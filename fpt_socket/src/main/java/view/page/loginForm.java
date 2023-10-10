@@ -38,7 +38,7 @@ public class loginForm extends javax.swing.JFrame {
         button2 = new view.custom.Button();
         button3 = new view.custom.Button();
         holder = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        title = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         naviBtn = new javax.swing.JLabel();
@@ -93,7 +93,7 @@ public class loginForm extends javax.swing.JFrame {
             }
         });
 
-        holder.setPreferredSize(new java.awt.Dimension(450, 250));
+        holder.setPreferredSize(new java.awt.Dimension(450, 400));
 
         javax.swing.GroupLayout holderLayout = new javax.swing.GroupLayout(holder);
         holder.setLayout(holderLayout);
@@ -103,11 +103,11 @@ public class loginForm extends javax.swing.JFrame {
         );
         holderLayout.setVerticalGroup(
             holderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 220, Short.MAX_VALUE)
+            .addGap(0, 400, Short.MAX_VALUE)
         );
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("Login");
+        title.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        title.setText("Login");
 
         jLabel2.setText("Chưa có tài khoản?");
 
@@ -136,13 +136,13 @@ public class loginForm extends javax.swing.JFrame {
             .addGroup(roundPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(holder, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+                    .addComponent(holder, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(button3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(85, 85, 85)
-                        .addComponent(jLabel1)
+                        .addComponent(title)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
@@ -162,14 +162,14 @@ public class loginForm extends javax.swing.JFrame {
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(button3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel1Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
+                        .addComponent(title)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(holder, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(holder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -185,7 +185,9 @@ public class loginForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(roundPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(roundPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -228,13 +230,16 @@ public class loginForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(isLogin){
             OpenChildForm(new register());
+            roundPanel1.repaint();
             jLabel2.setText("Đã có tài khoản?");
             naviBtn.setText("Đăng nhập");
+            title.setText("Register");
             isLogin=false;
         }else{
             OpenChildForm(new login());
             jLabel2.setText("Đã có tài khoản?");
             naviBtn.setText("Đăng nhập");
+            title.setText("Login");
             isLogin=true;
         }
     }//GEN-LAST:event_naviBtnMouseClicked
@@ -289,10 +294,10 @@ public class loginForm extends javax.swing.JFrame {
     private view.custom.Button button2;
     private view.custom.Button button3;
     private javax.swing.JPanel holder;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel naviBtn;
     private view.custom.RoundPanel roundPanel1;
+    private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 }
