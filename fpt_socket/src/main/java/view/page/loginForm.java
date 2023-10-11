@@ -237,8 +237,8 @@ public class loginForm extends javax.swing.JFrame {
             isLogin=false;
         }else{
             OpenChildForm(new login());
-            jLabel2.setText("Đã có tài khoản?");
-            naviBtn.setText("Đăng nhập");
+            jLabel2.setText("chưa có tài khoản?");
+            naviBtn.setText("Đăng kí");
             title.setText("Login");
             isLogin=true;
         }
