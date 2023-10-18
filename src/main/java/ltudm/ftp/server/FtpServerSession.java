@@ -43,23 +43,25 @@ public class FtpServerSession {
     }
 
     public boolean changeWorkingDir(String workingDir) {
+        // Go up 1 level
         if (workingDir.equals("..")) {
             System.out.println("Change working dir: " + workingDir);
             List<String> pathTokens = Arrays.asList(this.workingDir.replaceFirst("/", "").split("/"));
-            pathTokens.subList(0, pathTokens.size() - 1);
-            if(pathTokens.isEmpty()) {
+            pathTokens = pathTokens.subList(0, pathTokens.size() - 1);
+            if (pathTokens.isEmpty()) {
                 this.workingDir = "/";
-            } else {
-                this.workingDir = "/" + String.join("/", pathTokens);
-            }            
-        } else {
+                return true;
+            }
+            this.workingDir = "/" + String.join("/", pathTokens);
+            return true;
+        }
+        // Change working dir relative to root
+        if (workingDir.startsWith("/")) {
             this.workingDir = workingDir;
+            return true;
         }
-        if(workingDir.startsWith("/")) {
-            this.workingDir = workingDir;   
-        } else {
-            this.workingDir = this.workingDir + "/" + workingDir;
-        }
+        // Change working dir relative to current working dir
+        this.workingDir = this.workingDir + "/" + workingDir;
         return true;
     }
 
