@@ -175,6 +175,8 @@ public class FtpServer {
         ftpServerBuilder.addCommand("STOR", new STORCommand());
         ftpServerBuilder.addCommand("MKD", new MKDCommand());
         ftpServerBuilder.addCommand("DELE", new DELECommand());
+        ftpServerBuilder.addCommand("RNFR", new RNFRCommand());
+        ftpServerBuilder.addCommand("RNTO", new RNTOCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override

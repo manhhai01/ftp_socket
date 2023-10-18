@@ -1,0 +1,60 @@
+[main] INFO org.apache.ftpserver.impl.DefaultFtpServer - FTP server started
+[NioProcessor-3] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - CREATED
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - OPENED
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 220 Service ready for new user.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: AUTH TLS
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 431 Service is unavailable.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: AUTH SSL
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 431 Service is unavailable.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: USER testwrite
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 331 User name okay, need password for testwrite.
+
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: PASS *****
+[pool-3-thread-2] INFO org.apache.ftpserver.command.impl.PASS - Login success - testwrite
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 230 User logged in, proceed.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: SYST
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 215 UNIX Type: Apache FtpServer
+
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: FEAT
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 211-Extensions supported
+ SIZE
+ MDTM
+ REST STREAM
+ LANG en;zh-tw;ja;is
+ MLST Size;Modify;Type;Perm
+ AUTH SSL
+ AUTH TLS
+ MODE Z
+ UTF8
+ TVFS
+ MD5
+ MMD5
+ MFMT
+211 End
+
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: OPTS UTF8 ON
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 200 Command OPTS okay.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: OPTS MLST size;modify;type;
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 200 Command OPTS okay.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: PWD
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 257 "/" is current directory.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: TYPE I
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 200 Command TYPE okay.
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: EPSV
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 229 Entering Passive Mode (|||51148|)
+
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - RECEIVED: MLSD
+Home dir: ftp/testwrite
+Current working directory: /
+2
+[pool-3-thread-1] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 150 File status okay; about to open data connection.
+
+[pool-3-thread-2] INFO org.apache.ftpserver.listener.nio.FtpLoggingFilter - SENT: 226 Closing data connection.

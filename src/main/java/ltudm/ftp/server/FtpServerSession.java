@@ -11,6 +11,7 @@ public class FtpServerSession {
     // Working dir starts with "/"
     private String workingDir;
     private ServerSocket dataSocket;
+    private String RNFRFilename;
 
     public FtpServerSession() {
 
@@ -73,4 +74,11 @@ public class FtpServerSession {
         this.dataSocket = dataSocket;
     }
 
+    public String getRNFRFilename() {
+        return RNFRFilename;
+    }
+
+    public void setRNFRFilename(String RNFRFilename) {
+        this.RNFRFilename = RNFRFilename;
+    }
 }
