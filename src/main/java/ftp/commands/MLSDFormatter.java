@@ -5,7 +5,7 @@
 package ftp.commands;
 
 import java.io.File;
-import java.nio.file.Files;
+import java.io.FileFilter;
 
 /**
  *
@@ -13,28 +13,36 @@ import java.nio.file.Files;
  */
 public class MLSDFormatter {
 
-    public String format(File file) {
+    private String formatImplementation(File file, FileFilter fileFilter) {
         String result = "";
         System.out.println(file.getName());
-        File[] files = file.listFiles();
-        if(files.length == 0) {
+        File[] files = fileFilter == null ? file.listFiles() : file.listFiles(fileFilter);
+        if (files.length == 0) {
             return "";
         }
-        for (File f : file.listFiles()) {
-            if(f.isDirectory()) {
+        for (File f : files) {
+            if (f.isDirectory()) {
                 result += String.format("Type=%s;Size=%s;Perm=el; %s\n",
-                    f.isFile() ? "file" : "dir",
-                    f.length(),
-                    f.getName());
+                        f.isFile() ? "file" : "dir",
+                        f.length(),
+                        f.getName());
             } else {
                 result += String.format("Type=%s;Size=%s;Perm=%s; %s\n",
-                    f.isFile() ? "file" : "dir",
-                    f.length(),
-                    "r",
-                    f.getName());
+                        f.isFile() ? "file" : "dir",
+                        f.length(),
+                        "r",
+                        f.getName());
             }
-            
+
         }
         return result;
+    }
+    
+    public String format(File file) {
+        return formatImplementation(file, null);
+    }
+    
+    public String format(File file, FileFilter fileFilter) {
+        return formatImplementation(file, fileFilter);
     }
 }

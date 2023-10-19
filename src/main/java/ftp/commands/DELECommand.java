@@ -4,6 +4,8 @@
  */
 package ftp.commands;
 
+import ftp.FilePermission;
+import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import java.io.BufferedWriter;
@@ -23,11 +25,18 @@ public class DELECommand implements Command {
         try {
             String filename = arguments[0];
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + filename);
-            file.delete();
-            SocketUtils.writeLineAndFlush("250 Command okay.", commandSocketWriter);
+            FilePermissionService filePermissionService = new FilePermissionService();
+            FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+            if (filePermission.isDeletable()) {
+                file.delete();
+                SocketUtils.writeLineAndFlush("250 Command okay.", commandSocketWriter);
+            } else {
+                SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(DELECommand.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }

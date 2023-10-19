@@ -4,12 +4,14 @@
  */
 package ftp.commands;
 
+import ftp.FilePermission;
+import ftp.FilePermissionService;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
-import ftp.commands.Command;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -22,6 +24,7 @@ import java.util.logging.Logger;
  */
 public class MLSDCommand implements Command {
 
+    @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             System.out.println("User working directory: " + session.getWorkingDirAbsolutePath());
@@ -33,7 +36,15 @@ public class MLSDCommand implements Command {
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
-            String fileData = formatter.format(file);
+            String fileData = formatter.format(file, new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    FilePermissionService filePermissionService = new FilePermissionService();
+                    FilePermission filePermission = filePermissionService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
+                    return filePermission.isReadable();
+                }
+                
+            });
             System.out.println("FileData: " + fileData);
 //                    dataSocketWriter.write("Type=cdir;Modify=19981107085215;Perm=el; tmp\n" +
 //"Type=cdir;Modify=19981107085215;Perm=el; /tmp\n" +

@@ -4,6 +4,8 @@
  */
 package ftp.commands;
 
+import ftp.FilePermission;
+import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.commands.Command;
@@ -26,21 +28,29 @@ public class RETRCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
-            
+
             Socket socket = session.getDataSocket().accept();
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
-            BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            FileReader fileReader = new FileReader(file);
-            fileReader.transferTo(dataSocketWriter);
-            dataSocketWriter.flush();
-            fileReader.close();
-            dataSocketWriter.close();
-            socket.close();
+            FilePermissionService filePermissionService = new FilePermissionService();
+            FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+            if (filePermission.isReadable()) {
+                BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                FileReader fileReader = new FileReader(file);
+                fileReader.transferTo(dataSocketWriter);
+                dataSocketWriter.flush();
+                fileReader.close();
+                dataSocketWriter.close();
+            } else {
+                SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+            }
+
             
+            socket.close();
+
             SocketUtils.writeLineAndFlush("226 Closing data connection.", commandSocketWriter);
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }

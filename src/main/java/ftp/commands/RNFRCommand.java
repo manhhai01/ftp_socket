@@ -4,6 +4,8 @@
  */
 package ftp.commands;
 
+import ftp.FilePermission;
+import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.commands.Command;
@@ -28,8 +30,15 @@ public class RNFRCommand implements Command {
         try {
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
             if (file.exists()) {
+                FilePermissionService filePermissionService = new FilePermissionService();
+                FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+                if(!filePermission.isRenamable()) {
+                    SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+                    return;
+                }
                 SocketUtils.writeLineAndFlush("350: RNFR accepted. Please supply new name for RNTO.", commandSocketWriter);
                 session.setRNFRFilename(arguments[0]);
+
             } else {
                 SocketUtils.writeLineAndFlush("450 Requested file action not taken.", commandSocketWriter);
             }

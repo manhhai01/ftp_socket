@@ -4,6 +4,8 @@
  */
 package ftp.commands;
 
+import ftp.FilePermission;
+import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.commands.Command;
@@ -26,25 +28,37 @@ public class STORCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
-            
-            Socket socket = session.getDataSocket().accept();
-            
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
-            file.createNewFile();
+
+            // If user want to write to existed file
+            // Then check writable permission
+            if (file.exists()) {
+                FilePermissionService filePermissionService = new FilePermissionService();
+                FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+                if (!filePermission.isWritable()) {
+                    SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+                    return;
+                }
+            } 
+            // File is new = uploading
+            // Todo: Check uploadable permission
+            else {
+                file.createNewFile();
+            }
+            SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
+            Socket socket = session.getDataSocket().accept();
             BufferedReader dataSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             FileWriter fileWriter = new FileWriter(file);
             dataSocketReader.transferTo(fileWriter);
             fileWriter.close();
             dataSocketReader.close();
             socket.close();
-            
+
             SocketUtils.writeLineAndFlush("226 Closing data connection.", commandSocketWriter);
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
     }
-    
+
 }
