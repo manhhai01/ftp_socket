@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package ltudm.ftp.server;
+package ftp.commands;
 
+import ftp.FtpServerSession;
+import ftp.SocketUtils;
+import ftp.commands.Command;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,19 +21,30 @@ import java.util.logging.Logger;
  *
  * @author User
  */
-public class MKDCommand implements Command {
+public class STORCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
+            SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
+            
+            Socket socket = session.getDataSocket().accept();
+            
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
-            file.mkdir();
-            SocketUtils.writeLineAndFlush("257 \"" + arguments[0] + "\" created.", commandSocketWriter);
+            file.createNewFile();
+            BufferedReader dataSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            FileWriter fileWriter = new FileWriter(file);
+            dataSocketReader.transferTo(fileWriter);
+            fileWriter.close();
+            dataSocketReader.close();
+            socket.close();
             
             SocketUtils.writeLineAndFlush("226 Closing data connection.", commandSocketWriter);
         } catch (IOException ex) {
-            Logger.getLogger(MKDCommand.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        
     }
     
 }

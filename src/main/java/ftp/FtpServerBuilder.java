@@ -1,5 +1,6 @@
-package ltudm.ftp.server;
+package ftp;
 
+import ftp.commands.Command;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,5 +1,6 @@
-package ltudm.ftp.server;
+package ftp.commands;
 
+import ftp.FtpServerSession;
 import java.io.BufferedWriter;
 
 public interface Command {

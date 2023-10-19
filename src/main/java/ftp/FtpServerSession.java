@@ -1,4 +1,4 @@
-package ltudm.ftp.server;
+package ftp;
 
 import java.net.ServerSocket;
 import java.util.Arrays;

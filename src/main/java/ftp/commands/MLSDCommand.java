@@ -2,8 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package ltudm.ftp.server;
+package ftp.commands;
 
+import ftp.FtpServer;
+import ftp.FtpServerSession;
+import ftp.SocketUtils;
+import ftp.commands.Command;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;

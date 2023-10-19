@@ -2,8 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package ltudm.ftp.server;
+package ftp.commands;
 
+import ftp.FtpServer;
+import ftp.FtpServerSession;
+import ftp.SocketUtils;
+import ftp.commands.Command;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -13,16 +17,15 @@ import java.util.logging.Logger;
  *
  * @author User
  */
-public class CWDCommand implements Command {
-
+public class PWDCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            String newDir = arguments[0];
-            session.changeWorkingDir(newDir);
-            SocketUtils.writeLineAndFlush("250 Okay.", commandSocketWriter);
+            SocketUtils.writeLineAndFlush(
+                    String.format("257 \"%s\" is current directory.", session.getWorkingDir()),
+                    commandSocketWriter);
         } catch (IOException ex) {
-            Logger.getLogger(CWDCommand.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

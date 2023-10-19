@@ -1,8 +1,23 @@
-package ltudm.ftp.server;
+package ftp;
 
+import ftp.commands.TYPECommand;
+import ftp.commands.USERCommand;
+import ftp.commands.RNTOCommand;
+import ftp.commands.PWDCommand;
+import ftp.commands.RETRCommand;
+import ftp.commands.STORCommand;
+import ftp.commands.MLSDCommand;
+import ftp.commands.PASSCommand;
+import ftp.commands.RNFRCommand;
+import ftp.commands.MKDCommand;
+import ftp.commands.FEATCommand;
+import ftp.commands.CWDCommand;
+import ftp.commands.Command;
+import ftp.commands.DELECommand;
+import ftp.commands.EPSVCommand;
+import ftp.commands.AUTHCommand;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -162,13 +177,13 @@ public class FtpServer {
                 }
             }
         });
-        ftpServerBuilder.addCommand("AUTH", new AuthCommand());
-        ftpServerBuilder.addCommand("USER", new UserCommand());
-        ftpServerBuilder.addCommand("PASS", new PassCommand());
+        ftpServerBuilder.addCommand("AUTH", new AUTHCommand());
+        ftpServerBuilder.addCommand("USER", new USERCommand());
+        ftpServerBuilder.addCommand("PASS", new PASSCommand());
         ftpServerBuilder.addCommand("PWD", new PWDCommand());
         ftpServerBuilder.addCommand("MLSD", new MLSDCommand());
-        ftpServerBuilder.addCommand("FEAT", new FeatCommand());
-        ftpServerBuilder.addCommand("TYPE", new TypeCommand());
+        ftpServerBuilder.addCommand("FEAT", new FEATCommand());
+        ftpServerBuilder.addCommand("TYPE", new TYPECommand());
         ftpServerBuilder.addCommand("EPSV", new EPSVCommand());
         ftpServerBuilder.addCommand("CWD", new CWDCommand());
         ftpServerBuilder.addCommand("RETR", new RETRCommand());
