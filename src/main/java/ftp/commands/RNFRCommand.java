@@ -29,20 +29,19 @@ public class RNFRCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
-            if (file.exists()) {
-                FilePermissionService filePermissionService = new FilePermissionService();
-                FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
-                if(!filePermission.isRenamable()) {
-                    SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
-                    return;
-                }
-                SocketUtils.writeLineAndFlush("350: RNFR accepted. Please supply new name for RNTO.", commandSocketWriter);
-                session.setRNFRFilename(arguments[0]);
-
-            } else {
+            if (!file.exists()) {
                 SocketUtils.writeLineAndFlush("450 Requested file action not taken.", commandSocketWriter);
+                return;
             }
-
+            FilePermissionService filePermissionService = new FilePermissionService();
+            FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+            if (!filePermission.isRenamable()) {
+                SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+                return;
+            }
+            
+            SocketUtils.writeLineAndFlush("350: RNFR accepted. Please supply new name for RNTO.", commandSocketWriter);
+            session.setRNFRFilename(arguments[0]);
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -17,14 +17,14 @@ public class FilePermissionService {
     
     public FilePermissionService() {
         filePermissions.put("ftp", new FilePermission(true, false, false, false));
-        filePermissions.put("ftp/testuser", new FilePermission(true, false, false, false));
-        filePermissions.put("ftp/testuser/aaaa", new FilePermission(true, false, true, true));
+        filePermissions.put("ftp/testuser", new FilePermission(true, true, false, false));
+        filePermissions.put("ftp/testuser/aaaa", new FilePermission(true, true, true, true));
         filePermissions.put("ftp/testuser/aaaa/test.txt", new FilePermission(true, true, true, true));
-        filePermissions.put("ftp/testuser/abc", new FilePermission(true, false, true, true));
-        filePermissions.put("ftp/testuser/def", new FilePermission(true, false, true, true));
+        filePermissions.put("ftp/testuser/abc", new FilePermission(true, true, true, true));
+        filePermissions.put("ftp/testuser/def", new FilePermission(true, true, true, true));
         filePermissions.put("ftp/testuser2", new FilePermission(true, false, false, false));
-        filePermissions.put("ftp/testuser/log-login-successfully.txt", new FilePermission(true, true, true, false));
-        filePermissions.put("ftp/testuser/log2.txt", new FilePermission(true, false, true, false));
+        filePermissions.put("ftp/testuser/log-login-successfully.txt", new FilePermission(true, false, false, false));
+        filePermissions.put("ftp/testuser/log2.txt", new FilePermission(true, false, false, false));
         
     }
     
