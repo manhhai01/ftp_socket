@@ -27,10 +27,11 @@ public class STORCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        String filePath = session.getWorkingDirAbsolutePath() + "/" + arguments[0];
         try {
-            File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
+            File file = new File(filePath);
             FilePermissionService filePermissionService = new FilePermissionService();
-            // Overwrite case
+            // File update case
             if (file.exists()) {
                 FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
                 if (!filePermission.isWritable()) {
@@ -46,9 +47,10 @@ public class STORCommand implements Command {
                     return;
                 }
                 file.createNewFile();
+                filePermissionService.addFileOrDirectoryOwnerPermission(filePath, session.getUsername());
             }
             
-            SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
+            SocketUtils.writeLineAndFlush("250 Requested file action okay.", commandSocketWriter);
             Socket socket = session.getDataSocket().accept();
             BufferedReader dataSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             FileWriter fileWriter = new FileWriter(file);

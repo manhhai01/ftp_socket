@@ -19,11 +19,13 @@ public class MKDCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
+            String newDirPath = session.getWorkingDirAbsolutePath() + "/" + arguments[0];
+            File file = new File(newDirPath);
             FilePermissionService filePermissionService = new FilePermissionService();
             FilePermission currentDirPerm = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath(), session.getUsername());
             if(currentDirPerm.isWritable()) {
                 file.mkdir();
+                filePermissionService.addFileOrDirectoryOwnerPermission(newDirPath, session.getUsername());
                 SocketUtils.writeLineAndFlush("257 \"" + arguments[0] + "\" created.", commandSocketWriter);
             } else {
                 SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);

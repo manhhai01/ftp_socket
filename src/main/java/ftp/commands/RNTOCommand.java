@@ -1,5 +1,7 @@
 package ftp.commands;
 
+import ftp.FilePermission;
+import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.commands.Command;
@@ -25,13 +27,17 @@ public class RNTOCommand implements Command {
         }
         
         try {
-            File fileWithNewName = new File(session.getWorkingDirAbsolutePath() + "/" + newFilename);
+            String oldFilePath =  session.getWorkingDirAbsolutePath() + "/" + oldFilename;
+            String newFilePath = session.getWorkingDirAbsolutePath() + "/" + newFilename;
+            File fileWithNewName = new File(newFilePath);
             if (fileWithNewName.exists()) {
                 SocketUtils.writeLineAndFlush(String.format("450 File with %s name already exists.", newFilename), commandSocketWriter);
                 return;
             }
             
-            File fileToRename = new File(session.getWorkingDirAbsolutePath() + "/" + oldFilename);
+            FilePermissionService filePermissionService = new FilePermissionService();
+            filePermissionService.changeFilePath(oldFilePath, newFilePath, session.getUsername());
+            File fileToRename = new File(oldFilePath);
             fileToRename.renameTo(fileWithNewName);
             SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
             session.setRNFRFilename(null);
