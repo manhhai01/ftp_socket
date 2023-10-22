@@ -26,9 +26,10 @@ public class DELECommand implements Command {
             String filename = arguments[0];
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + filename);
             FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+            FilePermission filePermission = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath() + "/" + filename, session.getUsername());
             if (filePermission.isDeletable()) {
                 file.delete();
+                // Todo: delete in db
                 SocketUtils.writeLineAndFlush("250 Command okay.", commandSocketWriter);
             } else {
                 SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);

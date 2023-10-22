@@ -27,37 +27,96 @@ public class FilePermissionService {
         filePermissions.add(new StoredFilePermission("ftp/testuser/log2.txt", true, false, false, false, "testuser", "testuser"));
 
     }
-    
+
     /**
      * Note: This method does not check if file exists or not
-    */
+     */
     private StoredFilePermission getStoredFilePermission(String fromRootFilePath, String username) {
         return filePermissions.stream()
                 .filter(permission -> permission.appliedUser().equals(username) && permission.path().equals(fromRootFilePath))
                 .findAny()
                 .orElse(null);
     }
-    
-    /**
-     * Note: This method does not check if file exists or not
-    */
-    private StoredFilePermission getStoredFilePermissionRecursively(String fromRootFilePath, String username) {
-        String currentFilePath = fromRootFilePath;
-        StoredFilePermission filePermission;
-        while((filePermission = getStoredFilePermission(fromRootFilePath, username)) == null) {
-            List<String> pathTokens = Arrays.asList(currentFilePath.split("/"));
-            pathTokens = pathTokens.subList(0, pathTokens.size() - 2);
-            if (pathTokens.size() <= 1) {
-                break;
-            }
-            currentFilePath = "/" + String.join("/", pathTokens);
+
+    private String getFileOwner(String fromRootFilePath) {
+        StoredFilePermission perm = filePermissions.stream()
+                .filter(permission -> permission.path().equals(fromRootFilePath))
+                .findFirst()
+                .get();
+
+        if (perm == null) {
+            return null;
         }
-        return filePermission;
+        return perm.owner();
     }
 
     /**
      * Note: This method does not check if file exists or not
-    */
+     */
+    private StoredFilePermission getStoredFilePermissionRecursively(String fromRootFilePath, String username) {
+        StoredFilePermission filePermission;
+        filePermission = getStoredFilePermission(fromRootFilePath, username);
+        boolean isReadable = false;
+        boolean isWritable = false;
+        boolean isDeletable = false;
+
+        if (filePermission != null) {
+            // Owner has full permission
+            if (username.equals(filePermission.owner())) {
+                return new StoredFilePermission(fromRootFilePath, true, true, true, true, username, username);
+            }
+
+            String currentFilePath = fromRootFilePath;
+
+            // Deletable if the user is the owner of one of the folders containing the file
+            while (true) {
+                // Go to parent directory
+                List<String> pathTokens = Arrays.asList(currentFilePath.split("/"));
+                pathTokens = pathTokens.subList(0, pathTokens.size() - 2);
+                if (pathTokens.size() <= 1) {
+                    break;
+                }
+                currentFilePath = "/" + String.join("/", pathTokens);
+
+                // Get parent directory permission
+                filePermission = getStoredFilePermission(currentFilePath, username);
+
+                // If user is owner, set deletable to true
+                if (filePermission.owner().equals(username)) {
+                    isDeletable = true;
+                    break;
+                }
+            }
+
+            // Shared permission
+            StoredFilePermission sharedPermission = filePermissions.stream()
+                    .filter(perm -> perm.path().equals(fromRootFilePath) && perm.appliedUser().equals(username))
+                    .findFirst()
+                    .get();
+            if (sharedPermission != null) {
+                isReadable = sharedPermission.isReadable();
+                isWritable = sharedPermission.isWritable();
+            }
+
+            return new StoredFilePermission(fromRootFilePath, isReadable, isWritable, isDeletable, false, getFileOwner(fromRootFilePath), username);
+        }
+
+        // If not found then the closest parent directory's permission is also the file permission
+        // Go to parent directory
+        List<String> pathTokens = Arrays.asList(fromRootFilePath.split("/"));
+        if(pathTokens.isEmpty()) {
+            return null;
+        }
+        if(pathTokens.size() == 1) {
+            return getStoredFilePermissionRecursively("/", username);
+        }
+        pathTokens = pathTokens.subList(0, pathTokens.size() - 2);
+        return getStoredFilePermissionRecursively("/" + String.join("/", pathTokens), username);
+    }
+
+    /**
+     * Note: This method does not check if file exists or not
+     */
     public FilePermission getFilePermission(String fromRootFilePath, String username) {
         System.out.println("From root path: " + fromRootFilePath);
         StoredFilePermission storedFilePermission = getStoredFilePermissionRecursively(fromRootFilePath, username);
@@ -76,8 +135,7 @@ public class FilePermissionService {
         );
         return filePermission;
     }
-    
-    
+
     // Todo
     public boolean setShareDirectoryPermission(String fromRootFilePath, String username, boolean isReadable, boolean isWritable) {
 //        StoredFilePermission storedFilePermission = getStoredFilePermission(fromRootFilePath, username);

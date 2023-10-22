@@ -23,12 +23,12 @@ public class MLSDFormatter {
         for (File f : files) {
             if (f.isDirectory()) {
                 result += String.format("Type=%s;Size=%s;Perm=el; %s\n",
-                        f.isFile() ? "file" : "dir",
+                        "dir",
                         f.length(),
                         f.getName());
             } else {
                 result += String.format("Type=%s;Size=%s;Perm=%s; %s\n",
-                        f.isFile() ? "file" : "dir",
+                       "file",
                         f.length(),
                         "r",
                         f.getName());

@@ -28,7 +28,6 @@ public class RETRCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
-
             Socket socket = session.getDataSocket().accept();
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
             FilePermissionService filePermissionService = new FilePermissionService();

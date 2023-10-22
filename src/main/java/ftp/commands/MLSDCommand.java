@@ -36,14 +36,10 @@ public class MLSDCommand implements Command {
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
-            String fileData = formatter.format(file, new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    FilePermissionService filePermissionService = new FilePermissionService();
-                    FilePermission filePermission = filePermissionService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
-                    return filePermission.isReadable();
-                }
-                
+            String fileData = formatter.format(file, (File pathname) -> {
+                FilePermissionService filePermissionService = new FilePermissionService();
+                FilePermission filePermission = filePermissionService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
+                return filePermission.isReadable();
             });
             System.out.println("FileData: " + fileData);
 //                    dataSocketWriter.write("Type=cdir;Modify=19981107085215;Perm=el; tmp\n" +
@@ -63,6 +59,7 @@ public class MLSDCommand implements Command {
             dataSocketWriter.flush();
             dataSocketWriter.close();
             socket.close();
+            session.getDataSocket().close();
 
             SocketUtils.writeLineAndFlush("226 Closing data connection.", commandSocketWriter);
         } catch (IOException ex) {
