@@ -7,21 +7,22 @@ package ftp.commands;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
-import ftp.commands.Command;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author User
- */
 public class TYPECommand implements Command {
 
+    @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.writeLineAndFlush("200 Command TYPE okay.", commandSocketWriter);
+            SocketUtils.respondCommandSocket(
+                    StatusCode.COMMAND_OK,
+                    "Command TYPE okay.",
+                    commandSocketWriter
+            );
         } catch (IOException ex) {
             Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
         }

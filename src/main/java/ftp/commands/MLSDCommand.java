@@ -9,28 +9,27 @@ import ftp.FilePermissionService;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author User
- */
 public class MLSDCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             System.out.println("User working directory: " + session.getWorkingDirAbsolutePath());
-            SocketUtils.writeLineAndFlush("150 File status okay; about to open data connection.", commandSocketWriter);
-            
-            
+            SocketUtils.respondCommandSocket(
+                    StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
+                    "File status okay; about to open data connection.",
+                    commandSocketWriter
+            );
+
             Socket socket = session.getDataSocket().accept();
             System.out.println("Client connected to data socket: " + socket.getRemoteSocketAddress());
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -61,7 +60,11 @@ public class MLSDCommand implements Command {
             socket.close();
             session.getDataSocket().close();
 
-            SocketUtils.writeLineAndFlush("226 Closing data connection.", commandSocketWriter);
+            SocketUtils.respondCommandSocket(
+                    StatusCode.CLOSING_DATA_CONNECTION,
+                    "Closing data connection.",
+                    commandSocketWriter
+            );
         } catch (IOException ex) {
             Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
         }

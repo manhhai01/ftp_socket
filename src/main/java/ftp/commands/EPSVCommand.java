@@ -7,23 +7,24 @@ package ftp.commands;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author User
- */
 public class EPSVCommand implements Command {
 
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             // Listen on any free port
             ServerSocket dataSocket = new ServerSocket(0);
-            SocketUtils.writeLineAndFlush(String.format("229 Entering Extended Passive Mode (|||%s|)", dataSocket.getLocalPort()), commandSocketWriter);
+            SocketUtils.respondCommandSocket(
+                    StatusCode.ENTERED_EXTENDED_PASSIVE_MODE,
+                    String.format("Entering Extended Passive Mode (|||%s|)", dataSocket.getLocalPort()), 
+                    commandSocketWriter
+            );
             session.setDataSocket(dataSocket);
         } catch (IOException ex) {
             Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);

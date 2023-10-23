@@ -8,7 +8,7 @@ import ftp.FilePermission;
 import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
-import ftp.commands.Command;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -18,16 +18,16 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author User
- */
 public class RETRCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
+            SocketUtils.respondCommandSocket(
+                    StatusCode.FILE_ACTION_OK,
+                    "Requested file action okay, completed.",
+                    commandSocketWriter
+            );
             Socket socket = session.getDataSocket().accept();
             File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
             FilePermissionService filePermissionService = new FilePermissionService();
@@ -40,13 +40,20 @@ public class RETRCommand implements Command {
                 fileReader.close();
                 dataSocketWriter.close();
             } else {
-                SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.",
+                        commandSocketWriter
+                );
             }
 
-            
             socket.close();
 
-            SocketUtils.writeLineAndFlush("226 Closing data connection.", commandSocketWriter);
+            SocketUtils.respondCommandSocket(
+                    StatusCode.CLOSING_DATA_CONNECTION,
+                    "Closing data connection.",
+                    commandSocketWriter
+            );
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

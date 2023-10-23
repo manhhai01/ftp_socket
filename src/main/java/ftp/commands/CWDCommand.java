@@ -6,15 +6,12 @@ package ftp.commands;
 
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author User
- */
 public class CWDCommand implements Command {
 
     @Override
@@ -22,7 +19,10 @@ public class CWDCommand implements Command {
         try {
             String newDir = arguments[0];
             session.changeWorkingDir(newDir);
-            SocketUtils.writeLineAndFlush("250 Okay.", commandSocketWriter);
+            SocketUtils.respondCommandSocket(StatusCode.FILE_ACTION_OK,
+                    "Okay.",
+                    commandSocketWriter
+            );
         } catch (IOException ex) {
             Logger.getLogger(CWDCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

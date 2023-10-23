@@ -1,10 +1,9 @@
 package ftp.commands;
 
-import ftp.FilePermission;
 import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
-import ftp.commands.Command;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -17,29 +16,41 @@ public class RNTOCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         String newFilename = arguments[0];
         String oldFilename = session.getRNFRFilename();
-        if(oldFilename == null) {
+        if (oldFilename == null) {
             try {
-                SocketUtils.writeLineAndFlush("450 RNFR command is required before this command.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "RNFR command is required before this command.",
+                        commandSocketWriter
+                );
                 return;
             } catch (IOException ex) {
                 Logger.getLogger(RNTOCommand.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         try {
-            String oldFilePath =  session.getWorkingDirAbsolutePath() + "/" + oldFilename;
+            String oldFilePath = session.getWorkingDirAbsolutePath() + "/" + oldFilename;
             String newFilePath = session.getWorkingDirAbsolutePath() + "/" + newFilename;
             File fileWithNewName = new File(newFilePath);
             if (fileWithNewName.exists()) {
-                SocketUtils.writeLineAndFlush(String.format("450 File with %s name already exists.", newFilename), commandSocketWriter);
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "File with %s name already exists.",
+                        commandSocketWriter
+                );
                 return;
             }
-            
+
             FilePermissionService filePermissionService = new FilePermissionService();
             filePermissionService.changeFilePath(oldFilePath, newFilePath, session.getUsername());
             File fileToRename = new File(oldFilePath);
             fileToRename.renameTo(fileWithNewName);
-            SocketUtils.writeLineAndFlush("250 Requested file action okay, completed.", commandSocketWriter);
+            SocketUtils.respondCommandSocket(
+                    StatusCode.FILE_ACTION_OK,
+                    "Requested file action okay, completed.",
+                    commandSocketWriter
+            );
             session.setRNFRFilename(null);
 
         } catch (IOException ex) {
@@ -47,6 +58,4 @@ public class RNTOCommand implements Command {
         }
     }
 
-    
-    
 }

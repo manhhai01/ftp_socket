@@ -8,16 +8,13 @@ import ftp.FilePermission;
 import ftp.FilePermissionService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author User
- */
 public class DELECommand implements Command {
 
     @Override
@@ -30,9 +27,17 @@ public class DELECommand implements Command {
             if (filePermission.isDeletable()) {
                 file.delete();
                 // Todo: delete in db
-                SocketUtils.writeLineAndFlush("250 Command okay.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_OK, 
+                        "Command okay.", 
+                        commandSocketWriter
+                );
             } else {
-                SocketUtils.writeLineAndFlush("450 Forbidden.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.", 
+                        commandSocketWriter
+                );
             }
 
         } catch (IOException ex) {

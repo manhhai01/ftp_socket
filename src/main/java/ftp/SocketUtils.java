@@ -18,7 +18,7 @@ public class SocketUtils {
         writer.flush();
     }
     
-    public static void respondCommandSocket(String message, BufferedWriter socketWriter) throws IOException {
-        SocketUtils.writeLineAndFlush(message, socketWriter);
+    public static void respondCommandSocket(int statusCode, String message, BufferedWriter socketWriter) throws IOException {
+        SocketUtils.writeLineAndFlush(statusCode + " " + message, socketWriter);
     }
 }
