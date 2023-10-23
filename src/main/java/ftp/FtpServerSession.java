@@ -5,13 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FtpServerSession {
-
+   
     private String clientId;
     private String username;
     // Working dir starts with "/"
     private String workingDir;
     private ServerSocket dataSocket;
     private String RNFRFilename;
+    private String type;
 
     public FtpServerSession() {
 
@@ -80,5 +81,13 @@ public class FtpServerSession {
 
     public void setRNFRFilename(String RNFRFilename) {
         this.RNFRFilename = RNFRFilename;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

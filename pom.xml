@@ -11,4 +11,13 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>ltudm.ftp.server.FtpServer</exec.mainClass>
     </properties>
+    
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+    </dependencies>
 </project>

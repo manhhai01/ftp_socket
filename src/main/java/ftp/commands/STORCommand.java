@@ -15,9 +15,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class STORCommand implements Command {
 
@@ -62,7 +66,13 @@ public class STORCommand implements Command {
             Socket socket = session.getDataSocket().accept();
             BufferedReader dataSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             FileWriter fileWriter = new FileWriter(file);
-            dataSocketReader.transferTo(fileWriter);
+            if (session.getType().equals("A")) {
+                dataSocketReader.transferTo(fileWriter);
+            } else {
+                byte[] data = IOUtils.toByteArray(socket.getInputStream());
+                FileUtils.writeByteArrayToFile(file, data);
+            }
+
             fileWriter.close();
             dataSocketReader.close();
             socket.close();

@@ -18,11 +18,21 @@ public class TYPECommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.respondCommandSocket(
-                    StatusCode.COMMAND_OK,
-                    "Command TYPE okay.",
-                    commandSocketWriter
-            );
+            String type = arguments[0];
+            if (type.equals("A") || type.equals("I")) {
+                session.setType(arguments[0]);
+                SocketUtils.respondCommandSocket(
+                        StatusCode.COMMAND_OK,
+                        "Command TYPE okay.",
+                        commandSocketWriter
+                );
+            } else {
+                SocketUtils.respondCommandSocket(
+                        StatusCode.COMMAND_UNRECOGNIZED,
+                        "Command TYPE only accepts one argument, which is either \"I\" or \"A\"",
+                        commandSocketWriter
+                );
+            }
         } catch (IOException ex) {
             Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
         }

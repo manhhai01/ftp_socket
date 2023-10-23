@@ -17,6 +17,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class RETRCommand implements Command {
 
@@ -34,11 +36,22 @@ public class RETRCommand implements Command {
             FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
             if (filePermission.isReadable()) {
                 BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                FileReader fileReader = new FileReader(file);
-                fileReader.transferTo(dataSocketWriter);
-                dataSocketWriter.flush();
-                fileReader.close();
+                if (session.getType().equals("A")) {
+                    FileReader fileReader = new FileReader(file);
+                    fileReader.transferTo(dataSocketWriter);
+                    dataSocketWriter.flush();
+                    fileReader.close();
+                }
+                if (session.getType().equals("I")) {
+                    byte[] data = FileUtils.readFileToByteArray(file);
+                    IOUtils.write(data, socket.getOutputStream());
+                }
                 dataSocketWriter.close();
+                SocketUtils.respondCommandSocket(
+                        StatusCode.CLOSING_DATA_CONNECTION,
+                        "Closing data connection.",
+                        commandSocketWriter
+                );
             } else {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
@@ -48,12 +61,6 @@ public class RETRCommand implements Command {
             }
 
             socket.close();
-
-            SocketUtils.respondCommandSocket(
-                    StatusCode.CLOSING_DATA_CONNECTION,
-                    "Closing data connection.",
-                    commandSocketWriter
-            );
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
