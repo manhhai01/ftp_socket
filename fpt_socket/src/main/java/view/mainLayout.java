@@ -45,12 +45,16 @@ public class mainLayout extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         page1 = new view.custom.HighlightPanel();
         jLabel3 = new javax.swing.JLabel();
+        imageIcon1 = new view.custom.imageIcon();
         page2 = new view.custom.HighlightPanel();
         jLabel4 = new javax.swing.JLabel();
+        imageIcon2 = new view.custom.imageIcon();
         page3 = new view.custom.HighlightPanel();
         jLabel6 = new javax.swing.JLabel();
+        imageIcon3 = new view.custom.imageIcon();
         page4 = new view.custom.HighlightPanel();
         jLabel7 = new javax.swing.JLabel();
+        imageIcon4 = new view.custom.imageIcon();
         page5 = new view.custom.HighlightPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -63,7 +67,6 @@ public class mainLayout extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1366, 768));
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 255));
 
@@ -82,20 +85,29 @@ public class mainLayout extends javax.swing.JFrame {
         jLabel3.setForeground(normalText);
         jLabel3.setText("Thư mục của tôi");
 
+        imageIcon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/imac.png"))); // NOI18N
+        imageIcon1.setToolTipText("");
+
         javax.swing.GroupLayout page1Layout = new javax.swing.GroupLayout(page1);
         page1.setLayout(page1Layout);
         page1Layout.setHorizontalGroup(
             page1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(imageIcon1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         page1Layout.setVerticalGroup(
             page1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addGroup(page1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(page1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(imageIcon1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -113,20 +125,29 @@ public class mainLayout extends javax.swing.JFrame {
         jLabel4.setForeground(normalText);
         jLabel4.setText("Chia sẻ với tôi");
 
+        imageIcon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/share.png"))); // NOI18N
+        imageIcon2.setToolTipText("");
+
         javax.swing.GroupLayout page2Layout = new javax.swing.GroupLayout(page2);
         page2.setLayout(page2Layout);
         page2Layout.setHorizontalGroup(
             page2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(imageIcon2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         page2Layout.setVerticalGroup(
             page2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addGroup(page2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addGroup(page2Layout.createSequentialGroup()
+                        .addComponent(imageIcon2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -144,12 +165,17 @@ public class mainLayout extends javax.swing.JFrame {
         jLabel6.setForeground(normalText);
         jLabel6.setText("Thùng rác");
 
+        imageIcon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/delete.png"))); // NOI18N
+        imageIcon3.setToolTipText("");
+
         javax.swing.GroupLayout page3Layout = new javax.swing.GroupLayout(page3);
         page3.setLayout(page3Layout);
         page3Layout.setHorizontalGroup(
             page3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(38, 38, 38)
+                .addComponent(imageIcon3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -157,7 +183,11 @@ public class mainLayout extends javax.swing.JFrame {
             page3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addGroup(page3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(page3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(imageIcon3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -175,20 +205,29 @@ public class mainLayout extends javax.swing.JFrame {
         jLabel7.setForeground(normalText);
         jLabel7.setText("Thông tin cá nhân");
 
+        imageIcon4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/person.png"))); // NOI18N
+        imageIcon4.setToolTipText("");
+
         javax.swing.GroupLayout page4Layout = new javax.swing.GroupLayout(page4);
         page4.setLayout(page4Layout);
         page4Layout.setHorizontalGroup(
             page4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page4Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(19, 19, 19)
+                .addComponent(imageIcon4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         page4Layout.setVerticalGroup(
             page4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page4Layout.createSequentialGroup()
+            .addGroup(page4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addGroup(page4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(page4Layout.createSequentialGroup()
+                        .addComponent(imageIcon4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -449,6 +488,10 @@ public class mainLayout extends javax.swing.JFrame {
     private int mouseX,mouseY;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contentPanel;
+    private view.custom.imageIcon imageIcon1;
+    private view.custom.imageIcon imageIcon2;
+    private view.custom.imageIcon imageIcon3;
+    private view.custom.imageIcon imageIcon4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
