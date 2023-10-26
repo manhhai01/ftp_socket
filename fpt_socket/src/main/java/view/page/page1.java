@@ -4,6 +4,15 @@
  */
 package view.page;
 
+import java.awt.Component;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import view.custom.TableActionCellEditor;
+import view.custom.TableActionCellRender;
+import view.custom.TableActionEvent;
+
 /**
  *
  * @author Bum
@@ -15,8 +24,48 @@ public class page1 extends javax.swing.JPanel {
      */
     public page1() {
         initComponents();
+        setTable();
     }
+    public void setTable(){
+        TableActionEvent event = new TableActionEvent() {
+            @Override
+            public void onRename(int row) {
+                System.out.println("rename row : " + row);
+            }
 
+            @Override
+            public void onDelete(int row) {
+                if (table.isEditing()) {
+                    table.getCellEditor().stopCellEditing();
+                }
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                model.removeRow(row);
+            }
+
+            @Override
+            public void onCopy(int row) {
+                System.out.println("copy row : " + row);
+            }
+
+            @Override
+            public void onMove(int row) {
+                System.out.println("Move row : " + row); 
+            }
+
+            @Override
+            public void onDownload(int row) {
+                System.out.println("Download row : " + row); ; 
+            }
+
+            @Override
+            public void onShare(int row) {
+                System.out.println("Share row : " + row);  // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+        };
+        table.getColumnModel().getColumn(4).setCellRenderer(new TableActionCellRender());
+        table.getColumnModel().getColumn(4).setCellEditor(new TableActionCellEditor(event));
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,6 +91,8 @@ public class page1 extends javax.swing.JPanel {
         highlightPanel6 = new view.custom.HighlightPanel();
         jLabel9 = new javax.swing.JLabel();
         imageIcon5 = new view.custom.imageIcon();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
 
         setPreferredSize(new java.awt.Dimension(1066, 666));
         setVerifyInputWhenFocusTarget(false);
@@ -203,6 +254,38 @@ public class page1 extends javax.swing.JPanel {
                     .addComponent(imageIcon5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {"1", "A", "001", null, null},
+                {"2", "B", "002", null, null},
+                {"3", "C", "003", null, null},
+                {"4", "D", "004", null, null}
+            },
+            new String [] {
+                "Tên", "Chủ sở hữu", "Ngày thay đổi", "Kích cỡ tệp", ""
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        table.setFocusable(false);
+        table.setGridColor(new java.awt.Color(255, 255, 255));
+        table.setRowHeight(40);
+        table.setSelectionBackground(new java.awt.Color(56, 138, 112));
+        jScrollPane1.setViewportView(table);
+        if (table.getColumnModel().getColumnCount() > 0) {
+            table.getColumnModel().getColumn(0).setPreferredWidth(350);
+            table.getColumnModel().getColumn(1).setPreferredWidth(110);
+            table.getColumnModel().getColumn(2).setPreferredWidth(110);
+            table.getColumnModel().getColumn(3).setPreferredWidth(110);
+            table.getColumnModel().getColumn(4).setPreferredWidth(5);
+        }
+
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
         roundPanel1Layout.setHorizontalGroup(
@@ -215,13 +298,16 @@ public class page1 extends javax.swing.JPanel {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1041, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGap(52, 52, 52)
-                        .addComponent(roundPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(71, 71, 71)
-                        .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1)
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addComponent(roundPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(71, 71, 71)
+                                .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -238,7 +324,9 @@ public class page1 extends javax.swing.JPanel {
                     .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(534, Short.MAX_VALUE))
+                .addGap(50, 50, 50)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(57, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -256,26 +344,22 @@ public class page1 extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private view.custom.HighlightPanel highlightPanel1;
-    private view.custom.HighlightPanel highlightPanel2;
-    private view.custom.HighlightPanel highlightPanel4;
     private view.custom.HighlightPanel highlightPanel5;
     private view.custom.HighlightPanel highlightPanel6;
     private view.custom.imageIcon imageIcon1;
-    private view.custom.imageIcon imageIcon3;
     private view.custom.imageIcon imageIcon4;
     private view.custom.imageIcon imageIcon5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jTextField1;
     private view.custom.RoundPanel roundPanel1;
     private view.custom.RoundPanel roundPanel3;
     private view.custom.RoundPanel roundPanel4;
-    private view.custom.RoundPanel roundPanel5;
+    private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
 }

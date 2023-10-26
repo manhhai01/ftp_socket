@@ -6,9 +6,15 @@ package view.custom;
  */
 public interface TableActionEvent {
 
-    public void onEdit(int row);
+    public void onRename(int row);
 
+    public void onMove(int row);
+
+    public void onCopy(int row);
+    
     public void onDelete(int row);
-
-    public void onView(int row);
+    
+    public void onDownload(int row);
+    
+    public void onShare(int row);
 }
