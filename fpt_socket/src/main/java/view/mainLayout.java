@@ -15,7 +15,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import view.custom.HighlightPanel;
-import view.page.page1;
+import view.page.information;
+import view.page.myWorkingSpace;
+import view.page.share;
+import view.page.trash;
 
 /**
  *
@@ -31,6 +34,8 @@ public class mainLayout extends javax.swing.JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         pack();
         setSize(screenSize.width,screenSize.height);
+        active(page1);
+        getContent(new myWorkingSpace());
     }
 
     /**
@@ -396,19 +401,22 @@ public class mainLayout extends javax.swing.JFrame {
 
     private void page1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page1MouseClicked
         active(page1);
-        getContent(new page1());
+        getContent(new myWorkingSpace());
     }//GEN-LAST:event_page1MouseClicked
 
     private void page2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page2MouseClicked
         active(page2);
+        getContent(new share());
     }//GEN-LAST:event_page2MouseClicked
 
     private void page3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page3MouseClicked
         active(page3);
+        getContent(new trash());
     }//GEN-LAST:event_page3MouseClicked
 
     private void page4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page4MouseClicked
         active(page4);
+        getContent(new information());
     }//GEN-LAST:event_page4MouseClicked
 
     private void page5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page5MouseClicked

@@ -16,29 +16,32 @@ import javax.swing.table.DefaultTableModel;
 import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
 import view.custom.TableActionEvent;
+import view.custom.customDialog;
 
 /**
  *
  * @author Bum
  */
-public class page1 extends javax.swing.JPanel {
-
+public class share extends javax.swing.JPanel {
+    private final customDialog customDialog;
+    private final Frame parentFrame;
     /**
      * Creates new form page1
      */
-    public page1() {
+    public share() {
         initComponents();
         setTable();
+        parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        customDialog = new customDialog(parentFrame);
+        customDialog.setDialogContent(renamePanel);
     }
     public void setTable(){
-        table.setTableHeader(null);
-        Object[] options = {"OK", "Cancel"};
-        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        table.setTableHeader(null);               
         TableActionEvent event = new TableActionEvent() {
             @Override
-            public void onRename(int row) {               
-                int result=JOptionPane.showOptionDialog(parentFrame, jPanel3, "Custom OptionDialog",
-                JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);;
+            public void onRename(int row) {
+                renameField.setText("");// nên gán tên của row đó vào
+                customDialog.setVisible(true);
             }
 
             @Override
@@ -47,7 +50,7 @@ public class page1 extends javax.swing.JPanel {
                     table.getCellEditor().stopCellEditing();
                 }
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
-                model.removeRow(row);
+                model.removeRow(row);                
             }
 
             @Override
@@ -89,8 +92,11 @@ public class page1 extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel3 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
+        renamePanel = new javax.swing.JPanel();
+        renameField = new view.custom.passwordField();
+        renameConfirm = new view.custom.Button();
+        renameCancel = new view.custom.Button();
+        jLabel18 = new javax.swing.JLabel();
         roundPanel1 = new view.custom.RoundPanel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
@@ -116,28 +122,59 @@ public class page1 extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
 
-        jTextField2.setText("jTextField2");
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        renamePanel.setBackground(new java.awt.Color(255, 255, 255));
+        renamePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(216, 216, 216)));
+
+        renameField.setLabelText("Tên mới");
+
+        renameConfirm.setText("Xác nhận");
+        renameConfirm.setColor(new java.awt.Color(204, 204, 255));
+        renameConfirm.setColorClick(new java.awt.Color(153, 153, 153));
+        renameConfirm.setColorOver(new java.awt.Color(102, 102, 102));
+        renameConfirm.setRadius(10);
+
+        renameCancel.setText("Hủy");
+        renameCancel.setColor(new java.awt.Color(204, 204, 255));
+        renameCancel.setColorClick(new java.awt.Color(153, 153, 153));
+        renameCancel.setColorOver(new java.awt.Color(102, 102, 102));
+        renameCancel.setRadius(10);
+        renameCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                renameCancelActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(80, 80, 80)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(118, Short.MAX_VALUE))
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel18.setText("Đổi tên");
+
+        javax.swing.GroupLayout renamePanelLayout = new javax.swing.GroupLayout(renamePanel);
+        renamePanel.setLayout(renamePanelLayout);
+        renamePanelLayout.setHorizontalGroup(
+            renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(renamePanelLayout.createSequentialGroup()
+                .addGap(94, 94, 94)
+                .addGroup(renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(renamePanelLayout.createSequentialGroup()
+                        .addComponent(renameConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(119, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(70, 70, 70)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(97, Short.MAX_VALUE))
+        renamePanelLayout.setVerticalGroup(
+            renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(renamePanelLayout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(jLabel18)
+                .addGap(18, 18, 18)
+                .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(43, 43, 43)
+                .addGroup(renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(renameConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         setPreferredSize(new java.awt.Dimension(1066, 666));
@@ -148,7 +185,7 @@ public class page1 extends javax.swing.JPanel {
         jSeparator1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Thư mục của tôi >");
+        jLabel1.setText("Được chia sẻ với tôi >");
 
         roundPanel3.setBackground(new java.awt.Color(204, 204, 204));
         roundPanel3.setPreferredSize(new java.awt.Dimension(300, 40));
@@ -161,6 +198,11 @@ public class page1 extends javax.swing.JPanel {
         jTextField1.setPreferredSize(new java.awt.Dimension(64, 25));
 
         imageIcon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/magnifying-glass.png"))); // NOI18N
+        imageIcon1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                imageIcon1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout roundPanel3Layout = new javax.swing.GroupLayout(roundPanel3);
         roundPanel3.setLayout(roundPanel3Layout);
@@ -304,10 +346,10 @@ public class page1 extends javax.swing.JPanel {
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Example1", "Chinh", "30 thg 9, 2023", "69 bytes", null},
-                {"Example2", "Chinh", "30 thg 9, 2023", "69 bytes", null},
-                {"Example3", "Chinh", "30 thg 9, 2023", "69 bytes", null},
-                {"Example4", "Chinh", "30 thg 9, 2023", "69 bytes", null}
+                {"Example1", "Hồ Ngọc Hà", "30 thg 9, 2023", "69 bytes", null},
+                {"Example2", "Hương Giang", "30 thg 9, 2023", "69 bytes", null},
+                {"Example3", "Thanh Hằng", "30 thg 9, 2023", "69 bytes", null},
+                {"Example4", "Lan Khuê", "30 thg 9, 2023", "69 bytes", null}
             },
             new String [] {
                 "Tên", "Chủ sở hữu", "Ngày sửa đổi", "Kích thước tệp", ""
@@ -463,9 +505,13 @@ public class page1 extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tableMouseClicked
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    private void imageIcon1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageIcon1MouseClicked
+        String input=jTextField1.getText();
+    }//GEN-LAST:event_imageIcon1MouseClicked
+
+    private void renameCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameCancelActionPerformed
+        customDialog.setVisible(false);
+    }//GEN-LAST:event_renameCancelActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -476,10 +522,7 @@ public class page1 extends javax.swing.JPanel {
     private view.custom.imageIcon imageIcon4;
     private view.custom.imageIcon imageIcon5;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -489,14 +532,14 @@ public class page1 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private view.custom.Button renameCancel;
+    private view.custom.Button renameConfirm;
+    private view.custom.passwordField renameField;
+    private javax.swing.JPanel renamePanel;
     private view.custom.RoundPanel roundPanel1;
     private view.custom.RoundPanel roundPanel3;
     private view.custom.RoundPanel roundPanel4;
