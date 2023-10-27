@@ -35,7 +35,7 @@ public class customMenuItem extends JMenuItem {
         setIconTextGap(10); // Thay đổi khoảng cách tùy theo nhu cầu
 
         // Điều chỉnh giao diện cho JMenuItem
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        setBorder(BorderFactory.createEmptyBorder(6, 5, 6, 5));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         addMouseListener(new MouseListener() {

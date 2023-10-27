@@ -4,6 +4,7 @@
  */
 package view.custom;
 
+import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -21,6 +22,7 @@ public class test extends javax.swing.JFrame {
      */
     public test() {
         initComponents();
+        
         TableActionEvent event = new TableActionEvent() {
 
             @Override
@@ -58,12 +60,12 @@ public class test extends javax.swing.JFrame {
         };
         table.getColumnModel().getColumn(3).setCellRenderer(new TableActionCellRender());
         table.getColumnModel().getColumn(3).setCellEditor(new TableActionCellEditor(event));
-        table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1) {
-                setHorizontalAlignment(SwingConstants.RIGHT);
-                return super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
+        table.setDefaultRenderer(Object.class, (JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int column) -> {
+            Component component = new DefaultTableCellRenderer().getTableCellRendererComponent(t, value, isSelected, hasFocus, row, column);
+            if (isSelected == false ) {
+            component.setBackground(Color.WHITE);
             }
+            return component;
         });
     }
 
@@ -102,9 +104,13 @@ public class test extends javax.swing.JFrame {
         });
         table.setFillsViewportHeight(true);
         table.setFocusable(false);
-        table.setGridColor(new java.awt.Color(255, 255, 255));
+        table.setGridColor(new java.awt.Color(216, 216, 216));
         table.setRowHeight(40);
         table.setSelectionBackground(new java.awt.Color(56, 138, 112));
+        table.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        table.setShowGrid(false);
+        table.setShowHorizontalLines(true);
+        table.setShowVerticalLines(false);
         jScrollPane1.setViewportView(table);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -118,10 +124,9 @@ public class test extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE))
         );
 
         pack();
