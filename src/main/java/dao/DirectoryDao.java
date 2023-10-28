@@ -6,7 +6,7 @@ package dao;
 
 import config.HibernateConfig;
 import java.util.List;
-import model.File;
+import model.Directory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -14,11 +14,10 @@ import org.hibernate.Transaction;
  *
  * @author lamanhhai
  */
-public class FileDao {
-    
-    public File getFileById(int id) {
+public class DirectoryDao {
+    public Directory getUserById(int id) {
         Transaction transaction = null;
-        File file = null;
+        Directory directory = null;
         Session session = null;
         try {
             session = HibernateConfig.getSessionFactory().openSession();
@@ -27,7 +26,7 @@ public class FileDao {
             transaction = session.beginTransaction();
             
             // get user object by id
-            file = session.get(File.class, id);
+            directory = session.get(Directory.class, id);
             
             // commit the transaction
             transaction.commit();
@@ -39,13 +38,13 @@ public class FileDao {
             session.close();
         }
         
-        return file;
+        return directory;
     }
     
     @SuppressWarnings("unchecked")
-    public List<File> getAllFiles() {
+    public List<Directory> getAllUsers() {
         Transaction transaction = null;
-        List<File> files = null;
+        List<Directory> directories = null;
         Session session = null;
         try {
             session = HibernateConfig.getSessionFactory().openSession();
@@ -54,7 +53,7 @@ public class FileDao {
             transaction = session.beginTransaction();
             
             // get all users
-            files = session.createQuery("from File").list();
+            directories = session.createQuery("from Directory").list();
             
             // commit the transaction
             transaction.commit();
@@ -66,10 +65,10 @@ public class FileDao {
             session.close();
         }
         
-        return files;
+        return directories;
     }
     
-    public boolean save(File file) {
+    public boolean save(Directory directory) {
         Transaction transaction = null;
         Session session = null;
         boolean isInsert = false;
@@ -79,10 +78,11 @@ public class FileDao {
             transaction = session.beginTransaction();
             
             // save user object
-            session.save(file);
+            session.save(directory);
             
-            // commit the transaction d
+            // commit the transaction
             transaction.commit();
+            
             isInsert = true;
         } catch (Exception e) {
             if(transaction != null) {
@@ -95,7 +95,7 @@ public class FileDao {
         return isInsert;
     }
     
-    public boolean update(File file) {
+    public boolean update(Directory directory) {
         Transaction transaction = null;
         Session session = null;
         boolean isUpdate = false;
@@ -105,7 +105,7 @@ public class FileDao {
             transaction = session.beginTransaction();
             
             // save or update user object
-            session.saveOrUpdate(file);
+            session.saveOrUpdate(directory);
             
             // commit the transaction
             transaction.commit();
@@ -124,7 +124,7 @@ public class FileDao {
     
     public boolean remove(int id) {
         Transaction transaction = null;
-        File file = null;
+        Directory directory = null;
         Session session = null;
         boolean isDelete = false;
         try {
@@ -132,10 +132,10 @@ public class FileDao {
             // start the transaction
             transaction = session.beginTransaction();
             
-            file = session.get(File.class, id);
+            directory = session.get(Directory.class, id);
             
             // save or update user object
-            session.delete(file);
+            session.delete(directory);
             
             // commit the transaction
             transaction.commit();
