@@ -33,10 +33,10 @@ public class ShareFiles {
     private ShareFilesId ids;
     
     @Column(name = "read_permission")
-    private int readPermission;
+    private boolean readPermission;
     
     @Column(name = "write_permission")
-    private int writePermission;
+    private boolean writePermission;
     
     @ManyToOne
     @JoinColumn(name = "file_id", insertable = false, updatable = false)
