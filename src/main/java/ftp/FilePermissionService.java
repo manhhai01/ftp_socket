@@ -35,7 +35,7 @@ public class FilePermissionService {
 
     private FilePermission getDetailedFilePermission(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
-        
+
         if (file.isDirectory()) {
 //            return new FilePermission(fromRootFilePath, true, true, true, true, username, username);
             System.out.println("Fetching directory: " + fromRootFilePath);
@@ -46,7 +46,16 @@ public class FilePermissionService {
 
             // Return full permission if the user is directory's owner
             if (directoryFromDb.getUser().getUsername().equals(username)) {
-                return new FilePermission(directoryFromDb.getPath(), true, true, true, true, username, username);
+                return new FilePermission(
+                        directoryFromDb.getPath(),
+                        true,
+                        true,
+                        // Always renamable and deletable to owner unless it's the home folder
+                        !directoryFromDb.getPath().equals("ftp/" + username),
+                        !directoryFromDb.getPath().equals("ftp/" + username),
+                        username,
+                        username
+                );
             }
 
             // Setup path and owner for file permission
@@ -73,7 +82,7 @@ public class FilePermissionService {
 
             return detailedFilePermission;
         }
-        
+
         if (file.isFile()) {
             System.out.println("Fetching file: " + fromRootFilePath);
             // Fetch from file dao
@@ -84,7 +93,15 @@ public class FilePermissionService {
 
             // Return full permission if the user is file's owner
             if (fileFromDb.getUser().getUsername().equals(username)) {
-                return new FilePermission(fileFromDb.getPath(), true, true, true, true, username, username);
+                return new FilePermission(
+                        fileFromDb.getPath(),
+                        true,
+                        true,
+                        true,
+                        true,
+                        username,
+                        username
+                );
             }
 
             // Setup path and owner for file permission

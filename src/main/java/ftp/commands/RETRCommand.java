@@ -6,6 +6,7 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -24,6 +25,8 @@ public class RETRCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
         try {
             SocketUtils.respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
@@ -31,7 +34,8 @@ public class RETRCommand implements Command {
                     commandSocketWriter
             );
             Socket socket = session.getDataSocket().accept();
-            File file = new File(session.getWorkingDirAbsolutePath() + "/" + arguments[0]);
+            String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), arguments[0]);
+            File file = new File(filePath);
             FilePermissionService filePermissionService = new FilePermissionService();
             FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
             if (filePermission.isReadable()) {

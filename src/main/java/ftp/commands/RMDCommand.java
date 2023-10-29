@@ -2,6 +2,7 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -16,10 +17,12 @@ public class RMDCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
         String dirName = arguments[0];
-        String filePath = session.getWorkingDirAbsolutePath() + "/" + dirName;
+        String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
         File file = new File(filePath);
-        
+
         // Check if path is a directory
         if (!file.isDirectory()) {
             try {
@@ -33,7 +36,7 @@ public class RMDCommand implements Command {
             }
             return;
         }
-        
+
         // Check if directory is deletable
         FilePermissionService filePermissionService = new FilePermissionService();
         FilePermission filePermission = filePermissionService.getFilePermission(filePath, session.getUsername());
@@ -49,7 +52,7 @@ public class RMDCommand implements Command {
             }
             return;
         }
-        
+
         // Check if directory is empty
         try {
             if (Files.list(file.toPath()).findFirst().isPresent()) {
@@ -64,8 +67,7 @@ public class RMDCommand implements Command {
             Logger.getLogger(RMDCommand.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
-        
-        
+
         // Proceed to delete the directory
         file.delete();
         try {

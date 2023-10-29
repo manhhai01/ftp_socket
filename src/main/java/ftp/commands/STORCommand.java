@@ -6,6 +6,7 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -25,7 +26,9 @@ public class STORCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        String path = session.getWorkingDirAbsolutePath() + "/" + arguments[0];
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
+        String path = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), arguments[0]);
         try {
             File file = new File(path);
             FilePermissionService filePermissionService = new FilePermissionService();

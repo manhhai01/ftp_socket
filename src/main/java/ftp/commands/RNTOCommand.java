@@ -1,6 +1,7 @@
 package ftp.commands;
 
 import ftp.FilePermissionService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -14,6 +15,8 @@ public class RNTOCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
         String newFilename = arguments[0];
         String oldFilename = session.getRNFRFilename();
         if (oldFilename == null) {
@@ -30,8 +33,8 @@ public class RNTOCommand implements Command {
         }
 
         try {
-            String oldFilePath = session.getWorkingDirAbsolutePath() + "/" + oldFilename;
-            String newFilePath = session.getWorkingDirAbsolutePath() + "/" + newFilename;
+            String oldFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), oldFilename);
+            String newFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), newFilename);
             File fileWithNewName = new File(newFilePath);
             if (fileWithNewName.exists()) {
                 SocketUtils.respondCommandSocket(

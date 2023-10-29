@@ -2,6 +2,7 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -19,9 +20,10 @@ public class MKDCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
         try {
             String dirName = arguments[0];
-            String newDirPath = session.getWorkingDirAbsolutePath() + "/" + dirName;
+            String newDirPath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
             File file = new File(newDirPath);
             FilePermissionService filePermissionService = new FilePermissionService();
             FilePermission currentDirPerm = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath(), session.getUsername());

@@ -6,6 +6,7 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -19,9 +20,10 @@ public class RNFRCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
         try {
             String fileName = arguments[0];
-            String filePath = session.getWorkingDirAbsolutePath() + "/" + fileName;
+            String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), fileName);
             File file = new File(filePath);
             if (!file.exists()) {
                 SocketUtils.respondCommandSocket(
@@ -41,12 +43,12 @@ public class RNFRCommand implements Command {
                 );
                 return;
             }
-            
+
             SocketUtils.respondCommandSocket(
-                        StatusCode.FILE_ACTION_REQUIRES_INFO,
-                        "RNFR accepted. Please supply new name for RNTO.",
-                        commandSocketWriter
-                );
+                    StatusCode.FILE_ACTION_REQUIRES_INFO,
+                    "RNFR accepted. Please supply new name for RNTO.",
+                    commandSocketWriter
+            );
 //            SocketUtils.writeLineAndFlush("350: RNFR accepted. Please supply new name for RNTO.", commandSocketWriter);
             session.setRNFRFilename(fileName);
         } catch (IOException ex) {
