@@ -49,11 +49,11 @@ public class Seeder {
         directoryDao.save(new Directory(0, "ftp/testuser2", user2, null));
         
         
-        File sharedFile1 = new File(0, "/ftp/testuser/aaaa/test.txt", user1, null);
-        File sharedFile2 = new File(0, "/ftp/testuser/aaaa/log-login-successfully.txt", user1, null);
+        File sharedFile1 = new File(0, "ftp/testuser/aaaa/test.txt", user1, null);
+        File sharedFile2 = new File(0, "ftp/testuser/log-login-successfully.txt", user1, null);
         fileDao.save(sharedFile1);
         fileDao.save(sharedFile2);
-        fileDao.save(new File(0, "/ftp/testuser/aaaa/log2.txt", user1, null));
+        fileDao.save(new File(0, "ftp/testuser/log2.txt", user1, null));
         
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, true, userHomeDirectory, user2));
         

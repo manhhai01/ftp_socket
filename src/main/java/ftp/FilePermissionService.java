@@ -7,6 +7,8 @@ import dao.ShareFilesDao;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import model.Directory;
+import model.ShareDirectories;
 import model.ShareFiles;
 
 public class FilePermissionService {
@@ -33,44 +35,80 @@ public class FilePermissionService {
 
     private FilePermission getDetailedFilePermission(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
+        
         if (file.isDirectory()) {
-            // Fetch from dir dao
-            return new FilePermission(fromRootFilePath, true, true, true, true, username, username);
-        }
-        if (file.isFile()) {
-            // Fetch from file dao
-            model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
-            if(fileFromDb == null) {
+//            return new FilePermission(fromRootFilePath, true, true, true, true, username, username);
+            System.out.println("Fetching directory: " + fromRootFilePath);
+            Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootFilePath);
+            if (directoryFromDb == null) {
                 return null;
             }
-            
+
+            // Return full permission if the user is directory's owner
+            if (directoryFromDb.getUser().getUsername().equals(username)) {
+                return new FilePermission(directoryFromDb.getPath(), true, true, true, true, username, username);
+            }
+
+            // Setup path and owner for file permission
+            FilePermission detailedFilePermission = new FilePermission();
+            detailedFilePermission.setPath(directoryFromDb.getPath());
+            detailedFilePermission.setOwner(directoryFromDb.getUser().getUsername());
+
+            // Get directory's share permission
+            List<ShareDirectories> directoryPermissions = directoryFromDb.getShareDirectories();
+            ShareDirectories userPermission = directoryPermissions.stream()
+                    .filter(permission -> permission.getUser().getUsername().equals(username))
+                    .findFirst()
+                    .orElse(null);
+
+            // Return null if share permission can't be found
+            if (userPermission == null) {
+                return null;
+            }
+
+            // Get file read/write permission and set applied user
+            detailedFilePermission.setReadable(userPermission.isDownloadPermission());
+            detailedFilePermission.setWritable(userPermission.isUploadPermission());
+            detailedFilePermission.setAppliedUser(username);
+
+            return detailedFilePermission;
+        }
+        
+        if (file.isFile()) {
+            System.out.println("Fetching file: " + fromRootFilePath);
+            // Fetch from file dao
+            model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
+            if (fileFromDb == null) {
+                return null;
+            }
+
             // Return full permission if the user is file's owner
             if (fileFromDb.getUser().getUsername().equals(username)) {
                 return new FilePermission(fileFromDb.getPath(), true, true, true, true, username, username);
             }
-            
+
             // Setup path and owner for file permission
             FilePermission detailedFilePermission = new FilePermission();
             detailedFilePermission.setPath(fileFromDb.getPath());
             detailedFilePermission.setOwner(fileFromDb.getUser().getUsername());
-            
+
             // Get file's share permission
-            List<ShareFiles> shareFiles = fileFromDb.getShareFiles();
-            ShareFiles userPermission = shareFiles.stream()
+            List<ShareFiles> filePermissions = fileFromDb.getShareFiles();
+            ShareFiles userPermission = filePermissions.stream()
                     .filter(permission -> permission.getUser().getUsername().equals(username))
                     .findFirst()
                     .orElse(null);
-            
+
             // Return empty permission if share permission can't be found
-            if(userPermission == null) {
-                return detailedFilePermission;
+            if (userPermission == null) {
+                return null;
             }
-            
+
             // Get file read/write permission and set applied user
             detailedFilePermission.setReadable(userPermission.isReadPermission());
             detailedFilePermission.setWritable(userPermission.isWritePermission());
             detailedFilePermission.setAppliedUser(username);
-            
+
             return detailedFilePermission;
         }
 
@@ -93,8 +131,6 @@ public class FilePermissionService {
 //        }
 //        return perm.owner();
 //    }
-
-
     private FilePermission getDetailedFilePermissionRecursively(String fromRootFilePath, String username) {
         FilePermission filePermission;
         filePermission = getDetailedFilePermission(fromRootFilePath, username);
@@ -105,7 +141,7 @@ public class FilePermissionService {
             if (username.equals(filePermission.getOwner())) {
                 return filePermission;
             }
-            
+
             String currentFilePath = fromRootFilePath;
 
             // Deletable if the user is the owner of one of the folders containing the file
@@ -138,11 +174,10 @@ public class FilePermissionService {
 //                isWritable = sharedPermission.isWritable();
 //            }
             filePermission.setDeletable(isDeletable);
-            return filePermission;            
+            return filePermission;
         }
 
         // If not found then the closest parent directory's permission is also the file permission
-        
         // Go to parent directory
         List<String> pathTokens = Arrays.asList(fromRootFilePath.split("/"));
         if (pathTokens.isEmpty()) {
@@ -224,7 +259,7 @@ public class FilePermissionService {
 //                permission.appliedUser()
 //        ) : permission).toList());
 //        filePermissions = newFilePermissions;
-        
+
         return true;
     }
 }
