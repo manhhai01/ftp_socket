@@ -18,7 +18,7 @@ import org.hibernate.query.Query;
  */
 public class DirectoryDao {
 
-    public Directory getUserById(int id) {
+    public Directory getDirectoryById(int id) {
         Transaction transaction = null;
         Directory directory = null;
         Session session = null;
@@ -45,7 +45,7 @@ public class DirectoryDao {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Directory> getAllUsers() {
+    public List<Directory> getAllDirectories() {
         Transaction transaction = null;
         List<Directory> directories = null;
         Session session = null;

@@ -4,12 +4,16 @@ import dao.DirectoryDao;
 import dao.FileDao;
 import dao.ShareDirectoriesDao;
 import dao.ShareFilesDao;
+import dao.UserDao;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import model.Directory;
 import model.ShareDirectories;
 import model.ShareFiles;
+import model.User;
+import model.ids.ShareDirectoriesId;
+import model.ids.ShareFilesId;
 
 public class FilePermissionService {
 
@@ -19,6 +23,7 @@ public class FilePermissionService {
     private final ShareFilesDao shareFilesDao = new ShareFilesDao();
     private final DirectoryDao directoryDao = new DirectoryDao();
     private final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
+    private final UserDao userDao = new UserDao();
 
     public FilePermissionService() {
 //        filePermissions.add(new DetailedFilePermission("ftp", true, false, false, false, "testuser", "testuser"));
@@ -214,47 +219,38 @@ public class FilePermissionService {
     }
 
     // Todo
-    public boolean setShareDirectoryPermission(String fromRootFilePath, String username, boolean isReadable, boolean isWritable) {
-//        DetailedFilePermission storedFilePermission = getDetailedFilePermission(fromRootFilePath, username);
-//        if (storedFilePermission == null) {
-//            return false;
-//        }
-//
-//        DetailedFilePermission newDetailedFilePermission = new DetailedFilePermission(
-//                storedFilePermission.path(),
-//                isReadable,
-//                isWritable,
-//                storedFilePermission.isDeletable(),
-//                storedFilePermission.isRenamable(),
-//                storedFilePermission.owner(),
-//                storedFilePermission.appliedUser()
-//        );
-//        
-//        filePermissions.add(filePermissions.indexOf(storedFilePermission), newDetailedFilePermission);
-//
-        return true;
-    }
-
-    // Todo
     public boolean setShareFilePermission(String fromRootFilePath, String username, boolean isReadable, boolean isWritable) {
-//        DetailedFilePermission storedFilePermission = getDetailedFilePermission(fromRootFilePath, username);
-//        if (storedFilePermission == null) {
-//            return false;
-//        }
-//
-//        DetailedFilePermission newDetailedFilePermission = new DetailedFilePermission(
-//                storedFilePermission.path(),
-//                isReadable,
-//                isWritable,
-//                storedFilePermission.isDeletable(),
-//                storedFilePermission.isRenamable(),
-//                storedFilePermission.owner(),
-//                storedFilePermission.appliedUser()
-//        );
-//
-//        filePermissions.add(filePermissions.indexOf(storedFilePermission), newDetailedFilePermission);
+        File file = new File(fromRootFilePath);
+        
+        if (file.isFile()) {
+            model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
+            User user = userDao.getUserByUsername(username);
+            shareFilesDao.update(
+                    new ShareFiles(
+                            new ShareFilesId(fileInDb.getId(), user.getId()),
+                            isReadable,
+                            isWritable,
+                            fileInDb,
+                            user)
+            );
+            return true;
+        }
 
-        return true;
+        if (file.isDirectory()) {
+            Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootFilePath);
+            User user = userDao.getUserByUsername(username);
+            shareDirectoriesDao.update(
+                    new ShareDirectories(
+                            new ShareDirectoriesId(directoryInDb.getId(), user.getId()),
+                            isWritable,
+                            isReadable,
+                            directoryInDb,
+                            user)
+            );
+            return true;
+        }
+    
+        return false;
     }
 
     // Todo: owner of parent folder priviledge? owner of the file or folder priviledge?
