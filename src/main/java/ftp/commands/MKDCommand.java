@@ -24,12 +24,9 @@ public class MKDCommand implements Command {
         try {
             String dirName = arguments[0];
             String newDirPath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
-            File file = new File(newDirPath);
             FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission currentDirPerm = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath(), session.getUsername());
-            if (currentDirPerm.isWritable()) {
-                file.mkdir();
-                filePermissionService.addFileOrDirectoryOwnerPermission(newDirPath, session.getUsername());
+            boolean success = filePermissionService.createDirectory(newDirPath, session.getUsername());
+            if (success) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.DIRECTORY_CREATED,
                         String.format("\"%s\" Created.", dirName),

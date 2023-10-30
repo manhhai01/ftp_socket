@@ -24,21 +24,19 @@ public class DELECommand implements Command {
         try {
             String filename = arguments[0];
             String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), filename);
-            File file = new File(filePath);
+//            File file = new File(filePath);
             FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission filePermission = filePermissionService.getFilePermission(filePath, session.getUsername());
-            if (filePermission.isDeletable()) {
-                file.delete();
-                // Todo: delete in db
+//            FilePermission filePermission = filePermissionService.getFilePermission(filePath, session.getUsername());
+            if (filePermissionService.removeFile(filePath, session.getUsername())) {
                 SocketUtils.respondCommandSocket(
-                        StatusCode.FILE_ACTION_OK, 
-                        "Command okay.", 
+                        StatusCode.FILE_ACTION_OK,
+                        "Command okay.",
                         commandSocketWriter
                 );
             } else {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
-                        "Forbidden.", 
+                        "Forbidden.",
                         commandSocketWriter
                 );
             }

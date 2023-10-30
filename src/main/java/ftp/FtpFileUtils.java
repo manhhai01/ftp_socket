@@ -4,15 +4,28 @@
  */
 package ftp;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author User
  */
 public class FtpFileUtils {
+
     public String joinPath(String workingDir, String... tokens) {
-        if(workingDir.equals("ftp/")) {
+        if (workingDir.equals("ftp/")) {
             return "ftp/" + String.join("/", tokens);
         }
         return workingDir + "/" + String.join("/", tokens);
+    }
+
+    public String getParentPath(String path) {
+        List<String> pathTokens = Arrays.asList(path.split("/"));
+        pathTokens = pathTokens.subList(0, pathTokens.size() - 1);
+        if (pathTokens.isEmpty()) {
+            return "/";
+        }
+        return String.join("/", pathTokens);
     }
 }
