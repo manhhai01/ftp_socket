@@ -2,12 +2,12 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FileService;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,14 +18,16 @@ import java.util.logging.Logger;
  */
 public class MKDCommand implements Command {
 
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        FtpFileUtils ftpFileUtils = new FtpFileUtils();
         try {
             String dirName = arguments[0];
             String newDirPath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
-            FilePermissionService filePermissionService = new FilePermissionService();
-            boolean success = filePermissionService.createDirectory(newDirPath, session.getUsername());
+            boolean success = fileService.createDirectory(newDirPath, session.getUsername());
             if (success) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.DIRECTORY_CREATED,

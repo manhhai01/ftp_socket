@@ -5,6 +5,7 @@
 package ftp.commands;
 
 import ftp.FilePermissionService;
+import ftp.FileService;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -19,6 +20,10 @@ import java.util.logging.Logger;
  * @author User
  */
 public class SHRECommand implements Command {
+
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
@@ -35,13 +40,12 @@ public class SHRECommand implements Command {
             }
         }
         
-        FilePermissionService filePermissionService = new FilePermissionService();
-        FtpFileUtils fileUtils = new FtpFileUtils();
         String fileName = arguments[0];
         boolean isReadable = Boolean.parseBoolean(arguments[1]);
         boolean isWritable = Boolean.parseBoolean(arguments[2]);
-        String filePath = fileUtils.joinPath(session.getWorkingDirAbsolutePath(), fileName);
-        boolean isSuccess = filePermissionService.setShareFilePermission(filePath, session.getUsername(), isReadable, isWritable);
+        String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), fileName);
+        boolean isSuccess = fileService.setShareFilePermission(filePath, session.getUsername(), isReadable, isWritable);
+        
         if (isSuccess) {
             try {
                 SocketUtils.respondCommandSocket(

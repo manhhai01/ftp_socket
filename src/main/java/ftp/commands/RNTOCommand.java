@@ -1,6 +1,7 @@
 package ftp.commands;
 
 import ftp.FilePermissionService;
+import ftp.FileService;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -12,10 +13,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RNTOCommand implements Command {
-
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+    
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        FtpFileUtils ftpFileUtils = new FtpFileUtils();
+        
 
         String inputNewFilePath = arguments[0];
         String oldFilename = session.getRNFRFilename();
@@ -53,8 +57,8 @@ public class RNTOCommand implements Command {
                 return;
             }
 
-            FilePermissionService filePermissionService = new FilePermissionService();
-            filePermissionService.changeFilePath(oldFilePath, newFilePath, session.getUsername());
+            
+            fileService.changeFilePath(oldFilePath, newFilePath, session.getUsername());
             SocketUtils.respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
                     "Requested file action okay, completed.",

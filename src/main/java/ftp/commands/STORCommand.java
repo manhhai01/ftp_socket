@@ -4,36 +4,32 @@
  */
 package ftp.commands;
 
-import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FileService;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 public class STORCommand implements Command {
 
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
         String path = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), arguments[0]);
         try {
-            FilePermissionService filePermissionService = new FilePermissionService();
 
-            // Create file
-            boolean fileCreationSuccess = filePermissionService.createNormalFile(path, session.getUsername());
+            // Create file if it doesn't exist
+            boolean fileCreationSuccess = fileService.createNormalFile(path, session.getUsername());
             if (!fileCreationSuccess) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
@@ -47,10 +43,10 @@ public class STORCommand implements Command {
                     "Requested file action okay.",
                     commandSocketWriter
             );
-            
+
             // Write to file
             Socket socket = session.getDataSocket().accept();
-            filePermissionService.writeToNormalFile(
+            fileService.writeToNormalFile(
                     path,
                     session.getUsername(),
                     socket.getInputStream(),

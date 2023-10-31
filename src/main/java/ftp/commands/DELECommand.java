@@ -4,30 +4,29 @@
  */
 package ftp.commands;
 
-import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FileService;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DELECommand implements Command {
 
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        FtpFileUtils ftpFileUtils = new FtpFileUtils();
         try {
             String filename = arguments[0];
             String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), filename);
-//            File file = new File(filePath);
-            FilePermissionService filePermissionService = new FilePermissionService();
-//            FilePermission filePermission = filePermissionService.getFilePermission(filePath, session.getUsername());
-            if (filePermissionService.removeFile(filePath, session.getUsername())) {
+            if (fileService.removeFile(filePath, session.getUsername())) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,
                         "Command okay.",
