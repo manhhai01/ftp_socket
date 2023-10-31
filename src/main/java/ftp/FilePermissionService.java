@@ -31,6 +31,7 @@ public class FilePermissionService {
     private final DirectoryDao directoryDao = new DirectoryDao();
     private final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
     private final UserDao userDao = new UserDao();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     private FilePermission getDetailedFilePermission(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
@@ -376,8 +377,47 @@ public class FilePermissionService {
 
         return removeNormalFile(fromRootFilePath, username);
     }
+    
+    private void reparentFilePathInDb(File file, String newParentPath) {
+        String filePath = file.getPath().replace("\\", "/");
+        
+        if(file.isFile()) {
+            model.File fileInDb = fileDao.getFileByPath(filePath);
+            String newFilePath = ftpFileUtils.joinPath(newParentPath, file.getName());
+            fileInDb.setPath(newFilePath);
+            fileDao.update(fileInDb);
+        }
+    }
 
     public boolean changeFilePath(String oldFilePath, String newFilePath, String username) {
+        File file = new File(oldFilePath);
+        if(!file.exists()) {
+            return false;
+        }
+        
+        FilePermission filePermission = getFilePermission(oldFilePath, username);
+        if(!filePermission.isRenamable()) {
+            return false;
+        }
+        
+        // Check if uploadable
+        String parentPath = ftpFileUtils.getParentPath(newFilePath);       
+        FilePermission parentDirPermission = getFilePermission(parentPath, username);
+        if(!parentDirPermission.isWritable()) {
+            return false;
+        }
+        
+        File destination = new File(newFilePath);
+        reparentFilePathInDb(file, parentPath);
+        file.renameTo(destination);
+        
+        
+//        if(file.isDirectory()) {
+//            File[] files = file.listFiles();
+//            for(File child: files) {
+//                reparentFilePathInDb(child, newFilePath);
+//            }
+//        }
 //        ArrayList<DetailedFilePermission> newFilePermissions = new ArrayList<>(
 //                filePermissions.stream().map(permission -> permission.owner().equals(username) && permission.path().equals(oldFilePath) ? new DetailedFilePermission(
 //                newFilePath,
@@ -389,7 +429,7 @@ public class FilePermissionService {
 //                permission.appliedUser()
 //        ) : permission).toList());
 //        filePermissions = newFilePermissions;
-
+        
         return true;
     }
 }

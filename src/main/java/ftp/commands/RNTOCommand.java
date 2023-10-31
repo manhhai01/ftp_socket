@@ -17,7 +17,7 @@ public class RNTOCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
-        String newFilename = arguments[0];
+        String inputNewFilePath = arguments[0];
         String oldFilename = session.getRNFRFilename();
         if (oldFilename == null) {
             try {
@@ -34,7 +34,15 @@ public class RNTOCommand implements Command {
 
         try {
             String oldFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), oldFilename);
-            String newFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), newFilename);
+
+            String newFilePath;
+            // Absolute path
+            if (inputNewFilePath.startsWith("/")) {
+                newFilePath = "ftp" + inputNewFilePath;
+            }// File name only
+            else {
+                newFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), inputNewFilePath);
+            }
             File fileWithNewName = new File(newFilePath);
             if (fileWithNewName.exists()) {
                 SocketUtils.respondCommandSocket(
@@ -47,8 +55,6 @@ public class RNTOCommand implements Command {
 
             FilePermissionService filePermissionService = new FilePermissionService();
             filePermissionService.changeFilePath(oldFilePath, newFilePath, session.getUsername());
-            File fileToRename = new File(oldFilePath);
-            fileToRename.renameTo(fileWithNewName);
             SocketUtils.respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
                     "Requested file action okay, completed.",

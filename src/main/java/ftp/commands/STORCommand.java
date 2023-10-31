@@ -29,58 +29,6 @@ public class STORCommand implements Command {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
         String path = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), arguments[0]);
-//        try {
-//            File file = new File(path);
-//            FilePermissionService filePermissionService = new FilePermissionService();
-//            // File update case
-//            if (file.exists()) {
-//                FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
-//                if (!filePermission.isWritable()) {
-//                    SocketUtils.respondCommandSocket(
-//                            StatusCode.FILE_ACTION_NOT_TAKEN,
-//                            "Forbidden.",
-//                            commandSocketWriter
-//                    );
-//                    return;
-//                }
-//            } // Uploading case
-//            else {
-//                FilePermission currentDirPerm = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath(), session.getUsername());
-//                // Reject if uploading to current directory is not allowed
-//                if (!currentDirPerm.isWritable()) {
-//                    SocketUtils.respondCommandSocket(
-//                            StatusCode.FILE_ACTION_NOT_TAKEN,
-//                            "Forbidden.",
-//                            commandSocketWriter
-//                    );
-//                    return;
-//                }
-//                file.createNewFile();
-//                filePermissionService.createNormalFile(path, session.getUsername());
-//            }
-//SocketUtils.respondCommandSocket(
-//                    StatusCode.FILE_ACTION_OK,
-//                    "Requested file action okay.",
-//                    commandSocketWriter
-//            );
-//            Socket socket = session.getDataSocket().accept();
-//            BufferedReader dataSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            FileWriter fileWriter = new FileWriter(file);
-//            if (session.getType().equals("A")) {
-//                dataSocketReader.transferTo(fileWriter);
-//            } else {
-//                byte[] data = IOUtils.toByteArray(socket.getInputStream());
-//                FileUtils.writeByteArrayToFile(file, data);
-//            }
-//
-//            fileWriter.close();
-//            dataSocketReader.close();
-//            socket.close();
-//            SocketUtils.respondCommandSocket(
-//                    StatusCode.CLOSING_DATA_CONNECTION,
-//                    "Closing data connection.",
-//                    commandSocketWriter
-//            );
         try {
             FilePermissionService filePermissionService = new FilePermissionService();
 
