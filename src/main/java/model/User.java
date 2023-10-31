@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -68,6 +69,15 @@ public class User {
     
     @Column(name = "used_kb")
     private float usedKb;
+    
+    @Column(name = "is_active")
+    private int isActive;
+    
+    @Column(name = "otp")
+    private String otp;
+    
+    @Column(name = "create_date_otp")
+    private LocalDateTime  createDateOtp;
     
     @OneToMany(mappedBy = "user")
     private List<File> files;
