@@ -4,6 +4,7 @@
  */
 package ftp;
 
+import config.AppConfig;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,8 +15,8 @@ import java.util.List;
 public class FtpFileUtils {
 
     public String joinPath(String workingDir, String... tokens) {
-        if (workingDir.equals("ftp/")) {
-            return "ftp/" + String.join("/", tokens);
+        if (workingDir.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
+            return AppConfig.SERVER_FTP_FILE_PATH + String.join("/", tokens);
         }
         return workingDir + "/" + String.join("/", tokens);
     }

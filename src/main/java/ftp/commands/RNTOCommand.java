@@ -1,5 +1,6 @@
 package ftp.commands;
 
+import config.AppConfig;
 import ftp.FilePermissionService;
 import ftp.FileService;
 import ftp.FtpFileUtils;
@@ -42,7 +43,7 @@ public class RNTOCommand implements Command {
             String newFilePath;
             // Absolute path
             if (inputNewFilePath.startsWith("/")) {
-                newFilePath = "ftp" + inputNewFilePath;
+                newFilePath = inputNewFilePath.replaceFirst("/", AppConfig.SERVER_FTP_FILE_PATH);
             }// File name only
             else {
                 newFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), inputNewFilePath);

@@ -1,5 +1,6 @@
 package ftp;
 
+import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
 import dao.ShareDirectoriesDao;
@@ -41,8 +42,8 @@ public class FilePermissionService {
                         true,
                         true,
                         // Always renamable and deletable to owner unless it's the home folder
-                        !directoryFromDb.getPath().equals("ftp/" + username),
-                        !directoryFromDb.getPath().equals("ftp/" + username),
+                        !directoryFromDb.getPath().equals(AppConfig.SERVER_FTP_FILE_PATH + username),
+                        !directoryFromDb.getPath().equals(AppConfig.SERVER_FTP_FILE_PATH + username),
                         username,
                         username
                 );
