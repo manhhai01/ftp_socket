@@ -6,7 +6,6 @@ package dao;
 
 import config.HibernateConfig;
 import java.util.List;
-import model.Directory;
 import model.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -44,8 +43,6 @@ public class UserDao {
         return user;
     }
 
-<<<<<<< HEAD
-=======
     public User getUserByUsername(String username) {
         Transaction transaction = null;
         User user = null;
@@ -75,7 +72,6 @@ public class UserDao {
         return user;
     }
 
->>>>>>> 228b47d64764da7d950f9378a685c4538eeee7fe
     @SuppressWarnings("unchecked")
     public List<User> getAllUsers() {
         Transaction transaction = null;
