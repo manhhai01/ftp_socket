@@ -6,6 +6,7 @@ package model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +44,6 @@ public class Directory {
     @JoinColumn(name = "owner_id")
     private User user;
     
-    @OneToMany(mappedBy = "directory")
+    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "directory")
     private List<ShareDirectories> shareDirectories;
 }

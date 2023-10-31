@@ -4,83 +4,60 @@
  */
 package ftp.commands;
 
-import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FileService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 public class STORCommand implements Command {
 
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        String path = session.getWorkingDirAbsolutePath() + "/" + arguments[0];
-        try {
-            File file = new File(path);
-            FilePermissionService filePermissionService = new FilePermissionService();
-            // File update case
-            if (file.exists()) {
-                FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
-                if (!filePermission.isWritable()) {
-                    SocketUtils.respondCommandSocket(
-                            StatusCode.FILE_ACTION_NOT_TAKEN,
-                            "Forbidden.",
-                            commandSocketWriter
-                    );
-                    return;
-                }
-            } // Uploading case
-            else {
-                FilePermission currentDirPerm = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath(), session.getUsername());
-                // Reject if uploading to current directory is not allowed
-                if (!currentDirPerm.isWritable()) {
-                    SocketUtils.respondCommandSocket(
-                            StatusCode.FILE_ACTION_NOT_TAKEN,
-                            "Forbidden.",
-                            commandSocketWriter
-                    );
-                    return;
-                }
-                file.createNewFile();
-                filePermissionService.addFileOrDirectoryOwnerPermission(path, session.getUsername());
-            }
 
+        String path = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), arguments[0]);
+        try {
+
+            // Create file if it doesn't exist
+            boolean fileCreationSuccess = fileService.createNormalFile(path, session.getUsername());
+            if (!fileCreationSuccess) {
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.",
+                        commandSocketWriter
+                );
+                return;
+            }
             SocketUtils.respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
                     "Requested file action okay.",
                     commandSocketWriter
             );
-            Socket socket = session.getDataSocket().accept();
-            BufferedReader dataSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            FileWriter fileWriter = new FileWriter(file);
-            if (session.getType().equals("A")) {
-                dataSocketReader.transferTo(fileWriter);
-            } else {
-                byte[] data = IOUtils.toByteArray(socket.getInputStream());
-                FileUtils.writeByteArrayToFile(file, data);
-            }
 
-            fileWriter.close();
-            dataSocketReader.close();
-            socket.close();
+            // Write to file
+            Socket socket = session.getDataSocket().accept();
+            fileService.writeToNormalFile(
+                    path,
+                    session.getUsername(),
+                    socket.getInputStream(),
+                    session.getType()
+            );
             SocketUtils.respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Closing data connection.",
                     commandSocketWriter
             );
+
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

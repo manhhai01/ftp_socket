@@ -2,11 +2,12 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FileService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,17 +18,17 @@ import java.util.logging.Logger;
  */
 public class MKDCommand implements Command {
 
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             String dirName = arguments[0];
-            String newDirPath = session.getWorkingDirAbsolutePath() + "/" + dirName;
-            File file = new File(newDirPath);
-            FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission currentDirPerm = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath(), session.getUsername());
-            if (currentDirPerm.isWritable()) {
-                file.mkdir();
-                filePermissionService.addFileOrDirectoryOwnerPermission(newDirPath, session.getUsername());
+            String newDirPath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
+            boolean success = fileService.createDirectory(newDirPath, session.getUsername());
+            if (success) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.DIRECTORY_CREATED,
                         String.format("\"%s\" Created.", dirName),

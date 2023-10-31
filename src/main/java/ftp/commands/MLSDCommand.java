@@ -38,7 +38,7 @@ public class MLSDCommand implements Command {
             String fileData = formatter.format(file, (File pathname) -> {
                 FilePermissionService filePermissionService = new FilePermissionService();
                 FilePermission filePermission = filePermissionService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
-                return filePermission.isReadable();
+                return filePermission != null && filePermission.isReadable();
             });
             System.out.println("FileData: " + fileData);
 //                    dataSocketWriter.write("Type=cdir;Modify=19981107085215;Perm=el; tmp\n" +

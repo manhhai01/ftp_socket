@@ -5,6 +5,7 @@
 package dao;
 
 import config.HibernateConfig;
+import model.ShareDirectories;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -12,7 +13,7 @@ import org.hibernate.Transaction;
  *
  * @author lamanhhai
  */
-public class ShareDirectories {
+public class ShareDirectoriesDao {
     public boolean save(ShareDirectories sd) {
         Transaction transaction = null;
         Session session = null;

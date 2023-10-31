@@ -4,38 +4,38 @@
  */
 package ftp.commands;
 
-import ftp.FilePermission;
 import ftp.FilePermissionService;
+import ftp.FileService;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DELECommand implements Command {
 
+    private final FilePermissionService filePermissionService = new FilePermissionService();
+    private final FileService fileService = new FileService();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             String filename = arguments[0];
-            File file = new File(session.getWorkingDirAbsolutePath() + "/" + filename);
-            FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission filePermission = filePermissionService.getFilePermission(session.getWorkingDirAbsolutePath() + "/" + filename, session.getUsername());
-            if (filePermission.isDeletable()) {
-                file.delete();
-                // Todo: delete in db
+            String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), filename);
+            if (fileService.removeFile(filePath, session.getUsername())) {
                 SocketUtils.respondCommandSocket(
-                        StatusCode.FILE_ACTION_OK, 
-                        "Command okay.", 
+                        StatusCode.FILE_ACTION_OK,
+                        "Command okay.",
                         commandSocketWriter
                 );
             } else {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
-                        "Forbidden.", 
+                        "Forbidden.",
                         commandSocketWriter
                 );
             }

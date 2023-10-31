@@ -9,39 +9,69 @@ import java.util.List;
 import model.File;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 /**
  *
  * @author lamanhhai
  */
 public class FileDao {
-    
+
     public File getFileById(int id) {
         Transaction transaction = null;
         File file = null;
         Session session = null;
         try {
             session = HibernateConfig.getSessionFactory().openSession();
-            
+
             // start the transaction
             transaction = session.beginTransaction();
-            
+
             // get user object by id
             file = session.get(File.class, id);
-            
+
             // commit the transaction
             transaction.commit();
         } catch (Exception e) {
-            if(transaction != null) {
+            if (transaction != null) {
                 transaction.rollback();
             }
         } finally {
             session.close();
         }
-        
+
         return file;
     }
-    
+
+    public File getFileByPath(String path) {
+        Transaction transaction = null;
+        File file = null;
+        Session session = null;
+        try {
+            session = HibernateConfig.getSessionFactory().openSession();
+
+            // start the transaction
+            transaction = session.beginTransaction();
+
+            // get file by path
+            String hql = "FROM File WHERE path = :path";            
+            Query<File> query = session.createQuery(hql, File.class);
+            query.setParameter("path", path);
+            file = query.getSingleResult();
+            
+            // commit the transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        } finally {
+            session.close();
+        }
+
+        return file;
+    }
+
     @SuppressWarnings("unchecked")
     public List<File> getAllFiles() {
         Transaction transaction = null;
@@ -49,26 +79,26 @@ public class FileDao {
         Session session = null;
         try {
             session = HibernateConfig.getSessionFactory().openSession();
-            
+
             // start the transaction
             transaction = session.beginTransaction();
-            
+
             // get all users
             files = session.createQuery("from File").list();
-            
+
             // commit the transaction
             transaction.commit();
         } catch (Exception e) {
-            if(transaction != null) {
+            if (transaction != null) {
                 transaction.rollback();
             }
         } finally {
             session.close();
         }
-        
+
         return files;
     }
-    
+
     public boolean save(File file) {
         Transaction transaction = null;
         Session session = null;
@@ -77,24 +107,24 @@ public class FileDao {
             session = HibernateConfig.getSessionFactory().openSession();
             // start the transaction
             transaction = session.beginTransaction();
-            
+
             // save user object
             session.save(file);
-            
+
             // commit the transaction d
             transaction.commit();
             isInsert = true;
         } catch (Exception e) {
-            if(transaction != null) {
+            if (transaction != null) {
                 transaction.rollback();
             }
         } finally {
             session.close();
         }
-        
+
         return isInsert;
     }
-    
+
     public boolean update(File file) {
         Transaction transaction = null;
         Session session = null;
@@ -103,25 +133,25 @@ public class FileDao {
             session = HibernateConfig.getSessionFactory().openSession();
             // start the transaction
             transaction = session.beginTransaction();
-            
+
             // save or update user object
             session.saveOrUpdate(file);
-            
+
             // commit the transaction
             transaction.commit();
-            
+
             isUpdate = true;
         } catch (Exception e) {
-            if(transaction != null) {
+            if (transaction != null) {
                 transaction.rollback();
             }
         } finally {
             session.close();
         }
-        
+
         return isUpdate;
     }
-    
+
     public boolean remove(int id) {
         Transaction transaction = null;
         File file = null;
@@ -131,24 +161,24 @@ public class FileDao {
             session = HibernateConfig.getSessionFactory().openSession();
             // start the transaction
             transaction = session.beginTransaction();
-            
+
             file = session.get(File.class, id);
-            
+
             // save or update user object
             session.delete(file);
-            
+
             // commit the transaction
             transaction.commit();
-            
+
             isDelete = true;
         } catch (Exception e) {
-            if(transaction != null) {
+            if (transaction != null) {
                 transaction.rollback();
             }
         } finally {
             session.close();
         }
-        
+
         return isDelete;
     }
 }

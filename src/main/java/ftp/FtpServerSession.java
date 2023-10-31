@@ -1,5 +1,6 @@
 package ftp;
 
+import config.AppConfig;
 import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
@@ -39,21 +40,23 @@ public class FtpServerSession {
     }
 
     public String getWorkingDirAbsolutePath() {
-        // Working dir starts with "/"
+        // Note: working dir property starts with "/"
+        
+        // Replace / with corresponding root path
         String pathRelativeToRoot = workingDir.replaceFirst("/", "");
-        return "ftp/" + pathRelativeToRoot;
+        return AppConfig.SERVER_FTP_FILE_PATH + pathRelativeToRoot;
     }
 
     public boolean changeWorkingDir(String workingDir) {
+        if(workingDir.equals("/")) {
+            this.workingDir = "/";
+            return true;
+        }
         // Go up 1 level
         if (workingDir.equals("..")) {
             System.out.println("Change working dir: " + workingDir);
             List<String> pathTokens = Arrays.asList(this.workingDir.replaceFirst("/", "").split("/"));
             pathTokens = pathTokens.subList(0, pathTokens.size() - 1);
-            if (pathTokens.isEmpty()) {
-                this.workingDir = "/";
-                return true;
-            }
             this.workingDir = "/" + String.join("/", pathTokens);
             return true;
         }
