@@ -49,7 +49,6 @@ public class RNFRCommand implements Command {
                     "RNFR accepted. Please supply new name for RNTO.",
                     commandSocketWriter
             );
-//            SocketUtils.writeLineAndFlush("350: RNFR accepted. Please supply new name for RNTO.", commandSocketWriter);
             session.setRNFRFilename(fileName);
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
