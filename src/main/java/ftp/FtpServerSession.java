@@ -44,7 +44,7 @@ public class FtpServerSession {
         
         // Replace / with corresponding root path
         String pathRelativeToRoot = workingDir.replaceFirst("/", "");
-        return AppConfig.SERVER_FTP_FILE_PATH + pathRelativeToRoot;
+        return AppConfig.SERVER_FTP_FILE_PATH + workingDir;
     }
 
     public boolean changeWorkingDir(String workingDir) {

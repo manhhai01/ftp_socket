@@ -9,5 +9,5 @@ package config;
  * @author User
  */
 public class AppConfig {
-    public static final String SERVER_FTP_FILE_PATH = "ftp/";
+    public static final String SERVER_FTP_FILE_PATH = "ftp";
 }

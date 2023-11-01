@@ -4,6 +4,7 @@
  */
 package ftp.commands;
 
+import bus.UserBus;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -23,7 +24,9 @@ public class PASSCommand implements Command {
         String password = arguments[0];
         String username = session.getUsername();
         System.out.println("Username: " + username);
-        if (username.equals("testuser") && password.equals("test")) {
+        UserBus userBus = new UserBus();
+        boolean loggedIn = userBus.checkLogin(username, password);
+        if (loggedIn) {
             try {
                 session.changeWorkingDir("/" + session.getUsername());
                 SocketUtils.respondCommandSocket(230, "User logged in, proceed.", commandSocketWriter);

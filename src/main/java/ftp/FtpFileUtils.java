@@ -16,7 +16,11 @@ public class FtpFileUtils {
 
     public String joinPath(String workingDir, String... tokens) {
         if (workingDir.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
-            return AppConfig.SERVER_FTP_FILE_PATH + String.join("/", tokens);
+            if (tokens.length > 0) {
+                return AppConfig.SERVER_FTP_FILE_PATH + "/" + String.join("/", tokens);
+            } else {
+                return AppConfig.SERVER_FTP_FILE_PATH;
+            }
         }
         return workingDir + "/" + String.join("/", tokens);
     }
@@ -27,6 +31,7 @@ public class FtpFileUtils {
         if (pathTokens.isEmpty()) {
             return "/";
         }
-        return String.join("/", pathTokens);
+        String parentPath = String.join("/", pathTokens);
+        return parentPath;
     }
 }

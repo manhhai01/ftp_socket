@@ -28,6 +28,10 @@ public class FilePermissionService {
     private FilePermission getDetailedFilePermission(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
 
+        if (fromRootFilePath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
+            return new FilePermission(fromRootFilePath, true, false, false, false, "", username);
+        }
+
         if (file.isDirectory()) {
             System.out.println("Fetching directory: " + fromRootFilePath);
             Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootFilePath);
@@ -139,11 +143,11 @@ public class FilePermissionService {
 
             // Deletable if the user is the owner of one of the folders containing the file
             while (true) {
-                if (currentFilePath.equals("/")) {
+                if(currentFilePath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
                     break;
                 }
-                currentFilePath = ftpFileUtils.getParentPath(fromRootFilePath);
-
+                currentFilePath = ftpFileUtils.getParentPath(currentFilePath);
+                
                 // Get parent directory permission
                 FilePermission parentFilePermission = getDetailedFilePermission(currentFilePath, username);
 
@@ -160,14 +164,19 @@ public class FilePermissionService {
         // If not found then the closest parent directory's permission is also the file permission
         // Go to parent directory
         List<String> pathTokens = Arrays.asList(fromRootFilePath.split("/"));
+
         if (pathTokens.isEmpty()) {
             return null;
         }
-        if (pathTokens.size() == 1) {
+
+        if (pathTokens.size()
+                == 1) {
             return getDetailedFilePermissionRecursively("/", username);
         }
         pathTokens = pathTokens.subList(0, pathTokens.size() - 2);
-        return getDetailedFilePermissionRecursively("/" + String.join("/", pathTokens), username);
+
+        return getDetailedFilePermissionRecursively(
+                "/" + String.join("/", pathTokens), username);
     }
 
     public FilePermission getFilePermission(String fromRootFilePath, String username) {
