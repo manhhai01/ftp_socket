@@ -241,9 +241,20 @@ public class FileService {
         return true;
     }
 
-    // Todo: Forgot to check if user is owner
     public boolean setShareFilePermission(String fromRootFilePath, String username, boolean isReadable, boolean isWritable) {
         File file = new File(fromRootFilePath);
+        if (!file.exists()) {
+            return false;
+        }
+
+        FilePermission filePermission = filePermissionService.getFilePermission(fromRootFilePath, username);
+        if (filePermission == null) {
+            return false;
+        }
+
+        if (!filePermission.isOwner()) {
+            return false;
+        }
 
         if (file.isFile()) {
             model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
