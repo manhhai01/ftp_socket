@@ -4,6 +4,7 @@
  */
 package ftp;
 
+import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
 import dao.ShareDirectoriesDao;
@@ -15,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Directory;
@@ -64,6 +66,22 @@ public class FileService {
                 Logger.getLogger(FilePermissionService.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
+        }
+        return success;
+    }
+    
+    public boolean createHomeDirectoryIfNotExist(String username) {
+        String fromRootPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
+        User user = userDao.getUserByUsername(username);
+        Directory homeDir = directoryDao.getDirectoryByPath(fromRootPath);
+        if(homeDir != null) {
+            return true;
+        }
+        
+        boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
+        File file = new File(fromRootPath);
+        if (success) {
+            file.mkdir();
         }
         return success;
     }
@@ -285,5 +303,9 @@ public class FileService {
         }
 
         return false;
+    }
+    
+    public List<File> getSharedFiles(String username) {
+        return null;
     }
 }

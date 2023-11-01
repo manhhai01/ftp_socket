@@ -5,7 +5,9 @@
 package ftp.commands;
 
 import bus.UserBus;
+import config.AppConfig;
 import dao.UserDao;
+import ftp.FileService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -42,6 +44,7 @@ public class REGCommand implements Command {
             String jsonData = IOUtils.toString(dataSocket.getInputStream(), StandardCharsets.UTF_8);
             boolean success = userBus.registerUser(jsonData);
             if (success) {
+                FileService fileService = new FileService();
                 SocketUtils.respondCommandSocket(
                         StatusCode.CLOSING_DATA_CONNECTION,
                         "Account created successfully.",

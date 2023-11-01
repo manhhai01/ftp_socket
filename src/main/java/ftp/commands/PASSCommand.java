@@ -5,6 +5,9 @@
 package ftp.commands;
 
 import bus.UserBus;
+import config.AppConfig;
+import ftp.FileService;
+import ftp.FtpFileUtils;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -28,6 +31,8 @@ public class PASSCommand implements Command {
         boolean loggedIn = userBus.checkLogin(username, password);
         if (loggedIn) {
             try {
+                FileService fileService = new FileService();
+                fileService.createHomeDirectoryIfNotExist(username);
                 session.changeWorkingDir("/" + session.getUsername());
                 SocketUtils.respondCommandSocket(230, "User logged in, proceed.", commandSocketWriter);
             } catch (IOException ex) {

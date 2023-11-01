@@ -56,10 +56,21 @@ public class UserBus {
         return isSuccess;
     }
 
-    public boolean verifyOtp(String username, String otp) {
+    public boolean verifyOtp(String username, String password, String otp) {
         boolean isVerify = false;
         User userCheck = userDao.getUserByUserName(username);
         if (userCheck != null) {
+            boolean match = false;
+
+            MP5Utils mP5Utils = new MP5Utils();
+            String pwdHash = mP5Utils.getMD5Hash(password);
+            if (pwdHash.equals(userCheck.getPassword())) {
+                match = true;
+            }
+            
+            if(!match) {
+                return false;
+            }
             LocalDateTime currentDateTime = LocalDateTime.now();
 
             // Tính thời gian chênh lệch
@@ -140,7 +151,7 @@ public class UserBus {
         boolean res = userBus.registerUser(jsonUserRegister);
         System.out.println("Kiem tra register: " + res);
 
-        boolean res1 = userBus.verifyOtp("lahai7744@gmail.com", "424873");
+        boolean res1 = userBus.verifyOtp("lahai7744@gmail.com", "123", "424873");
         System.out.println("Kiem tra verify otp: " + res1);
 
         boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com", "123");

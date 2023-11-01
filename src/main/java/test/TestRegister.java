@@ -47,7 +47,7 @@ public class TestRegister {
         String regAck = commandReader.readLine();
         System.out.println("Reg ack: " + regAck);
         dataWriter.write("{\n"
-                + "            \"username\": \"lahai7744@gmail.com\",\n"
+                + "            \"username\": \"saudaiphat@gmail.com\",\n"
                 + "            \"password\": \"123\";\n"
                 + "            \"firstName\": \"Nguyễn Văn\",\n"
                 + "            \"lastName\": \"C\",\n"

@@ -20,6 +20,7 @@ import ftp.commands.GOTPCommand;
 import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
 import ftp.commands.SHRECommand;
+import ftp.commands.SOTPCommand;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -200,6 +201,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("SHRE", new SHRECommand());
         ftpServerBuilder.addCommand("REG", new REGCommand());
         ftpServerBuilder.addCommand("GOTP", new GOTPCommand());
+        ftpServerBuilder.addCommand("SOTP", new SOTPCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
