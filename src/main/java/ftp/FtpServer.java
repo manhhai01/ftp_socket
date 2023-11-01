@@ -16,6 +16,7 @@ import ftp.commands.Command;
 import ftp.commands.DELECommand;
 import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
+import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
 import ftp.commands.SHRECommand;
 import java.io.BufferedReader;
@@ -196,6 +197,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("RNTO", new RNTOCommand());
         ftpServerBuilder.addCommand("RMD", new RMDCommand());
         ftpServerBuilder.addCommand("SHRE", new SHRECommand());
+        ftpServerBuilder.addCommand("REG", new REGCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
