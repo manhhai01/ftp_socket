@@ -79,10 +79,22 @@ public class UserBus {
         return isVerify;
     }
 
-    public boolean reGenerateOtp(String username) {
+    public boolean reGenerateOtp(String username, String password) {
         boolean isReGenerate = false;
         User userCheck = userDao.getUserByUserName(username);
         if (userCheck != null && userCheck.getIsActive() == 0) {
+            boolean match = false;
+
+            MP5Utils mP5Utils = new MP5Utils();
+            String pwdHash = mP5Utils.getMD5Hash(password);
+            if (pwdHash.equals(userCheck.getPassword())) {
+                match = true;
+            }
+            
+            if(!match) {
+                return false;
+            }
+            
             OtpUtils otpUtils = new OtpUtils();
             String otp = otpUtils.generateOtp();
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -96,19 +108,19 @@ public class UserBus {
                 isReGenerate = true;
             }
         }
-        
+
         return isReGenerate;
     }
 
     public boolean checkLogin(String username, String password) {
         boolean isLogin = false;
         User userCheck = userDao.getUserByUserName(username);
-        if(userCheck != null && userCheck.getIsActive() == 1) {
+        if (userCheck != null && userCheck.getIsActive() == 1) {
             MP5Utils mP5Utils = new MP5Utils();
             String pwdHash = mP5Utils.getMD5Hash(password);
             if (pwdHash.equals(userCheck.getPassword())) {
                 isLogin = true;
-            }     
+            }
         }
         return isLogin;
     }
@@ -130,10 +142,10 @@ public class UserBus {
 
         boolean res1 = userBus.verifyOtp("lahai7744@gmail.com", "424873");
         System.out.println("Kiem tra verify otp: " + res1);
-        
-        boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com");
+
+        boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com", "123");
         System.out.println("Kiem tra regen: " + res2);
-        
+
         boolean res3 = userBus.checkLogin("lahai7744@gmail.com", "123");
         System.out.println("Kiem tra login: " + res3);
     }

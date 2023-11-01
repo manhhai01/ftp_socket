@@ -16,6 +16,7 @@ import ftp.commands.Command;
 import ftp.commands.DELECommand;
 import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
+import ftp.commands.GOTPCommand;
 import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
 import ftp.commands.SHRECommand;
@@ -198,6 +199,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("RMD", new RMDCommand());
         ftpServerBuilder.addCommand("SHRE", new SHRECommand());
         ftpServerBuilder.addCommand("REG", new REGCommand());
+        ftpServerBuilder.addCommand("GOTP", new GOTPCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override

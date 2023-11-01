@@ -49,7 +49,7 @@ public class REGCommand implements Command {
                 );
             } else {
                 SocketUtils.respondCommandSocket(
-                        StatusCode.NOT_LOGGED_IN,
+                        StatusCode.ACTION_FAILED,
                         "Registration failed.",
                         commandSocketWriter
                 );
