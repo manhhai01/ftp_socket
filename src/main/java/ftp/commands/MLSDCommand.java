@@ -35,7 +35,7 @@ public class MLSDCommand implements Command {
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
-            String fileData = formatter.format(file, (File pathname) -> {
+            String fileData = formatter.listFormat(file, (File pathname) -> {
                 FilePermissionService filePermissionService = new FilePermissionService();
                 FilePermission filePermission = filePermissionService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
                 return filePermission != null && filePermission.isReadable();

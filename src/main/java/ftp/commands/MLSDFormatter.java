@@ -13,7 +13,24 @@ import java.io.FileFilter;
  */
 public class MLSDFormatter {
 
-    private String formatImplementation(File file, FileFilter fileFilter) {
+    private String format(File file) {
+        String result;
+        if (file.isDirectory()) {
+            result = String.format("Type=%s;Size=%s;Perm=el; %s\n",
+                    "dir",
+                    file.length(),
+                    file.getName());
+        } else {
+            result = String.format("Type=%s;Size=%s;Perm=%s; %s\n",
+                    "file",
+                    file.length(),
+                    "r",
+                    file.getName());
+        }
+        return result;
+    }
+
+    private String listFormatImplementation(File file, FileFilter fileFilter) {
         String result = "";
         System.out.println(file.getName());
         File[] files = fileFilter == null ? file.listFiles() : file.listFiles(fileFilter);
@@ -21,28 +38,21 @@ public class MLSDFormatter {
             return "";
         }
         for (File f : files) {
-            if (f.isDirectory()) {
-                result += String.format("Type=%s;Size=%s;Perm=el; %s\n",
-                        "dir",
-                        f.length(),
-                        f.getName());
-            } else {
-                result += String.format("Type=%s;Size=%s;Perm=%s; %s\n",
-                       "file",
-                        f.length(),
-                        "r",
-                        f.getName());
-            }
+            result += format(f);
 
         }
         return result;
     }
-    
-    public String format(File file) {
-        return formatImplementation(file, null);
+
+    public String listFormat(File file) {
+        return listFormatImplementation(file, null);
     }
-    
-    public String format(File file, FileFilter fileFilter) {
-        return formatImplementation(file, fileFilter);
+
+    public String listFormat(File file, FileFilter fileFilter) {
+        return listFormatImplementation(file, fileFilter);
+    }
+
+    public String formatSingleFile(File file) {
+        return format(file);
     }
 }

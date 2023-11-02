@@ -4,8 +4,13 @@
  */
 package dao;
 
+import payload.GetSharedFilesResultDto;
 import config.HibernateConfig;
+import java.util.ArrayList;
 import java.util.List;
+import model.Directory;
+import model.File;
+import model.ShareFiles;
 import model.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -213,4 +218,37 @@ public class UserDao {
         return user;
     }
 
+    public GetSharedFilesResultDto getSharedFiles(String appliedUsername) {
+        Transaction transaction = null;
+        Session session = null;
+        GetSharedFilesResultDto getSharedFilesResult = new GetSharedFilesResultDto();
+        try {
+            session = HibernateConfig.getSessionFactory().openSession();
+
+            transaction = session.beginTransaction();
+
+            String filesHql = "SELECT f FROM File f "
+                    + "INNER JOIN f.shareFiles sf INNER JOIN sf.user u WHERE u.username = :username";
+            Query<File> filesQuery = session.createQuery(filesHql, File.class);
+            filesQuery.setParameter("username", appliedUsername);
+            getSharedFilesResult.files = filesQuery.getResultList();
+
+            String dirHql = "SELECT d FROM Directory d "
+                    + "INNER JOIN d.shareDirectories sd INNER JOIN sd.user u WHERE u.username = :username";
+            Query<Directory> dirQuery = session.createQuery(dirHql, Directory.class);
+            dirQuery.setParameter("username", appliedUsername);
+            getSharedFilesResult.directories = dirQuery.getResultList();
+
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        } finally {
+            session.close();
+        }
+
+        return getSharedFilesResult;
+    }
 }

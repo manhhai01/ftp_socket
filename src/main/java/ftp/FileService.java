@@ -7,6 +7,7 @@ package ftp;
 import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
+import payload.GetSharedFilesResultDto;
 import dao.ShareDirectoriesDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
@@ -305,7 +306,7 @@ public class FileService {
         return false;
     }
     
-    public List<File> getSharedFiles(String username) {
-        return null;
+    public GetSharedFilesResultDto getSharedFiles(String appliedUsername) {
+        return userDao.getSharedFiles(appliedUsername);
     }
 }
