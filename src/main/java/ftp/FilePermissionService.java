@@ -65,9 +65,9 @@ public class FilePermissionService {
                     .findFirst()
                     .orElse(null);
 
-            // Return null if share permission can't be found
+            // Return if share permission can't be found
             if (userPermission == null) {
-                return null;
+                return detailedFilePermission;
             }
 
             // Get file read/write permission and set applied user

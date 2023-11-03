@@ -4,6 +4,7 @@
  */
 package ftp.commands;
 
+import config.AppConfig;
 import dao.UserDao;
 import ftp.FilePermission;
 import ftp.FilePermissionService;
@@ -26,6 +27,18 @@ import payload.GetSharedFilesResultDto;
  */
 public class LSHRCommand implements Command {
 
+    private String formatSingleFile(File file, String pathStartWithFtpRoot) {
+        MLSDFormatter formatter = new MLSDFormatter();
+
+        // Remove new line
+        return formatter.formatSingleFile(file).replace("\n", "")
+                // Add file path and remove ftp root path so string will be in the form "/path/to/file.txt"
+                // instead of "path/to-ftp-root/path/to/file.txt"
+                + " " + pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "") 
+                // Add new line back
+                + "\n";
+    }
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
@@ -37,25 +50,24 @@ public class LSHRCommand implements Command {
 
             Socket dataSocket = session.getDataSocket().accept();
             BufferedWriter dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
-            
-            MLSDFormatter formatter = new MLSDFormatter();
+
             UserDao userDao = new UserDao();
             GetSharedFilesResultDto sharedFiles = userDao.getSharedFiles(session.getUsername());
             String result = "";
-            
+
             for (var dir : sharedFiles.directories) {
                 File file = new File(dir.getPath());
-                result += formatter.formatSingleFile(file);
+                result += formatSingleFile(file, dir.getPath());
             }
-            
-            for(var f: sharedFiles.files) {
+
+            for (var f : sharedFiles.files) {
                 File file = new File(f.getPath());
-                result += formatter.formatSingleFile(file);
+                result += formatSingleFile(file, f.getPath());
             }
-            
+
             SocketUtils.writeLineAndFlush(result, dataWriter);
             dataWriter.close();
-            
+
             SocketUtils.respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Data connection closed.",

@@ -45,13 +45,51 @@ public class TestLSHR {
         Socket dataSocket = new Socket("localhost", dataPort);
         BufferedWriter dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
         BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-        
+
         // Get shared files
         SocketUtils.writeLineAndFlush("LSHR", commandWriter);
         commandReader.readLine();
 
         // Read data
         System.out.println(IOUtils.toString(dataReader));
+        
+        dataWriter.close();
+        dataReader.close();
+        dataSocket.close();
+        
+        // Read closing data socket message
+        System.out.println(commandReader.readLine());
 
+        // Open new data port for RETR
+        commandWriter.write("EPSV");
+        commandWriter.newLine();
+        commandWriter.flush();
+        epsvResponse = commandReader.readLine();
+        System.out.println("EPSV response: " + epsvResponse);
+        dataPort = Integer.parseInt(epsvResponse
+                .replace("229 Entering Extended Passive Mode (|||", "")
+                .replace("|)", ""));
+        dataSocket = new Socket("localhost", dataPort);
+        dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
+        dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+        
+        // Sending file type
+        // A: text
+        // I: binary (media files, such as image, video...)
+        SocketUtils.writeLineAndFlush("TYPE A", commandWriter);
+        commandReader.readLine();
+        
+        // Retrieve file
+        SocketUtils.writeLineAndFlush("RETR /testuser/aaaa/test.txt", commandWriter);
+        
+        // Start of transfer message
+        System.out.println("RETR: " + commandReader.readLine());
+        
+        // File content
+        System.out.println("RETR result: " + IOUtils.toString(dataReader));
+        
+        // End of transfer message
+        System.out.println(commandReader.readLine());
+        
     }
 }
