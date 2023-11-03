@@ -1,7 +1,7 @@
 package ftp.commands;
 
 import ftp.FilePermission;
-import ftp.FilePermissionService;
+import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -38,8 +38,8 @@ public class RMDCommand implements Command {
         }
 
         // Check if directory is deletable
-        FilePermissionService filePermissionService = new FilePermissionService();
-        FilePermission filePermission = filePermissionService.getFilePermission(filePath, session.getUsername());
+        FileBus fileService = new FileBus();
+        FilePermission filePermission = fileService.getFilePermission(filePath, session.getUsername());
         if (!filePermission.isDeletable()) {
             try {
                 SocketUtils.respondCommandSocket(

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package ftp;
+package bus;
 
 import config.AppConfig;
 import dao.DirectoryDao;
@@ -11,12 +11,15 @@ import payload.GetSharedFilesResultDto;
 import dao.ShareDirectoriesDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
+import ftp.FilePermission;
+import ftp.FtpFileUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +36,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @author User
  */
-public class FileService {
+public class FileBus {
 
     private final FileDao fileDao = new FileDao();
     private final ShareFilesDao shareFilesDao = new ShareFilesDao();
@@ -41,14 +44,13 @@ public class FileService {
     private final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
     private final UserDao userDao = new UserDao();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
-    private final FilePermissionService filePermissionService = new FilePermissionService();
 
     public boolean createNormalFile(String fromRootFilePath, String username) {
         User user = userDao.getUserByUsername(username);
 
         // Check if upload is allowed
         String parentDirPath = new FtpFileUtils().getParentPath(fromRootFilePath);
-        FilePermission parentPermission = filePermissionService.getFilePermission(parentDirPath, username);
+        FilePermission parentPermission = getFilePermission(parentDirPath, username);
         if (!parentPermission.isWritable()) {
             return false;
         }
@@ -64,21 +66,21 @@ public class FileService {
             try {
                 file.createNewFile();
             } catch (IOException ex) {
-                Logger.getLogger(FilePermissionService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
         }
         return success;
     }
-    
+
     public boolean createHomeDirectoryIfNotExist(String username) {
         String fromRootPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
         User user = userDao.getUserByUsername(username);
         Directory homeDir = directoryDao.getDirectoryByPath(fromRootPath);
-        if(homeDir != null) {
+        if (homeDir != null) {
             return true;
         }
-        
+
         boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
         File file = new File(fromRootPath);
         if (success) {
@@ -92,7 +94,7 @@ public class FileService {
 
         // Check if upload is allowed
         String parentDirPath = new FtpFileUtils().getParentPath(fromRootPath);
-        FilePermission parentPermission = filePermissionService.getFilePermission(parentDirPath, username);
+        FilePermission parentPermission = getFilePermission(parentDirPath, username);
         if (!parentPermission.isWritable()) {
             return false;
         }
@@ -118,7 +120,7 @@ public class FileService {
             return false;
         }
 
-        FilePermission filePermission = filePermissionService.getFilePermission(fromRootFilePath, username);
+        FilePermission filePermission = getFilePermission(fromRootFilePath, username);
         if (filePermission == null) {
             return true;
         }
@@ -158,7 +160,7 @@ public class FileService {
             }
 
         } catch (IOException ex) {
-            Logger.getLogger(FilePermissionService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
 
@@ -179,7 +181,7 @@ public class FileService {
             return false;
         }
 
-        FilePermission filePermission = filePermissionService.getFilePermission(fromRootPath, username);
+        FilePermission filePermission = getFilePermission(fromRootPath, username);
         if (filePermission == null) {
             return true;
         }
@@ -241,14 +243,14 @@ public class FileService {
             return false;
         }
 
-        FilePermission filePermission = filePermissionService.getFilePermission(oldFilePath, username);
+        FilePermission filePermission = getFilePermission(oldFilePath, username);
         if (!filePermission.isRenamable()) {
             return false;
         }
 
         // Check if uploadable
         String parentPath = ftpFileUtils.getParentPath(newFilePath);
-        FilePermission parentDirPermission = filePermissionService.getFilePermission(parentPath, username);
+        FilePermission parentDirPermission = getFilePermission(parentPath, username);
         if (!parentDirPermission.isWritable()) {
             return false;
         }
@@ -266,7 +268,7 @@ public class FileService {
             return false;
         }
 
-        FilePermission filePermission = filePermissionService.getFilePermission(fromRootFilePath, username);
+        FilePermission filePermission = getFilePermission(fromRootFilePath, username);
         if (filePermission == null) {
             return false;
         }
@@ -305,8 +307,168 @@ public class FileService {
 
         return false;
     }
-    
+
     public GetSharedFilesResultDto getSharedFiles(String appliedUsername) {
         return userDao.getSharedFiles(appliedUsername);
+    }
+
+    private FilePermission getDetailedFilePermission(String fromRootFilePath, String username) {
+        File file = new File(fromRootFilePath);
+
+        if (fromRootFilePath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
+            return new FilePermission(fromRootFilePath, true, false, false, false, "", username);
+        }
+
+        if (file.isDirectory()) {
+            System.out.println("Fetching directory: " + fromRootFilePath);
+            Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootFilePath);
+            if (directoryFromDb == null) {
+                return null;
+            }
+
+            // Return full permission if the user is directory's owner
+            if (directoryFromDb.getUser().getUsername().equals(username)) {
+                return new FilePermission(
+                        directoryFromDb.getPath(),
+                        true,
+                        true,
+                        // Always renamable and deletable to owner unless it's the home folder
+                        !directoryFromDb.getPath().equals(AppConfig.SERVER_FTP_FILE_PATH + username),
+                        !directoryFromDb.getPath().equals(AppConfig.SERVER_FTP_FILE_PATH + username),
+                        username,
+                        username
+                );
+            }
+
+            // Setup path and owner for file permission
+            FilePermission detailedFilePermission = new FilePermission();
+            detailedFilePermission.setPath(directoryFromDb.getPath());
+            detailedFilePermission.setOwner(directoryFromDb.getUser().getUsername());
+
+            // Get directory's share permission
+            List<ShareDirectories> directoryPermissions = directoryFromDb.getShareDirectories();
+            ShareDirectories userPermission = directoryPermissions.stream()
+                    .filter(permission -> permission.getUser().getUsername().equals(username))
+                    .findFirst()
+                    .orElse(null);
+
+            // Return if share permission can't be found
+            if (userPermission == null) {
+                return detailedFilePermission;
+            }
+
+            // Get file read/write permission and set applied user
+            detailedFilePermission.setReadable(userPermission.isDownloadPermission());
+            detailedFilePermission.setWritable(userPermission.isUploadPermission());
+            detailedFilePermission.setAppliedUser(username);
+
+            return detailedFilePermission;
+        }
+
+        if (file.isFile()) {
+            System.out.println("Fetching file: " + fromRootFilePath);
+            // Fetch from file dao
+            model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
+            if (fileFromDb == null) {
+                return null;
+            }
+
+            // Return full permission if the user is file's owner
+            if (fileFromDb.getUser().getUsername().equals(username)) {
+                return new FilePermission(
+                        fileFromDb.getPath(),
+                        true,
+                        true,
+                        true,
+                        true,
+                        username,
+                        username
+                );
+            }
+
+            // Setup path and owner for file permission
+            FilePermission detailedFilePermission = new FilePermission();
+            detailedFilePermission.setPath(fileFromDb.getPath());
+            detailedFilePermission.setOwner(fileFromDb.getUser().getUsername());
+
+            // Get file's share permission
+            List<ShareFiles> filePermissions = fileFromDb.getShareFiles();
+            ShareFiles userPermission = filePermissions.stream()
+                    .filter(permission -> permission.getUser().getUsername().equals(username))
+                    .findFirst()
+                    .orElse(null);
+
+            // Return empty permission if share permission can't be found
+            if (userPermission == null) {
+                return null;
+            }
+
+            // Get file read/write permission and set applied user
+            detailedFilePermission.setReadable(userPermission.isReadPermission());
+            detailedFilePermission.setWritable(userPermission.isWritePermission());
+            detailedFilePermission.setAppliedUser(username);
+
+            return detailedFilePermission;
+        }
+
+        return null;
+    }
+
+    private FilePermission getDetailedFilePermissionRecursively(String fromRootFilePath, String username) {
+        FtpFileUtils ftpFileUtils = new FtpFileUtils();
+        FilePermission filePermission;
+        filePermission = getDetailedFilePermission(fromRootFilePath, username);
+        boolean isDeletable = false;
+
+        if (filePermission != null) {
+            // Owner has full permission
+            if (username.equals(filePermission.getOwner())) {
+                return filePermission;
+            }
+
+            String currentFilePath = fromRootFilePath;
+
+            // Deletable if the user is the owner of one of the folders containing the file
+            while (true) {
+                if (currentFilePath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
+                    break;
+                }
+                currentFilePath = ftpFileUtils.getParentPath(currentFilePath);
+
+                // Get parent directory permission
+                FilePermission parentFilePermission = getDetailedFilePermission(currentFilePath, username);
+
+                // If user is owner, set deletable to true
+                if (parentFilePermission.getOwner().equals(username)) {
+                    isDeletable = true;
+                    break;
+                }
+            }
+            filePermission.setDeletable(isDeletable);
+            return filePermission;
+        }
+
+        // If not found then the closest parent directory's permission is also the file permission
+        // Go to parent directory
+        List<String> pathTokens = Arrays.asList(fromRootFilePath.split("/"));
+
+        if (pathTokens.isEmpty()) {
+            return null;
+        }
+
+        if (pathTokens.size()
+                == 1) {
+            return getDetailedFilePermissionRecursively("/", username);
+        }
+        pathTokens = pathTokens.subList(0, pathTokens.size() - 2);
+
+        return getDetailedFilePermissionRecursively(
+                "/" + String.join("/", pathTokens), username);
+    }
+
+    public FilePermission getFilePermission(String fromRootFilePath, String username) {
+        System.out.println("From root path: " + fromRootFilePath);
+        FilePermission storedFilePermission = getDetailedFilePermissionRecursively(fromRootFilePath, username);
+        return storedFilePermission;
     }
 }

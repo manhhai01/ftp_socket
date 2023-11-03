@@ -6,7 +6,7 @@ package ftp.commands;
 
 import config.AppConfig;
 import ftp.FilePermission;
-import ftp.FilePermissionService;
+import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -37,14 +37,14 @@ public class RETRCommand implements Command {
             String inputFilePath = arguments[0];
             Socket socket = session.getDataSocket().accept();
             String filePath;
-            if(inputFilePath.startsWith("/")) {
+            if (inputFilePath.startsWith("/")) {
                 filePath = inputFilePath.replaceFirst("/", AppConfig.SERVER_FTP_FILE_PATH + "/");
             } else {
                 filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), inputFilePath);
             }
             File file = new File(filePath);
-            FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission filePermission = filePermissionService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+            FileBus fileService = new FileBus();
+            FilePermission filePermission = fileService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
             if (filePermission.isReadable()) {
                 BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 if (session.getType().equals("A")) {

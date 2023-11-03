@@ -6,9 +6,6 @@ package ftp.commands;
 
 import config.AppConfig;
 import dao.UserDao;
-import ftp.FilePermission;
-import ftp.FilePermissionService;
-import ftp.FileService;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;

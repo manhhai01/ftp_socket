@@ -5,7 +5,7 @@
 package ftp.commands;
 
 import ftp.FilePermission;
-import ftp.FilePermissionService;
+import bus.FileBus;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -36,8 +36,8 @@ public class MLSDCommand implements Command {
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
             String fileData = formatter.listFormat(file, (File pathname) -> {
-                FilePermissionService filePermissionService = new FilePermissionService();
-                FilePermission filePermission = filePermissionService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
+                FileBus fileService = new FileBus();
+                FilePermission filePermission = fileService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
                 return filePermission != null && filePermission.isReadable();
             });
             System.out.println("FileData: " + fileData);

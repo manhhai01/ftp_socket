@@ -4,8 +4,7 @@
  */
 package ftp.commands;
 
-import ftp.FilePermissionService;
-import ftp.FileService;
+import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -18,8 +17,7 @@ import java.util.logging.Logger;
 
 public class STORCommand implements Command {
 
-    private final FilePermissionService filePermissionService = new FilePermissionService();
-    private final FileService fileService = new FileService();
+    private final FileBus fileService = new FileBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     @Override

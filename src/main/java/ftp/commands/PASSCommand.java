@@ -6,11 +6,12 @@ package ftp.commands;
 
 import bus.UserBus;
 import config.AppConfig;
-import ftp.FileService;
+import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
+import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -31,16 +32,16 @@ public class PASSCommand implements Command {
         boolean loggedIn = userBus.checkLogin(username, password);
         if (loggedIn) {
             try {
-                FileService fileService = new FileService();
+                FileBus fileService = new FileBus();
                 fileService.createHomeDirectoryIfNotExist(username);
                 session.changeWorkingDir("/" + session.getUsername());
-                SocketUtils.respondCommandSocket(230, "User logged in, proceed.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(StatusCode.LOGGED_IN, "User logged in, proceed.", commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
-                SocketUtils.respondCommandSocket(530, "Authentication failed.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(StatusCode.NOT_LOGGED_IN, "Authentication failed.", commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }

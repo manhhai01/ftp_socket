@@ -5,7 +5,7 @@
 package ftp.commands;
 
 import ftp.FilePermission;
-import ftp.FilePermissionService;
+import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -33,8 +33,8 @@ public class RNFRCommand implements Command {
                 );
                 return;
             }
-            FilePermissionService filePermissionService = new FilePermissionService();
-            FilePermission filePermission = filePermissionService.getFilePermission(filePath, session.getUsername());
+            FileBus fileService = new FileBus();
+            FilePermission filePermission = fileService.getFilePermission(filePath, session.getUsername());
             if (!filePermission.isRenamable()) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
