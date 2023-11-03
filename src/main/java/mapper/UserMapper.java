@@ -30,7 +30,8 @@ public class UserMapper {
         user.setAnonymous(false);
         user.setUsedKb(0);
         user.setIsActive(0);
-        
+        user.setBlock(false);
+        user.setBlockUpdown(false);
         return user;
     }
 }
