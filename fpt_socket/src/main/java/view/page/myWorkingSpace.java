@@ -7,12 +7,14 @@ package view.page;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import view.custom.IconRenderer;
 import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
 import view.custom.TableActionEvent;
@@ -73,8 +75,10 @@ public class myWorkingSpace extends javax.swing.JPanel {
                 System.out.println("Share row : " + row);  // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
             }
         };
-        table.getColumnModel().getColumn(4).setCellRenderer(new TableActionCellRender());
-        table.getColumnModel().getColumn(4).setCellEditor(new TableActionCellEditor(event));
+
+        table.getColumnModel().getColumn(0).setCellRenderer(new IconRenderer());
+        table.getColumnModel().getColumn(5).setCellRenderer(new TableActionCellRender());
+        table.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event));
         table.setDefaultRenderer(Object.class, (JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int column) -> {
             Component component = new DefaultTableCellRenderer().getTableCellRendererComponent(t, value, isSelected, hasFocus, row, column);
             if (isSelected == false ) {
@@ -82,6 +86,9 @@ public class myWorkingSpace extends javax.swing.JPanel {
             }
             return component;
         });
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        Object[] row = new Object[]{new ImageIcon(getClass().getResource("/view/img/cloud-upload.png")),"Row 2","","",""};
+        model.addRow(row);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -347,17 +354,17 @@ public class myWorkingSpace extends javax.swing.JPanel {
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Example1", "Chinh", "30 thg 9, 2023", "69 bytes", null},
-                {"Example2", "Chinh", "30 thg 9, 2023", "69 bytes", null},
-                {"Example3", "Chinh", "30 thg 9, 2023", "69 bytes", null},
-                {"Example4", "Chinh", "30 thg 9, 2023", "69 bytes", null}
+                {null, "Example1", "Chinh", "30 thg 9, 2023", "69 bytes", null, null},
+                {null, "Example2", "Chinh", "30 thg 9, 2023", "69 bytes", null, null},
+                {null, "Example3", "Chinh", "30 thg 9, 2023", "69 bytes", null, null},
+                {null, "Example4", "Chinh", "30 thg 9, 2023", "69 bytes", null, null}
             },
             new String [] {
-                "Tên", "Chủ sở hữu", "Ngày sửa đổi", "Kích thước tệp", ""
+                "", "Tên", "Chủ sở hữu", "Ngày sửa đổi", "Kích thước tệp", "", ""
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
+                false, false, false, false, false, true, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -379,11 +386,16 @@ public class myWorkingSpace extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(table);
         if (table.getColumnModel().getColumnCount() > 0) {
-            table.getColumnModel().getColumn(0).setPreferredWidth(300);
-            table.getColumnModel().getColumn(1).setPreferredWidth(100);
+            table.getColumnModel().getColumn(0).setMinWidth(40);
+            table.getColumnModel().getColumn(0).setMaxWidth(40);
+            table.getColumnModel().getColumn(1).setPreferredWidth(290);
             table.getColumnModel().getColumn(2).setPreferredWidth(100);
-            table.getColumnModel().getColumn(3).setPreferredWidth(50);
-            table.getColumnModel().getColumn(4).setPreferredWidth(10);
+            table.getColumnModel().getColumn(3).setPreferredWidth(100);
+            table.getColumnModel().getColumn(4).setPreferredWidth(50);
+            table.getColumnModel().getColumn(5).setPreferredWidth(10);
+            table.getColumnModel().getColumn(6).setMinWidth(0);
+            table.getColumnModel().getColumn(6).setPreferredWidth(0);
+            table.getColumnModel().getColumn(6).setMaxWidth(0);
         }
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));

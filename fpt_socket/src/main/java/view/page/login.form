@@ -31,9 +31,9 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="textField1" min="-2" pref="230" max="-2" attributes="0"/>
+                  <Component id="userField" min="-2" pref="230" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="passwordField1" pref="230" max="32767" attributes="0"/>
+                      <Component id="passwordField" pref="230" max="32767" attributes="0"/>
                       <Component id="button1" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -45,9 +45,9 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
-              <Component id="textField1" min="-2" max="-2" attributes="0"/>
+              <Component id="userField" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="passwordField1" min="-2" max="-2" attributes="0"/>
+              <Component id="passwordField" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
               <Component id="button1" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="115" max="32767" attributes="0"/>
@@ -56,12 +56,12 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="view.custom.textField" name="textField1">
+    <Component class="view.custom.textField" name="userField">
       <Properties>
         <Property name="labelText" type="java.lang.String" value="email"/>
       </Properties>
     </Component>
-    <Component class="view.custom.passwordField" name="passwordField1">
+    <Component class="view.custom.passwordField" name="passwordField">
       <Properties>
         <Property name="labelText" type="java.lang.String" value="M&#x1ead;t kh&#x1ea9;u"/>
       </Properties>
@@ -79,6 +79,9 @@
         </Property>
         <Property name="label" type="java.lang.String" value="&#x110;&#x103;ng nh&#x1ead;p"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="button1ActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

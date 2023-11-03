@@ -6,6 +6,8 @@ package view.page;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import javax.swing.JPanel;
 
 /**
@@ -20,7 +22,8 @@ public class loginForm extends javax.swing.JFrame {
     public loginForm() {
         initComponents();
         isLogin = true;
-        setBackground(new Color(0,0,0,0));
+        centerLocation();
+//        setBackground(new Color(0,0,0,0));
         OpenChildForm(new login());
         setVisible(true);
     }
@@ -136,15 +139,17 @@ public class loginForm extends javax.swing.JFrame {
             .addGroup(roundPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(holder, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                        .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(button3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(85, 85, 85)
-                        .addComponent(title)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(holder, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(button3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(85, 85, 85)
+                                .addComponent(title)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(roundPanel1Layout.createSequentialGroup()
                 .addGap(110, 110, 110)
@@ -250,6 +255,19 @@ public class loginForm extends javax.swing.JFrame {
         holder.add(panel);
         holder.repaint();
         holder.revalidate();
+    }
+        public void centerLocation(){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            
+            // Lấy kích thước của JFrame
+            Dimension frameSize = getSize();
+            
+            // Tính toán vị trí để đặt JFrame ở giữa màn hình
+            int x = (screenSize.width - frameSize.width) / 2;
+            int y = (screenSize.height - frameSize.height) / 2;
+            
+            // Đặt vị trí của JFrame
+            setLocation(x, y);
     }
     /**
      * @param args the command line arguments

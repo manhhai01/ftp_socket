@@ -31,9 +31,10 @@ public class mainLayout extends javax.swing.JFrame {
     public mainLayout() {
         lightTheme();
         initComponents();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        pack();
-        setSize(screenSize.width,screenSize.height);
+        centerLocation();
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        pack();
+//        setSize(screenSize.width,screenSize.height);
         active(page1);
         getContent(new myWorkingSpace());
     }
@@ -455,6 +456,21 @@ public class mainLayout extends javax.swing.JFrame {
         contentPanel.add(panel,BorderLayout.CENTER);
         contentPanel.repaint();
         contentPanel.revalidate();
+    }
+    
+    
+    public void centerLocation(){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            
+            // Lấy kích thước của JFrame
+            Dimension frameSize = getSize();
+            
+            // Tính toán vị trí để đặt JFrame ở giữa màn hình
+            int x = (screenSize.width - frameSize.width) / 2;
+            int y = (screenSize.height - frameSize.height) / 2;
+            
+            // Đặt vị trí của JFrame
+            setLocation(x, y);
     }
     /**
      * @param args the command line arguments

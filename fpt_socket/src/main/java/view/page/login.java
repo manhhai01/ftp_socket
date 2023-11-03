@@ -4,6 +4,14 @@
  */
 package view.page;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import socket.socketManager;
+import view.mainLayout;
+
 /**
  *
  * @author Bum
@@ -15,6 +23,7 @@ public class login extends javax.swing.JPanel {
      */
     public login() {
         initComponents();
+        repaint();
     }
 
     /**
@@ -26,8 +35,8 @@ public class login extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        textField1 = new view.custom.textField();
-        passwordField1 = new view.custom.passwordField();
+        userField = new view.custom.textField();
+        passwordField = new view.custom.passwordField();
         button1 = new view.custom.Button();
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -35,14 +44,19 @@ public class login extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(400, 220));
         setRequestFocusEnabled(false);
 
-        textField1.setLabelText("email");
+        userField.setLabelText("email");
 
-        passwordField1.setLabelText("Mật khẩu");
+        passwordField.setLabelText("Mật khẩu");
 
         button1.setBackground(new java.awt.Color(204, 204, 255));
         button1.setColor(new java.awt.Color(204, 204, 255));
         button1.setColorOver(new java.awt.Color(255, 204, 204));
         button1.setLabel("Đăng nhập");
+        button1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -51,9 +65,9 @@ public class login extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(85, 85, 85)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(textField1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(passwordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                        .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                         .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(85, Short.MAX_VALUE))
         );
@@ -61,19 +75,38 @@ public class login extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(82, 82, 82)
-                .addComponent(textField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(passwordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48)
                 .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(115, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
+        String user = userField.getText();
+        String password = passwordField.getText();
+        if(!user.isEmpty() && !password.isEmpty()){
+            try {
+                String message = socketManager.getInstance().loginCommand(user, password);
+                System.out.println(message);
+                if(message.isEmpty()){
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                    frame.dispose();
+                    new mainLayout().setVisible(true);
+                    
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_button1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private view.custom.Button button1;
-    private view.custom.passwordField passwordField1;
-    private view.custom.textField textField1;
+    private view.custom.passwordField passwordField;
+    private view.custom.textField userField;
     // End of variables declaration//GEN-END:variables
 }
