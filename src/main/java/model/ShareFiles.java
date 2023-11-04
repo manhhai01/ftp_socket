@@ -32,11 +32,8 @@ public class ShareFiles {
     @EmbeddedId
     private ShareFilesId ids;
     
-    @Column(name = "read_permission")
-    private boolean readPermission;
-    
-    @Column(name = "write_permission")
-    private boolean writePermission;
+    @Column(name = "permission")
+    private String permission;
     
     @ManyToOne
     @JoinColumn(name = "file_id", insertable = false, updatable = false)

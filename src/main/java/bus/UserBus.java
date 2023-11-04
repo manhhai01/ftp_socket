@@ -170,7 +170,7 @@ public class UserBus {
         boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com", "123");
         System.out.println("Kiem tra regen: " + res2);
 
-        String res3 = userBus.checkLogin("lahai7744@gmail.com", "123");
+        String res3 = userBus.checkLogin("lequoctai201201@gmail.com", "123");
         System.out.println("Kiem tra login: " + res3);
     }
 
