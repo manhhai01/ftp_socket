@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import threading.ThreadManager;
 
 public class FtpServer {
 
@@ -81,45 +82,6 @@ public class FtpServer {
         this.server = server;
     }
 
-    private InputParseResult parseInput(String input) {
-        StringTokenizer tokenizer = new StringTokenizer(input);
-        List<String> tokens = new ArrayList<>();
-        while (tokenizer.hasMoreTokens()) {
-            tokens.add(tokenizer.nextToken());
-        }
-
-        return new InputParseResult(
-                tokens.get(0),
-                tokens.subList(1, tokens.size()).toArray(String[]::new)
-        );
-    }
-
-//    private void executeCommandAndResponse(BufferedWriter writer, Command command, String[] args, FtpServerSession session) {
-//        CommandResult result = command.execute(args, session);
-//        if (result != null) {
-//            try {
-//                SocketUtils.writeLineAndFlush(result.commandResponse(), writer);
-//            } catch (IOException ex) {
-//                Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//    }
-    private void matchCommand(String input, BufferedWriter writer, FtpServerSession session) {
-        System.out.println("Input: " + input);
-        InputParseResult parsedInput = parseInput(input);
-        Command command = commands.get(parsedInput.commandName());
-        if (command != null) {
-            command.execute(parsedInput.args(), session, writer);
-        } else {
-            try {
-                SocketUtils.writeLineAndFlush("500 Command is not recognised.", writer);
-            } catch (IOException ex) {
-                Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-    }
-
     public void start() {
         try {
             server = new ServerSocket(21);
@@ -130,38 +92,16 @@ public class FtpServer {
         while (true) {
             try {
                 Socket socket = server.accept();
-                sessions.put(socket.getRemoteSocketAddress().toString(), new FtpServerSession(socket.getRemoteSocketAddress().toString()));
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                // Call socket connection listeners
-                onSocketConnectCommands.forEach((command) -> {
-                    command.execute(null, sessions.get(socket.getRemoteSocketAddress().toString()), writer);
-                });
-
-                // Create new thread for listening to command socket
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String input = "";
-                        try {
-                            // Listen on commands
-                            while ((input = reader.readLine()) != null) {
-                                matchCommand(input, writer, sessions.get(socket.getRemoteSocketAddress().toString()));
-                            }
-                            // Call socket disconnection listeners
-                            onSocketDisconnectCommands.forEach((command) -> {
-                                command.execute(null, sessions.get(socket.getRemoteSocketAddress().toString()), writer);
-                            });
-                            sessions.remove(socket.getRemoteSocketAddress().toString());
-                        } catch (IOException ex) {
-                            Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                });
-
-                thread.start();
-
+                // Create new thread for each connected user
+                ThreadManager.getInstance().getExecutorService().execute(
+                        new FtpSessionWorker(
+                                socket,
+                                onSocketConnectCommands,
+                                onSocketDisconnectCommands,
+                                commands
+                        )
+                );
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }
