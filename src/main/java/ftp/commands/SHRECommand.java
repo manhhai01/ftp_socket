@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// Fix
 /**
  *
  * @author User
@@ -41,7 +42,10 @@ public class SHRECommand implements Command {
         String fileName = arguments[0];
         boolean isReadable = Boolean.parseBoolean(arguments[1]);
         boolean isWritable = Boolean.parseBoolean(arguments[2]);
-        String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), fileName);
+        String filePath = ftpFileUtils.convertPublicPathToFtpPath(
+                    session.getWorkingDirAbsolutePath(),
+                    fileName
+            );
         boolean isSuccess = fileService.setShareFilePermission(filePath, session.getUsername(), isReadable, isWritable);
 
         if (isSuccess) {

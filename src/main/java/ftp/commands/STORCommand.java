@@ -5,6 +5,8 @@
 package ftp.commands;
 
 import bus.FileBus;
+import config.AppConfig;
+import dao.UserDao;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -14,18 +16,36 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.User;
 
 public class STORCommand implements Command {
 
     private final FileBus fileService = new FileBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+    private final UserDao userDao = new UserDao();
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
 
-        String path = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), arguments[0]);
-        try {
+        String inputFilePath = arguments[0];
+        String path = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), inputFilePath);
+        if (path.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
+            User user = userDao.getUserByUserName(session.getUsername());
+            if(!user.isAnonymous()) {
+                try {
+                    SocketUtils.respondCommandSocket(
+                            StatusCode.FILE_ACTION_NOT_TAKEN,
+                            "Anonymous disabled.",
+                            commandSocketWriter
+                    );
+                    return;
+                } catch (IOException ex) {
+                    Logger.getLogger(STORCommand.class.getName()).log(Level.SEVERE, null, ex);
+                }                
+            }
+        }
 
+        try {
             // Create file if it doesn't exist
             boolean fileCreationSuccess = fileService.createNormalFile(path, session.getUsername());
             if (!fileCreationSuccess) {

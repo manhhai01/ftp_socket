@@ -20,7 +20,10 @@ public class RMDCommand implements Command {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
         String dirName = arguments[0];
-        String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
+        String filePath = ftpFileUtils.convertPublicPathToFtpPath(
+                session.getWorkingDirAbsolutePath(),
+                dirName
+        );
         File file = new File(filePath);
 
         // Check if path is a directory

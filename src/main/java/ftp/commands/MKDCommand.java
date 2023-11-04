@@ -23,7 +23,7 @@ public class MKDCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             String dirName = arguments[0];
-            String newDirPath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), dirName);
+            String newDirPath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), dirName);
             boolean success = fileService.createDirectory(newDirPath, session.getUsername());
             if (success) {
                 SocketUtils.respondCommandSocket(

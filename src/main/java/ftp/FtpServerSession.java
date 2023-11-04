@@ -6,8 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FtpServerSession {
-   
-    private String clientId;
+
     private String username;
     // Working dir starts with "/"
     private String workingDir;
@@ -17,14 +16,6 @@ public class FtpServerSession {
 
     public FtpServerSession() {
 
-    }
-
-    public FtpServerSession(String clientId) {
-
-    }
-
-    public String getClientId() {
-        return clientId;
     }
 
     public String getUsername() {
@@ -41,14 +32,13 @@ public class FtpServerSession {
 
     public String getWorkingDirAbsolutePath() {
         // Note: working dir property starts with "/"
-        
+
         // Replace / with corresponding root path
-        String pathRelativeToRoot = workingDir.replaceFirst("/", "");
         return AppConfig.SERVER_FTP_FILE_PATH + workingDir;
     }
 
     public boolean changeWorkingDir(String workingDir) {
-        if(workingDir.equals("/")) {
+        if (workingDir.equals("/")) {
             this.workingDir = "/";
             return true;
         }

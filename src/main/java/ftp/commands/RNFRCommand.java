@@ -23,7 +23,10 @@ public class RNFRCommand implements Command {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
         try {
             String fileName = arguments[0];
-            String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), fileName);
+            String filePath = ftpFileUtils.convertPublicPathToFtpPath(
+                    session.getWorkingDirAbsolutePath(),
+                    fileName
+            );
             File file = new File(filePath);
             if (!file.exists()) {
                 SocketUtils.respondCommandSocket(

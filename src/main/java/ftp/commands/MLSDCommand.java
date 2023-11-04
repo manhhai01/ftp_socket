@@ -31,7 +31,6 @@ public class MLSDCommand implements Command {
                     "File status okay; about to open data connection.",
                     commandSocketWriter
             );
-
             Socket socket = session.getDataSocket().accept();
             System.out.println("Client connected to data socket: " + socket.getRemoteSocketAddress());
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));

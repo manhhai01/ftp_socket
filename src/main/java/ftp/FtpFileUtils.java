@@ -34,4 +34,19 @@ public class FtpFileUtils {
         String parentPath = String.join("/", pathTokens);
         return parentPath;
     }
+
+    public String convertJavaPathToFtpPath(String javaFilePath) {
+        return javaFilePath.replace("\\", "/");
+    }
+
+    public String convertPublicPathToFtpPath(String workingDirAbsolutePath, String publicPath) {
+        String filePath = "";
+        if (publicPath.startsWith("/")) {
+            filePath = publicPath.replaceFirst("/", AppConfig.SERVER_FTP_FILE_PATH + "/");
+        } else {
+            filePath = joinPath(workingDirAbsolutePath, publicPath);
+        }
+
+        return filePath;
+    }
 }

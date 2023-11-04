@@ -7,6 +7,7 @@ package ftp.commands;
 import config.AppConfig;
 import ftp.FilePermission;
 import bus.FileBus;
+import dao.UserDao;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -19,17 +20,17 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.User;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-
-// Hello
 public class RETRCommand implements Command {
-
+    
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
-
+        UserDao userDao = new UserDao();
+        
         try {
             SocketUtils.respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
@@ -38,11 +39,21 @@ public class RETRCommand implements Command {
             );
             String inputFilePath = arguments[0];
             Socket socket = session.getDataSocket().accept();
-            String filePath;
-            if (inputFilePath.startsWith("/")) {
-                filePath = inputFilePath.replaceFirst("/", AppConfig.SERVER_FTP_FILE_PATH + "/");
-            } else {
-                filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), inputFilePath);
+            String filePath = ftpFileUtils.convertPublicPathToFtpPath(
+                    session.getWorkingDirAbsolutePath(),
+                    inputFilePath
+            );
+            
+            if (filePath.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
+                User user = userDao.getUserByUserName(session.getUsername());
+                if (!user.isAnonymous()) {
+                    SocketUtils.respondCommandSocket(
+                            StatusCode.FILE_ACTION_NOT_TAKEN,
+                            "Anonymous disabled.",
+                            commandSocketWriter
+                    );
+                    return;
+                }
             }
             File file = new File(filePath);
             FileBus fileService = new FileBus();
@@ -72,11 +83,11 @@ public class RETRCommand implements Command {
                         commandSocketWriter
                 );
             }
-
+            
             socket.close();
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
 }

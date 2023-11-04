@@ -4,6 +4,7 @@
  */
 package bus;
 
+import payload.GetAnonymousFilesResult;
 import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
@@ -13,12 +14,14 @@ import dao.ShareFilesDao;
 import dao.UserDao;
 import ftp.FilePermission;
 import ftp.FtpFileUtils;
+import ftp.commands.AnonymousDisabledException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -312,6 +315,7 @@ public class FileBus {
         return userDao.getSharedFiles(appliedUsername);
     }
 
+    // Todo: Bug
     private FilePermission getDetailedFilePermission(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
 
@@ -470,5 +474,35 @@ public class FileBus {
         System.out.println("From root path: " + fromRootFilePath);
         FilePermission storedFilePermission = getDetailedFilePermissionRecursively(fromRootFilePath, username);
         return storedFilePermission;
+    }
+
+    public GetAnonymousFilesResult getAnonymousFiles(String username) throws AnonymousDisabledException {
+        GetAnonymousFilesResult result = new GetAnonymousFilesResult();
+        result.files = new ArrayList<>();
+        result.directories = new ArrayList<>();
+        
+        User user = userDao.getUserByUserName(username);
+        if(!user.isAnonymous()) {
+            throw new AnonymousDisabledException();
+        }
+        File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
+        if(!file.exists()) {
+            file.mkdir();
+        }
+        
+        File[] files = file.listFiles();
+        for(File f: files) {
+            String filePath = ftpFileUtils.convertJavaPathToFtpPath(f.getPath());
+            if(f.isDirectory()) {
+                Directory dir = directoryDao.getDirectoryByPath(filePath);
+                result.directories.add(dir);
+            }
+            if(f.isFile()) {
+                model.File fileFromDb = fileDao.getFileByPath(filePath);
+                result.files.add(fileFromDb);
+            }
+        }
+        
+        return result;
     }
 }

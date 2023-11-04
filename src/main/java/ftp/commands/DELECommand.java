@@ -23,7 +23,7 @@ public class DELECommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             String filename = arguments[0];
-            String filePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), filename);
+            String filePath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), filename);
             if (fileService.removeFile(filePath, session.getUsername())) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,

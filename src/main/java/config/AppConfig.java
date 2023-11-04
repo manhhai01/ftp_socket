@@ -10,4 +10,5 @@ package config;
  */
 public class AppConfig {
     public static final String SERVER_FTP_FILE_PATH = "ftp";
+    public static final String SERVER_FTP_ANON_PATH = "ftp/anonymous";
 }

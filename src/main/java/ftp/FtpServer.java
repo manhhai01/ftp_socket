@@ -17,6 +17,7 @@ import ftp.commands.DELECommand;
 import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
 import ftp.commands.GOTPCommand;
+import ftp.commands.LSANCommand;
 import ftp.commands.LSHRCommand;
 import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
@@ -41,7 +42,6 @@ import threading.ThreadManager;
 public class FtpServer {
 
     private Map<String, Command> commands = new HashMap<>();
-    private Map<String, FtpServerSession> sessions = new HashMap<>();
     private List<Command> onSocketConnectCommands = new ArrayList<>();
     private List<Command> onSocketDisconnectCommands = new ArrayList<>();
     private ServerSocket server;
@@ -52,10 +52,6 @@ public class FtpServer {
 
     public void setCommands(Map<String, Command> commands) {
         this.commands = commands;
-    }
-
-    public Map<String, FtpServerSession> getSessions() {
-        return sessions;
     }
 
     public List<Command> getOnSocketConnectCommands() {
@@ -123,6 +119,7 @@ public class FtpServer {
                 }
             }
         });
+        
         ftpServerBuilder.addCommand("AUTH", new AUTHCommand());
         ftpServerBuilder.addCommand("USER", new USERCommand());
         ftpServerBuilder.addCommand("PASS", new PASSCommand());
@@ -144,6 +141,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("GOTP", new GOTPCommand());
         ftpServerBuilder.addCommand("SOTP", new SOTPCommand());
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
+        ftpServerBuilder.addCommand("LSAN", new LSANCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
