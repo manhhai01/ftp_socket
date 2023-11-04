@@ -67,8 +67,8 @@ public class UserBus {
             if (pwdHash.equals(userCheck.getPassword())) {
                 match = true;
             }
-            
-            if(!match) {
+
+            if (!match) {
                 return false;
             }
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -101,11 +101,11 @@ public class UserBus {
             if (pwdHash.equals(userCheck.getPassword())) {
                 match = true;
             }
-            
-            if(!match) {
+
+            if (!match) {
                 return false;
             }
-            
+
             OtpUtils otpUtils = new OtpUtils();
             String otp = otpUtils.generateOtp();
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -123,24 +123,37 @@ public class UserBus {
         return isReGenerate;
     }
 
-    public boolean checkLogin(String username, String password) {
-        boolean isLogin = false;
+    public String checkLogin(String username, String password) {
+        String message = "";
         User userCheck = userDao.getUserByUserName(username);
-        if (userCheck != null && userCheck.getIsActive() == 1) {
-            MP5Utils mP5Utils = new MP5Utils();
-            String pwdHash = mP5Utils.getMD5Hash(password);
-            if (pwdHash.equals(userCheck.getPassword())) {
-                isLogin = true;
-            }
+//        if (userCheck != null) {
+//            if(userCheck.getIsActive() == 0) {
+//                return "Tài khoản chưa xác thực";
+//            } else {
+//                MP5Utils mP5Utils = new MP5Utils();
+//                String pwdHash = mP5Utils.getMD5Hash(password);
+//                if (pwdHash.equals(userCheck.getPassword()) && userCheck.getIsActive() == 1) {
+//                   return "Đăng nhập thành công"; 
+//                }
+//            }
+//            
+        if (userCheck == null) {
+            return "Tài khoản không tồn tại";
         }
-        return isLogin;
+        MP5Utils mP5Utils = new MP5Utils();
+        String pwdHash = mP5Utils.getMD5Hash(password);
+        if (!pwdHash.equals(userCheck.getPassword())) 
+            return "Đăng nhập thất bại";
+        if(userCheck.getIsActive() == 0) 
+                return "Tài khoản chưa xác thực";
+        return "";
     }
 
     public static void main(String[] args) {
 
         UserBus userBus = new UserBus();
         String jsonUserRegister = "{\n"
-                + "            \"username\": \"lahai7744@gmail.com\",\n"
+                + "            \"username\": \"lequoctai201201@gmail.com\",\n"
                 + "            \"password\": \"123\";\n"
                 + "            \"firstName\": \"Nguyễn Văn\",\n"
                 + "            \"lastName\": \"C\",\n"
@@ -157,7 +170,7 @@ public class UserBus {
         boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com", "123");
         System.out.println("Kiem tra regen: " + res2);
 
-        boolean res3 = userBus.checkLogin("lahai7744@gmail.com", "123");
+        String res3 = userBus.checkLogin("lahai7744@gmail.com", "123");
         System.out.println("Kiem tra login: " + res3);
     }
 

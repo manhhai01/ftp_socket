@@ -5,9 +5,7 @@
 package ftp.commands;
 
 import bus.UserBus;
-import config.AppConfig;
 import bus.FileBus;
-import ftp.FtpFileUtils;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -29,7 +27,8 @@ public class PASSCommand implements Command {
         String username = session.getUsername();
         System.out.println("Username: " + username);
         UserBus userBus = new UserBus();
-        boolean loggedIn = userBus.checkLogin(username, password);
+        String message = userBus.checkLogin(username, password);
+        boolean loggedIn = message.equals("");
         if (loggedIn) {
             try {
                 FileBus fileService = new FileBus();
@@ -41,7 +40,7 @@ public class PASSCommand implements Command {
             }
         } else {
             try {
-                SocketUtils.respondCommandSocket(StatusCode.NOT_LOGGED_IN, "Authentication failed.", commandSocketWriter);
+                SocketUtils.respondCommandSocket(StatusCode.NOT_LOGGED_IN, message, commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }

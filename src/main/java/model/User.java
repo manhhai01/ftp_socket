@@ -79,6 +79,12 @@ public class User {
     @Column(name = "create_date_otp")
     private LocalDateTime  createDateOtp;
     
+    @Column(name = "is_block")
+    private boolean isBlock;
+    
+    @Column(name = "is_block_updown")
+    private boolean isBlockUpdown;
+    
     @OneToMany(mappedBy = "user")
     private List<File> files;
     
