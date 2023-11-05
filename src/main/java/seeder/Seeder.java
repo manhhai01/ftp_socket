@@ -90,8 +90,8 @@ public class Seeder {
 
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, true, userHomeDirectory, user2));
 
-        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile1.getId(), user2.getId()), true, true, sharedFile1, user2));
-        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile2.getId(), user2.getId()), true, false, sharedFile2, user2));
+//        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile1.getId(), user2.getId()), true, true, sharedFile1, user2));
+//        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile2.getId(), user2.getId()), true, false, sharedFile2, user2));
 
 //        directoryDao.save(new Directory(0, AppConfig.SERVER_FTP_FILE_PATH, null, null));
 //        Directory userHomeDirectory = new Directory(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser", user1, null);
