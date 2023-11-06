@@ -28,19 +28,27 @@ public class PASSCommand implements Command {
         System.out.println("Username: " + username);
         UserBus userBus = new UserBus();
         String message = userBus.checkLogin(username, password);
-        boolean loggedIn = message.equals("");
-        if (loggedIn) {
+        if (message.equals(UserBus.LOGIN_SUCCESS_MSG)) {
             try {
                 FileBus fileService = new FileBus();
                 fileService.createHomeDirectoryIfNotExist(username);
                 session.changeWorkingDir("/" + session.getUsername());
                 SocketUtils.respondCommandSocket(StatusCode.LOGGED_IN, "User logged in, proceed.", commandSocketWriter);
+                return;
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
+        }
+        if (message.equals(UserBus.LOGIN_PASSWORD_MISMATCH_MSG)) {
             try {
                 SocketUtils.respondCommandSocket(StatusCode.NOT_LOGGED_IN, message, commandSocketWriter);
+            } catch (IOException ex) {
+                Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (message.equals(UserBus.LOGIN_ACCOUNT_NOT_VERIFIED_MSG)) {
+            try {
+                SocketUtils.respondCommandSocket(StatusCode.OTP_NEEDED, message, commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }

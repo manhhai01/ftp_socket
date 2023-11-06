@@ -20,7 +20,10 @@ import utils.OtpUtils;
  * @author lamanhhai
  */
 public class UserBus {
-
+    public static final String LOGIN_PASSWORD_MISMATCH_MSG = "Đăng nhập thất bại";
+    public static final String LOGIN_ACCOUNT_NOT_VERIFIED_MSG = "Tài khoản chưa xác thực";
+    public static final String LOGIN_SUCCESS_MSG = ""; 
+    
     private UserDao userDao = new UserDao();
 
     @SuppressWarnings("empty-statement")
@@ -138,15 +141,15 @@ public class UserBus {
 //            }
 //            
         if (userCheck == null) {
-            return "Tài khoản không tồn tại";
+            return LOGIN_PASSWORD_MISMATCH_MSG;
         }
         MP5Utils mP5Utils = new MP5Utils();
         String pwdHash = mP5Utils.getMD5Hash(password);
         if (!pwdHash.equals(userCheck.getPassword())) 
-            return "Đăng nhập thất bại";
+            return LOGIN_PASSWORD_MISMATCH_MSG;
         if(userCheck.getIsActive() == 0) 
-                return "Tài khoản chưa xác thực";
-        return "";
+                return LOGIN_ACCOUNT_NOT_VERIFIED_MSG;
+        return LOGIN_SUCCESS_MSG;
     }
 
     public static void main(String[] args) {
