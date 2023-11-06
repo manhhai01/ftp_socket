@@ -42,7 +42,7 @@ public class RMDCommand implements Command {
 
         // Check if directory is deletable
         FileBus fileService = new FileBus();
-        FilePermission filePermission = fileService.getFilePermission(filePath, session.getUsername());
+        FilePermission filePermission = fileService.getFilePermission(filePath, session.getUsername(), FileBus.DIRECTORY_TYPE);
         if (!filePermission.isDeletable()) {
             try {
                 SocketUtils.respondCommandSocket(

@@ -37,7 +37,11 @@ public class RNFRCommand implements Command {
                 return;
             }
             FileBus fileService = new FileBus();
-            FilePermission filePermission = fileService.getFilePermission(filePath, session.getUsername());
+            FilePermission filePermission = fileService.getFilePermission(
+                    filePath,
+                    session.getUsername(),
+                    file.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE
+            );
             if (!filePermission.isRenamable()) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,

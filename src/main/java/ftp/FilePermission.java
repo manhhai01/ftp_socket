@@ -1,24 +1,33 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package ftp;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+/**
+ *
+ * @author User
+ */
+public abstract class FilePermission {
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class FilePermission {
-    private String path;
-    private boolean isReadable = false; 
-    private boolean isWritable = false;
-    private boolean isDeletable = false;
-    private boolean isRenamable = false;
-    private String owner;
-    private String appliedUser;
-    
-    public boolean isOwner() {
-        return owner.equals(appliedUser);
+    protected boolean exist;
+
+    public boolean isExist() {
+        return exist;
     }
+
+    public void setExist(boolean exist) {
+        this.exist = exist;
+    }
+
+    public abstract boolean isShared();
+
+    public abstract boolean isWritable();
+
+    public abstract boolean isReadable();
+
+    public abstract boolean isRenamable();
+
+    public abstract boolean isDeletable();
+
 }

@@ -7,6 +7,7 @@ package ftp.commands;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
+import ftp.NormalFilePermission;
 import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
@@ -26,47 +27,120 @@ public class SHRECommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        if (arguments.length != 3) {
+        try {
+            String type = arguments[0];
+            String fileName = arguments[1];
+            String filePath = ftpFileUtils.convertPublicPathToFtpPath(
+                    session.getWorkingDirAbsolutePath(),
+                    fileName
+            );
+            if (type.equals(FileBus.NORMAL_FILE_TYPE)) {
+                String permission = arguments[2];
+                if (!permission.equals(NormalFilePermission.FULL_PERMISSION)
+                        && !permission.equals(NormalFilePermission.NULL_PERMISSION)
+                        && !permission.equals(NormalFilePermission.READABLE_PERMISSION)) {
+                    SocketUtils.respondCommandSocket(
+                            StatusCode.FILE_ACTION_NOT_TAKEN,
+                            "Syntax error.",
+                            commandSocketWriter
+                    );
+                    return;
+                }
+
+                boolean isSuccess = fileService.setShareNormalFilePermission(filePath, session.getUsername(), permission);
+                if (isSuccess) {
+                    try {
+                        SocketUtils.respondCommandSocket(
+                                StatusCode.FILE_ACTION_OK,
+                                String.format("Shared file %s successfully.", fileName),
+                                commandSocketWriter
+                        );
+                    } catch (IOException ex) {
+                        Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        SocketUtils.respondCommandSocket(
+                                StatusCode.FILE_ACTION_NOT_TAKEN,
+                                "Forbidden.",
+                                commandSocketWriter
+                        );
+                    } catch (IOException ex) {
+                        Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            if (type.equals(FileBus.DIRECTORY_TYPE)) {
+                boolean canModify = Boolean.parseBoolean(arguments[2]);
+                boolean uploadable = Boolean.parseBoolean(arguments[3]);
+                boolean downloadable = Boolean.parseBoolean(arguments[4]);
+
+                boolean isSuccess = fileService.setShareDirectoryPermission(
+                        filePath,
+                        session.getUsername(),
+                        canModify,
+                        uploadable,
+                        downloadable
+                );
+                if (isSuccess) {
+                    try {
+                        SocketUtils.respondCommandSocket(
+                                StatusCode.FILE_ACTION_OK,
+                                String.format("Shared file %s successfully.", fileName),
+                                commandSocketWriter
+                        );
+                    } catch (IOException ex) {
+                        Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        SocketUtils.respondCommandSocket(
+                                StatusCode.FILE_ACTION_NOT_TAKEN,
+                                "Forbidden.",
+                                commandSocketWriter
+                        );
+                    } catch (IOException ex) {
+                        Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+            }
+
+//        boolean isSuccess = fileService.setShareFilePermission(filePath, session.getUsername(), isReadable, isWritable);
+//
+//        if (isSuccess) {
+//            try {
+//                SocketUtils.respondCommandSocket(
+//                        StatusCode.FILE_ACTION_OK,
+//                        String.format("Shared file %s successfully.", fileName),
+//                        commandSocketWriter
+//                );
+//            } catch (IOException ex) {
+//                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        } else {
+//            try {
+//                SocketUtils.respondCommandSocket(
+//                        StatusCode.FILE_ACTION_NOT_TAKEN,
+//                        "Forbidden.",
+//                        commandSocketWriter
+//                );
+//            } catch (IOException ex) {
+//                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+        } catch (IOException ex) {
+            Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ArrayIndexOutOfBoundsException ex) {
             try {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Syntax error.",
                         commandSocketWriter
                 );
-                return;
-            } catch (IOException ex) {
-                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        String fileName = arguments[0];
-        boolean isReadable = Boolean.parseBoolean(arguments[1]);
-        boolean isWritable = Boolean.parseBoolean(arguments[2]);
-        String filePath = ftpFileUtils.convertPublicPathToFtpPath(
-                    session.getWorkingDirAbsolutePath(),
-                    fileName
-            );
-        boolean isSuccess = fileService.setShareFilePermission(filePath, session.getUsername(), isReadable, isWritable);
-
-        if (isSuccess) {
-            try {
-                SocketUtils.respondCommandSocket(
-                        StatusCode.FILE_ACTION_OK,
-                        String.format("Shared file %s successfully.", fileName),
-                        commandSocketWriter
-                );
-            } catch (IOException ex) {
-                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            try {
-                SocketUtils.respondCommandSocket(
-                        StatusCode.FILE_ACTION_NOT_TAKEN,
-                        "Forbidden.",
-                        commandSocketWriter
-                );
-            } catch (IOException ex) {
-                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex1) {
+                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
     }

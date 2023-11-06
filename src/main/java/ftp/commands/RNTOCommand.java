@@ -56,19 +56,31 @@ public class RNTOCommand implements Command {
             if (fileWithNewName.exists()) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
-                        "File with %s name already exists.",
+                        String.format("File with %s name already exists.", inputNewFilePath),
                         commandSocketWriter
                 );
                 return;
             }
 
-            fileService.changeFilePath(oldFilePath, newFilePath, session.getUsername());
-            SocketUtils.respondCommandSocket(
-                    StatusCode.FILE_ACTION_OK,
-                    "Requested file action okay, completed.",
-                    commandSocketWriter
-            );
-            session.setRNFRFilename(null);
+            boolean success = fileService.changeFilePath(
+                    oldFilePath,
+                    newFilePath,
+                    session.getUsername(),
+                    fileWithNewName.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
+            if (success) {
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_OK,
+                        "Requested file action okay, completed.",
+                        commandSocketWriter
+                );
+                session.setRNFRFilename(null);
+            } else {
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.",
+                        commandSocketWriter
+                );
+            }
 
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);

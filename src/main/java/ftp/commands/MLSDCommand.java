@@ -6,6 +6,7 @@ package ftp.commands;
 
 import ftp.FilePermission;
 import bus.FileBus;
+import ftp.FtpFileUtils;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -17,7 +18,6 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 // Testing
 public class MLSDCommand implements Command {
@@ -36,10 +36,16 @@ public class MLSDCommand implements Command {
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
-            String fileData = formatter.listFormat(file, (File pathname) -> {
+            FtpFileUtils ftpFileUtils = new FtpFileUtils();
+            String fileData = formatter.listFormat(file, (File childFile) -> {
                 FileBus fileService = new FileBus();
-                FilePermission filePermission = fileService.getFilePermission(pathname.getPath().replace("\\", "/"), session.getUsername());
-                return filePermission != null && filePermission.isReadable();
+
+                FilePermission filePermission = fileService.getFilePermission(
+                        //                        pathname.getPath().replace("\\", "/"), 
+                        ftpFileUtils.convertJavaPathToFtpPath(childFile.getPath()),
+                        session.getUsername(),
+                        childFile.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
+                return filePermission.isReadable();
             });
             System.out.println("FileData: " + fileData);
 //                    dataSocketWriter.write("Type=cdir;Modify=19981107085215;Perm=el; tmp\n" +

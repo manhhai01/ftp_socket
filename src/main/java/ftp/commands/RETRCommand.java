@@ -25,12 +25,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class RETRCommand implements Command {
-    
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
         UserDao userDao = new UserDao();
-        
+
         try {
             SocketUtils.respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
@@ -43,7 +43,7 @@ public class RETRCommand implements Command {
                     session.getWorkingDirAbsolutePath(),
                     inputFilePath
             );
-            
+
             if (filePath.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
                 User user = userDao.getUserByUserName(session.getUsername());
                 if (!user.isAnonymous()) {
@@ -57,7 +57,11 @@ public class RETRCommand implements Command {
             }
             File file = new File(filePath);
             FileBus fileService = new FileBus();
-            FilePermission filePermission = fileService.getFilePermission(file.getPath().replace("\\", "/"), session.getUsername());
+            FilePermission filePermission = fileService.getFilePermission(
+                    filePath,
+                    session.getUsername(),
+                    file.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE
+            );
             if (filePermission.isReadable()) {
                 BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 if (session.getType().equals("A")) {
@@ -83,11 +87,11 @@ public class RETRCommand implements Command {
                         commandSocketWriter
                 );
             }
-            
+
             socket.close();
         } catch (IOException ex) {
             Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }

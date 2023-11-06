@@ -26,23 +26,26 @@ import model.ids.ShareDirectoriesId;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShareDirectories { 
-    
+public class ShareDirectories {
+
     @EmbeddedId
     private ShareDirectoriesId ids;
-    
+
+    @Column(name = "can_modify")
+    private boolean canModify;
+
     @Column(name = "upload_permission")
     private boolean uploadPermission;
-    
+
     @Column(name = "download_permission")
     private boolean downloadPermission;
-    
+
     @ManyToOne
     @JoinColumn(name = "directory_id", insertable = false, updatable = false)
     private Directory directory;
-    
+
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
-    
+
 }

@@ -27,7 +27,6 @@ import utils.MP5Utils;
  *
  * @author User
  */
-
 // REMEMBER TO CREATE ROOT FOLDER IN FILE SYSTEM FIRST! (for example: ftp)
 public class Seeder {
 
@@ -58,13 +57,13 @@ public class Seeder {
 
     public static void main(String[] args) throws IOException {
         MP5Utils md5Utils = new MP5Utils();
-        
+
         User rootUser = new User();
         rootUser.setUsername("root");
         rootUser.setPassword(md5Utils.getMD5Hash("root"));
         rootUser.setIsActive(1);
         userDao.save(rootUser);
-        
+
         User user1 = new User();
         user1.setUsername("testuser");
         user1.setPassword(md5Utils.getMD5Hash("test"));
@@ -88,29 +87,6 @@ public class Seeder {
         model.File sharedFile2 = createFile(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/log-login-successfully.txt", "log 111", user1, null);
         createFile(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/log2.txt", "log 112", user1, null);
 
-        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, true, userHomeDirectory, user2));
-
-//        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile1.getId(), user2.getId()), true, true, sharedFile1, user2));
-//        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile2.getId(), user2.getId()), true, false, sharedFile2, user2));
-
-//        directoryDao.save(new Directory(0, AppConfig.SERVER_FTP_FILE_PATH, null, null));
-//        Directory userHomeDirectory = new Directory(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser", user1, null);
-//        directoryDao.save(userHomeDirectory);
-//        File file = new File(AppConfig.SERVER_FTP_FILE_PATH + "testuser");
-//        directoryDao.save(new Directory(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser/aaaa", user1, null));
-//        directoryDao.save(new Directory(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser/abc", user1, null));
-//        directoryDao.save(new Directory(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser/def", user1, null));
-//        directoryDao.save(new Directory(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser2", user2, null));
-//
-//        model.File sharedFile1 = new model.File(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser/aaaa/test.txt", user1, null);
-//        model.File sharedFile2 = new model.File(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser/log-login-successfully.txt", user1, null);
-//        fileDao.save(sharedFile1);
-//        fileDao.save(sharedFile2);
-//        fileDao.save(new model.File(0, AppConfig.SERVER_FTP_FILE_PATH + "testuser/log2.txt", user1, null));
-//
-//        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, true, userHomeDirectory, user2));
-//
-//        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile1.getId(), user2.getId()), true, true, sharedFile1, user2));
-//        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFile2.getId(), user2.getId()), true, false, sharedFile2, user2));
+        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, false, true, userHomeDirectory, user2));
     }
 }
