@@ -1,5 +1,6 @@
 package ftp.commands;
 
+import bus.DirectoryBus;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class MKDCommand implements Command {
 
-    private final FileBus fileService = new FileBus();
+    private final DirectoryBus directoryBus = new DirectoryBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     @Override
@@ -24,7 +25,7 @@ public class MKDCommand implements Command {
         try {
             String dirName = arguments[0];
             String newDirPath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), dirName);
-            boolean success = fileService.createDirectory(newDirPath, session.getUsername());
+            boolean success = directoryBus.createDirectory(newDirPath, session.getUsername());
             if (success) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.DIRECTORY_CREATED,

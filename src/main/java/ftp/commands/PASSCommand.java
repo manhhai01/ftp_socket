@@ -4,6 +4,7 @@
  */
 package ftp.commands;
 
+import bus.DirectoryBus;
 import bus.UserBus;
 import bus.FileBus;
 import ftp.FtpServer;
@@ -21,6 +22,8 @@ import java.util.logging.Logger;
  */
 public class PASSCommand implements Command {
 
+    private final DirectoryBus directoryBus = new DirectoryBus();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         String password = arguments[0];
@@ -30,8 +33,7 @@ public class PASSCommand implements Command {
         String message = userBus.checkLogin(username, password);
         if (message.equals(UserBus.LOGIN_SUCCESS_MSG)) {
             try {
-                FileBus fileService = new FileBus();
-                fileService.createHomeDirectoryIfNotExist(username);
+                directoryBus.createHomeDirectoryIfNotExist(username);
                 session.changeWorkingDir("/" + session.getUsername());
                 SocketUtils.respondCommandSocket(StatusCode.LOGGED_IN, "User logged in, proceed.", commandSocketWriter);
                 return;

@@ -9,33 +9,19 @@ import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
 import payload.GetSharedFilesResultDto;
-import dao.ShareDirectoriesDao;
-import dao.ShareFilesDao;
 import dao.UserDao;
 import ftp.DirectoryPermission;
 import ftp.FilePermission;
 import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
 import ftp.commands.AnonymousDisabledException;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.Directory;
 import model.ShareDirectories;
 import model.ShareFiles;
 import model.User;
-import model.ids.ShareDirectoriesId;
-import model.ids.ShareFilesId;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -47,166 +33,11 @@ public class FileBus {
     public static final String NORMAL_FILE_TYPE = "file";
 
     private final FileDao fileDao = new FileDao();
-    private final ShareFilesDao shareFilesDao = new ShareFilesDao();
     private final DirectoryDao directoryDao = new DirectoryDao();
-    private final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
     private final UserDao userDao = new UserDao();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
-
-    public boolean createNormalFile(String fromRootFilePath, String username) {
-        User user = userDao.getUserByUsername(username);
-
-        // Check if upload is allowed
-        String parentDirPath = new FtpFileUtils().getParentPath(fromRootFilePath);
-        DirectoryPermission parentPermission = (DirectoryPermission) getFilePermission(parentDirPath, username, DIRECTORY_TYPE);
-        if (!parentPermission.isUploadable()) {
-            return false;
-        }
-
-        File file = new File(fromRootFilePath);
-        if (file.exists()) {
-            return true;
-        }
-
-        boolean success = fileDao.save(new model.File(0, fromRootFilePath, user, null));
-
-        if (success) {
-            try {
-                file.createNewFile();
-            } catch (IOException ex) {
-                Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            }
-        }
-        return success;
-    }
-
-    public boolean createHomeDirectoryIfNotExist(String username) {
-        String fromRootPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
-        User user = userDao.getUserByUsername(username);
-        Directory homeDir = directoryDao.getDirectoryByPath(fromRootPath);
-        if (homeDir != null) {
-            return true;
-        }
-
-        boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
-        File file = new File(fromRootPath);
-        if (success) {
-            file.mkdir();
-        }
-        return success;
-    }
-
-    public boolean createDirectory(String fromRootPath, String username) {
-        User user = userDao.getUserByUsername(username);
-
-        // Check if upload is allowed
-        String parentDirPath = new FtpFileUtils().getParentPath(fromRootPath);
-        DirectoryPermission parentPermission = (DirectoryPermission) getFilePermission(parentDirPath, username, DIRECTORY_TYPE);
-        if (!parentPermission.isUploadable()) {
-            return false;
-        }
-        File file = new File(fromRootPath);
-        if (file.exists()) {
-            return true;
-        }
-
-        boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
-        if (success) {
-            file.mkdir();
-        }
-        return success;
-    }
-
-    public boolean removeNormalFile(String fromRootFilePath, String username) {
-        File file = new File(fromRootFilePath);
-        if (!file.exists()) {
-            return true;
-        }
-
-        if (!file.isFile()) {
-            return false;
-        }
-
-        NormalFilePermission filePermission = (NormalFilePermission) getFilePermission(fromRootFilePath, username, NORMAL_FILE_TYPE);
-        if (!filePermission.isExist()) {
-            return true;
-        }
-
-        if (!filePermission.isDeletable()) {
-            return false;
-        }
-
-        model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
-        boolean success = fileDao.remove(fileFromDb.getId());
-        if (success) {
-            file.delete();
-        }
-        return success;
-    }
-
-    public boolean writeToNormalFile(String fromRootFilePath, String username, InputStream data, String writeMode) {
-        File file = new File(fromRootFilePath);
-        NormalFilePermission filePermission = (NormalFilePermission) getFilePermission(fromRootFilePath, username, NORMAL_FILE_TYPE);
-        if (!file.exists()) {
-            return false;
-        }
-
-        if (!file.isFile()) {
-            return false;
-        }
-
-        if (!filePermission.isWritable()) {
-            return false;
-        }
-
-        try {
-            if (writeMode.equals("A")) {
-                FileWriter fileWriter = new FileWriter(file);
-                BufferedReader dataReader = new BufferedReader(new InputStreamReader(data));
-                dataReader.transferTo(fileWriter);
-                dataReader.close();
-                fileWriter.close();
-            } else {
-                byte[] dataBytes = IOUtils.toByteArray(data);
-                FileUtils.writeByteArrayToFile(file, dataBytes);
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean removeDirectory(String fromRootPath, String username) {
-        File file = new File(fromRootPath);
-        if (!file.exists()) {
-            return true;
-        }
-
-        if (!file.isDirectory()) {
-            return false;
-        }
-
-        if (file.list().length > 0) {
-            return false;
-        }
-
-        DirectoryPermission directoryPermission = (DirectoryPermission) getFilePermission(fromRootPath, username, DIRECTORY_TYPE);
-
-        if (!directoryPermission.isDeletable()) {
-            return false;
-        }
-
-        Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootPath);
-        boolean success = directoryDao.remove(directoryFromDb.getId());
-        if (success) {
-            file.delete();
-        }
-        return success;
-    }
+    private final NormalFileBus normalFileBus = new NormalFileBus();
+    private final DirectoryBus directoryBus = new DirectoryBus();
 
     public boolean removeFile(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
@@ -215,10 +46,10 @@ public class FileBus {
         }
 
         if (file.isDirectory()) {
-            return removeDirectory(fromRootFilePath, username);
+            return directoryBus.removeDirectory(fromRootFilePath, username);
         }
 
-        return removeNormalFile(fromRootFilePath, username);
+        return normalFileBus.removeNormalFile(fromRootFilePath, username);
     }
 
     private void reparentFilePathInDb(File file, String newParentPath) {
@@ -272,96 +103,10 @@ public class FileBus {
         return true;
     }
 
-    public boolean setShareNormalFilePermission(String fromRootFilePath, String ownerUsername, String appliedUsername, String permission) {
-        model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
-        if (fileInDb == null) {
-            return false;
-        }
-
-        if (!ownerUsername.equals(fileInDb.getUser().getUsername())) {
-            return false;
-        }
-
-        User appliedUser = userDao.getUserByUserName(appliedUsername);
-
-        boolean success = shareFilesDao.update(
-                new ShareFiles(
-                        new ShareFilesId(fileInDb.getId(), appliedUser.getId()),
-                        permission,
-                        fileInDb,
-                        appliedUser)
-        );
-        return success;
-
-    }
-
-    public boolean unshareNormalFile(String fromRootFilePath, String ownerUsername, String appliedUsername) {
-        model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
-        if (fileInDb == null) {
-            return false;
-        }
-
-        if (!ownerUsername.equals(fileInDb.getUser().getUsername())) {
-            return false;
-        }
-
-        User appliedUser = userDao.getUserByUserName(appliedUsername);
-
-        ShareFiles shareFile = new ShareFiles();
-        shareFile.setIds(new ShareFilesId(fileInDb.getId(), appliedUser.getId()));
-
-        boolean success = shareFilesDao.remove(shareFile);
-        return success;
-    }
-
-    public boolean setShareDirectoryPermission(String fromRootDirPath, String ownerUsername, String appliedUsername, boolean canModify, boolean uploadable, boolean downloadable) {
-        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
-        if (directoryInDb == null) {
-            return false;
-        }
-
-        if (!ownerUsername.equals(directoryInDb.getUser().getUsername())) {
-            return false;
-        }
-
-        User appliedUser = userDao.getUserByUserName(appliedUsername);
-
-        boolean success = shareDirectoriesDao.update(
-                new ShareDirectories(
-                        new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()),
-                        canModify,
-                        uploadable,
-                        downloadable,
-                        directoryInDb,
-                        appliedUser)
-        );
-        return success;
-    }
-
-    public boolean unshareDirectory(String fromRootDirPath, String ownerUsername, String appliedUsername) {
-        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
-        if (directoryInDb == null) {
-            return false;
-        }
-
-        if (!ownerUsername.equals(directoryInDb.getUser().getUsername())) {
-            return false;
-        }
-
-        User appliedUser = userDao.getUserByUserName(appliedUsername);
-
-        ShareDirectories shareDirectory = new ShareDirectories();
-        shareDirectory.setIds(new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()));
-
-        boolean success = shareDirectoriesDao.remove(shareDirectory);
-        return success;
-    }
-
     public GetSharedFilesResultDto getSharedFiles(String appliedUsername) {
         return userDao.getSharedFiles(appliedUsername);
     }
 
-    // Todo: Bug
     private FilePermission getSingleFilePermission(String fromRootFilePath, String username, String fileType) {
         // FTP root case
         if (fromRootFilePath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {

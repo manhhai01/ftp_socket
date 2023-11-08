@@ -5,6 +5,7 @@
 package ftp.commands;
 
 import bus.FileBus;
+import bus.NormalFileBus;
 import config.AppConfig;
 import dao.UserDao;
 import ftp.FtpFileUtils;
@@ -20,7 +21,7 @@ import model.User;
 
 public class STORCommand implements Command {
 
-    private final FileBus fileService = new FileBus();
+    private final NormalFileBus normalFileBus = new NormalFileBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
     private final UserDao userDao = new UserDao();
 
@@ -31,7 +32,7 @@ public class STORCommand implements Command {
         String path = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), inputFilePath);
         if (path.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
             User user = userDao.getUserByUserName(session.getUsername());
-            if(!user.isAnonymous()) {
+            if (!user.isAnonymous()) {
                 try {
                     SocketUtils.respondCommandSocket(
                             StatusCode.FILE_ACTION_NOT_TAKEN,
@@ -41,13 +42,13 @@ public class STORCommand implements Command {
                     return;
                 } catch (IOException ex) {
                     Logger.getLogger(STORCommand.class.getName()).log(Level.SEVERE, null, ex);
-                }                
+                }
             }
         }
 
         try {
             // Create file if it doesn't exist
-            boolean fileCreationSuccess = fileService.createNormalFile(path, session.getUsername());
+            boolean fileCreationSuccess = normalFileBus.createNormalFile(path, session.getUsername());
             if (!fileCreationSuccess) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
@@ -64,7 +65,7 @@ public class STORCommand implements Command {
 
             // Write to file
             Socket socket = session.getDataSocket().accept();
-            fileService.writeToNormalFile(
+            normalFileBus.writeToNormalFile(
                     path,
                     session.getUsername(),
                     socket.getInputStream(),

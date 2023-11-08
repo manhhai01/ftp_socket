@@ -4,7 +4,9 @@
  */
 package ftp.commands;
 
+import bus.DirectoryBus;
 import bus.FileBus;
+import bus.NormalFileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
@@ -21,6 +23,8 @@ import java.util.logging.Logger;
 public class USHRCommand implements Command {
 
     private final FileBus fileService = new FileBus();
+    private final NormalFileBus normalFileBus = new NormalFileBus();
+    private final DirectoryBus directoryBus = new DirectoryBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     @Override
@@ -43,11 +47,11 @@ public class USHRCommand implements Command {
                 session.getWorkingDirAbsolutePath(),
                 fileName
         );
-        boolean success = false;
+        boolean success;
         if (type.equals(FileBus.NORMAL_FILE_TYPE)) {
-            success = fileService.unshareNormalFile(filePath, session.getUsername(), appliedUsername);
+            success = normalFileBus.unshareNormalFile(filePath, session.getUsername(), appliedUsername);
         } else {
-            success = fileService.unshareDirectory(filePath, session.getUsername(), appliedUsername);
+            success = directoryBus.unshareDirectory(filePath, session.getUsername(), appliedUsername);
         }
 
         if (success) {

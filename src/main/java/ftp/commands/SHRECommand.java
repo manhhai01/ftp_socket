@@ -4,7 +4,9 @@
  */
 package ftp.commands;
 
+import bus.DirectoryBus;
 import bus.FileBus;
+import bus.NormalFileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.NormalFilePermission;
@@ -23,6 +25,8 @@ import java.util.logging.Logger;
 public class SHRECommand implements Command {
 
     private final FileBus fileService = new FileBus();
+    private final NormalFileBus normalFileBus = new NormalFileBus();
+    private final DirectoryBus directoryBus = new DirectoryBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     @Override
@@ -48,7 +52,7 @@ public class SHRECommand implements Command {
                     return;
                 }
 
-                boolean isSuccess = fileService.setShareNormalFilePermission(
+                boolean isSuccess = normalFileBus.setShareNormalFilePermission(
                         filePath,
                         session.getUsername(),
                         appliedUsername,
@@ -83,7 +87,7 @@ public class SHRECommand implements Command {
                 boolean uploadable = Boolean.parseBoolean(arguments[4]);
                 boolean downloadable = Boolean.parseBoolean(arguments[5]);
 
-                boolean isSuccess = fileService.setShareDirectoryPermission(
+                boolean isSuccess = directoryBus.setShareDirectoryPermission(
                         filePath,
                         session.getUsername(),
                         appliedUsername,
