@@ -30,12 +30,13 @@ public class SHRECommand implements Command {
         try {
             String type = arguments[0];
             String fileName = arguments[1];
+            String appliedUsername = arguments[2];
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                     session.getWorkingDirAbsolutePath(),
                     fileName
             );
             if (type.equals(FileBus.NORMAL_FILE_TYPE)) {
-                String permission = arguments[2];
+                String permission = arguments[3];
                 if (!permission.equals(NormalFilePermission.FULL_PERMISSION)
                         && !permission.equals(NormalFilePermission.NULL_PERMISSION)
                         && !permission.equals(NormalFilePermission.READABLE_PERMISSION)) {
@@ -47,7 +48,13 @@ public class SHRECommand implements Command {
                     return;
                 }
 
-                boolean isSuccess = fileService.setShareNormalFilePermission(filePath, session.getUsername(), permission);
+                boolean isSuccess = fileService.setShareNormalFilePermission(
+                        filePath,
+                        session.getUsername(),
+                        appliedUsername,
+                        permission
+                );
+
                 if (isSuccess) {
                     try {
                         SocketUtils.respondCommandSocket(
@@ -72,17 +79,19 @@ public class SHRECommand implements Command {
             }
 
             if (type.equals(FileBus.DIRECTORY_TYPE)) {
-                boolean canModify = Boolean.parseBoolean(arguments[2]);
-                boolean uploadable = Boolean.parseBoolean(arguments[3]);
-                boolean downloadable = Boolean.parseBoolean(arguments[4]);
+                boolean canModify = Boolean.parseBoolean(arguments[3]);
+                boolean uploadable = Boolean.parseBoolean(arguments[4]);
+                boolean downloadable = Boolean.parseBoolean(arguments[5]);
 
                 boolean isSuccess = fileService.setShareDirectoryPermission(
                         filePath,
                         session.getUsername(),
+                        appliedUsername,
                         canModify,
                         uploadable,
                         downloadable
                 );
+
                 if (isSuccess) {
                     try {
                         SocketUtils.respondCommandSocket(
@@ -106,30 +115,6 @@ public class SHRECommand implements Command {
                 }
 
             }
-
-//        boolean isSuccess = fileService.setShareFilePermission(filePath, session.getUsername(), isReadable, isWritable);
-//
-//        if (isSuccess) {
-//            try {
-//                SocketUtils.respondCommandSocket(
-//                        StatusCode.FILE_ACTION_OK,
-//                        String.format("Shared file %s successfully.", fileName),
-//                        commandSocketWriter
-//                );
-//            } catch (IOException ex) {
-//                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        } else {
-//            try {
-//                SocketUtils.respondCommandSocket(
-//                        StatusCode.FILE_ACTION_NOT_TAKEN,
-//                        "Forbidden.",
-//                        commandSocketWriter
-//                );
-//            } catch (IOException ex) {
-//                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
         } catch (IOException ex) {
             Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ArrayIndexOutOfBoundsException ex) {

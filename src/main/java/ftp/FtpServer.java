@@ -23,6 +23,7 @@ import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
 import ftp.commands.SHRECommand;
 import ftp.commands.SOTPCommand;
+import ftp.commands.USHRCommand;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -119,7 +120,7 @@ public class FtpServer {
                 }
             }
         });
-        
+
         ftpServerBuilder.addCommand("AUTH", new AUTHCommand());
         ftpServerBuilder.addCommand("USER", new USERCommand());
         ftpServerBuilder.addCommand("PASS", new PASSCommand());
@@ -141,6 +142,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("GOTP", new GOTPCommand());
         ftpServerBuilder.addCommand("SOTP", new SOTPCommand());
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
+        ftpServerBuilder.addCommand("USHR", new USHRCommand());
         ftpServerBuilder.addCommand("LSAN", new LSANCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {

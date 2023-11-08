@@ -4,6 +4,9 @@
  */
 package ftp.commands;
 
+import bus.FileBus;
+import ftp.DirectoryPermission;
+import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.SocketUtils;
 import ftp.StatusCode;
@@ -14,15 +17,32 @@ import java.util.logging.Logger;
 
 public class CWDCommand implements Command {
 
+    private final FileBus fileBus = new FileBus();
+    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             String newDir = arguments[0];
-            session.changeWorkingDir(newDir);
-            SocketUtils.respondCommandSocket(StatusCode.FILE_ACTION_OK,
-                    "Okay.",
-                    commandSocketWriter
+            String newDirPath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), newDir);
+            DirectoryPermission directoryPermission = (DirectoryPermission) fileBus.getFilePermission(
+                    newDirPath,
+                    session.getUsername(),
+                    FileBus.DIRECTORY_TYPE
             );
+            if (directoryPermission.isReadable()) {
+                session.changeWorkingDir(newDir);
+                SocketUtils.respondCommandSocket(StatusCode.FILE_ACTION_OK,
+                        "Okay.",
+                        commandSocketWriter
+                );
+            } else {
+                SocketUtils.respondCommandSocket(StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.",
+                        commandSocketWriter
+                );
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(CWDCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

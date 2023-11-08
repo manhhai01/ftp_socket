@@ -272,44 +272,88 @@ public class FileBus {
         return true;
     }
 
-    public boolean setShareNormalFilePermission(String fromRootFilePath, String username, String permission) {
+    public boolean setShareNormalFilePermission(String fromRootFilePath, String ownerUsername, String appliedUsername, String permission) {
         model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
         if (fileInDb == null) {
             return false;
         }
-        User user = userDao.getUserByUsername(username);
-        if (!username.equals(fileInDb.getUser().getUsername())) {
+
+        if (!ownerUsername.equals(fileInDb.getUser().getUsername())) {
             return false;
         }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
         boolean success = shareFilesDao.update(
                 new ShareFiles(
-                        new ShareFilesId(fileInDb.getId(), user.getId()),
+                        new ShareFilesId(fileInDb.getId(), appliedUser.getId()),
                         permission,
                         fileInDb,
-                        user)
+                        appliedUser)
         );
         return success;
 
     }
 
-    public boolean setShareDirectoryPermission(String fromRootDirPath, String username, boolean canModify, boolean uploadable, boolean downloadable) {
+    public boolean unshareNormalFile(String fromRootFilePath, String ownerUsername, String appliedUsername) {
+        model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
+        if (fileInDb == null) {
+            return false;
+        }
+
+        if (!ownerUsername.equals(fileInDb.getUser().getUsername())) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        ShareFiles shareFile = new ShareFiles();
+        shareFile.setIds(new ShareFilesId(fileInDb.getId(), appliedUser.getId()));
+
+        boolean success = shareFilesDao.remove(shareFile);
+        return success;
+    }
+
+    public boolean setShareDirectoryPermission(String fromRootDirPath, String ownerUsername, String appliedUsername, boolean canModify, boolean uploadable, boolean downloadable) {
         Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
         if (directoryInDb == null) {
             return false;
         }
-        User user = userDao.getUserByUsername(username);
-        if (!username.equals(directoryInDb.getUser().getUsername())) {
+
+        if (!ownerUsername.equals(directoryInDb.getUser().getUsername())) {
             return false;
         }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
         boolean success = shareDirectoriesDao.update(
                 new ShareDirectories(
-                        new ShareDirectoriesId(directoryInDb.getId(), user.getId()),
+                        new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()),
                         canModify,
                         uploadable,
                         downloadable,
                         directoryInDb,
-                        user)
+                        appliedUser)
         );
+        return success;
+    }
+
+    public boolean unshareDirectory(String fromRootDirPath, String ownerUsername, String appliedUsername) {
+        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
+        if (directoryInDb == null) {
+            return false;
+        }
+
+        if (!ownerUsername.equals(directoryInDb.getUser().getUsername())) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        ShareDirectories shareDirectory = new ShareDirectories();
+        shareDirectory.setIds(new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()));
+
+        boolean success = shareDirectoriesDao.remove(shareDirectory);
         return success;
     }
 
@@ -463,6 +507,5 @@ public class FileBus {
 
         return result;
     }
-    
-    
+
 }
