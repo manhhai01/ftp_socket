@@ -32,12 +32,12 @@ public class FileBus {
     public static final String DIRECTORY_TYPE = "directory";
     public static final String NORMAL_FILE_TYPE = "file";
 
-    private final FileDao fileDao = new FileDao();
-    private final DirectoryDao directoryDao = new DirectoryDao();
-    private final UserDao userDao = new UserDao();
-    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
-    private final NormalFileBus normalFileBus = new NormalFileBus();
-    private final DirectoryBus directoryBus = new DirectoryBus();
+    private static final FileDao fileDao = new FileDao();
+    private static final DirectoryDao directoryDao = new DirectoryDao();
+    private static final UserDao userDao = new UserDao();
+    private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+    private static final NormalFileBus normalFileBus = new NormalFileBus();
+    private static final DirectoryBus directoryBus = new DirectoryBus();
 
     public boolean removeFile(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);

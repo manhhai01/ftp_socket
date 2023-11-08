@@ -6,9 +6,7 @@ package bus;
 
 import static bus.FileBus.DIRECTORY_TYPE;
 import static bus.FileBus.NORMAL_FILE_TYPE;
-import dao.DirectoryDao;
 import dao.FileDao;
-import dao.ShareDirectoriesDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
 import ftp.DirectoryPermission;
@@ -34,11 +32,11 @@ import org.apache.commons.io.IOUtils;
  */
 public class NormalFileBus {
 
-    private final FileDao fileDao = new FileDao();
-    private final ShareFilesDao shareFilesDao = new ShareFilesDao();
-    private final UserDao userDao = new UserDao();
-    private final FileBus fileBus = new FileBus();
-    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+    private static final FileDao fileDao = new FileDao();
+    private static final ShareFilesDao shareFilesDao = new ShareFilesDao();
+    private static final UserDao userDao = new UserDao();
+    private static final FileBus fileBus = new FileBus();
+    private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     public boolean createNormalFile(String fromRootFilePath, String username) {
         User user = userDao.getUserByUsername(username);
@@ -161,6 +159,9 @@ public class NormalFileBus {
                         fileInDb,
                         appliedUser)
         );
+        
+        // Todo: Send mail
+        
         return success;
 
     }

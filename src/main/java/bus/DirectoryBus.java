@@ -25,12 +25,12 @@ import model.ids.ShareDirectoriesId;
  */
 public class DirectoryBus {
 
-    private final FileBus fileBus = new FileBus();
-    private final FileDao fileDao = new FileDao();
-    private final DirectoryDao directoryDao = new DirectoryDao();
-    private final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
-    private final UserDao userDao = new UserDao();
-    private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
+    private static final FileBus fileBus = new FileBus();
+    private static final FileDao fileDao = new FileDao();
+    private static final DirectoryDao directoryDao = new DirectoryDao();
+    private static final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
+    private static final UserDao userDao = new UserDao();
+    private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     public boolean createHomeDirectoryIfNotExist(String username) {
         String fromRootPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
@@ -126,6 +126,9 @@ public class DirectoryBus {
                         directoryInDb,
                         appliedUser)
         );
+        
+        // Todo: Send mail
+        
         return success;
     }
 
@@ -146,5 +149,12 @@ public class DirectoryBus {
 
         boolean success = shareDirectoriesDao.remove(shareDirectory);
         return success;
+    }
+
+    public double getHomeDirectorySizeKb(String username) {
+        String homeDirPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
+        File homeDir = new File(homeDirPath);
+        // Convert byte to kb
+        return homeDir.length() * 1024;
     }
 }

@@ -1,5 +1,6 @@
 package ftp;
 
+import ftp.commands.SIZECommand;
 import ftp.commands.TYPECommand;
 import ftp.commands.USERCommand;
 import ftp.commands.RNTOCommand;
@@ -144,6 +145,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
         ftpServerBuilder.addCommand("USHR", new USHRCommand());
         ftpServerBuilder.addCommand("LSAN", new LSANCommand());
+        ftpServerBuilder.addCommand("SIZE", new SIZECommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import mapper.UserMapper;
 import model.User;
 import payload.UserDto;
+import payload.UserFileLimits;
 import utils.EmailUtils;
 import utils.MP5Utils;
 import utils.OtpUtils;
@@ -20,12 +21,17 @@ import utils.OtpUtils;
  * @author lamanhhai
  */
 public class UserBus {
+
     public static final String LOGIN_PASSWORD_MISMATCH_MSG = "Đăng nhập thất bại";
     public static final String LOGIN_ACCOUNT_NOT_VERIFIED_MSG = "Tài khoản chưa xác thực";
-    public static final String LOGIN_SUCCESS_MSG = ""; 
-    
-    private UserDao userDao = new UserDao();
+    public static final String LOGIN_SUCCESS_MSG = "";
+    public static final String SET_FILE_LIMITS_USER_NOT_FOUND = "Không tìm thấy user";
+    public static final String SET_FILE_LIMITS_QUOTA_SMALLER_THAN_DIR_SIZE = "Dung lượng tối đa không được nhỏ hơn dung lượng hiện tại của thư mục";
+    public static final String SET_FILE_LIMITS_SUCCESSFULLY = "Thành công";
 
+    private final UserDao userDao = new UserDao();
+    private final DirectoryBus directoryBus = new DirectoryBus();
+    
     @SuppressWarnings("empty-statement")
     public boolean registerUser(String jsonUserRegister) {
         boolean isSuccess = false;
@@ -145,11 +151,40 @@ public class UserBus {
         }
         MP5Utils mP5Utils = new MP5Utils();
         String pwdHash = mP5Utils.getMD5Hash(password);
-        if (!pwdHash.equals(userCheck.getPassword())) 
+        if (!pwdHash.equals(userCheck.getPassword())) {
             return LOGIN_PASSWORD_MISMATCH_MSG;
-        if(userCheck.getIsActive() == 0) 
-                return LOGIN_ACCOUNT_NOT_VERIFIED_MSG;
+        }
+        if (userCheck.getIsActive() == 0) {
+            return LOGIN_ACCOUNT_NOT_VERIFIED_MSG;
+        }
         return LOGIN_SUCCESS_MSG;
+    }
+
+    public String setFileLimits(String username, UserFileLimits limits) {
+        User user = userDao.getUserByUserName(username);
+        if (user == null) {
+            return SET_FILE_LIMITS_USER_NOT_FOUND;
+        }
+        
+        if (limits.getMaxDownloadFileSizeKb() != null) {
+            user.setMaxDownloadFileSizeKb(limits.getMaxDownloadFileSizeKb());
+        }
+        
+        if (limits.getMaxUploadFileSizeKb() != null) {
+            user.setMaxUploadFileSizeKb(limits.getMaxUploadFileSizeKb());
+        }
+        
+        if(limits.getQuotaKb() != null) {
+            int quotaKb = limits.getQuotaKb();
+            if(directoryBus.getHomeDirectorySizeKb(username) < quotaKb) {
+                return SET_FILE_LIMITS_QUOTA_SMALLER_THAN_DIR_SIZE;
+            }
+            
+            user.setQuotaInKb(quotaKb);          
+        }
+        
+        userDao.update(user);
+        return SET_FILE_LIMITS_SUCCESSFULLY;
     }
 
     public static void main(String[] args) {
