@@ -4,6 +4,9 @@
  */
 package ftp.commands;
 
+import ftp.DirectoryPermission;
+import ftp.FilePermission;
+import ftp.NormalFilePermission;
 import java.io.File;
 import java.io.FileFilter;
 
@@ -13,24 +16,52 @@ import java.io.FileFilter;
  */
 public class MLSDFormatter {
 
-    private String format(File file) {
+    private String getNormalFilePermissionString(NormalFilePermission filePermission) {
+        if (filePermission.getPermission().equals(NormalFilePermission.FULL_PERMISSION)) {
+            return "rwdf";
+        } else if (filePermission.getPermission().equals(NormalFilePermission.READABLE_PERMISSION)) {
+            return "r";
+        }
+        return "";
+    }
+
+    private String getDirPermissionString(DirectoryPermission dirPermission) {
+        String perm = "el";
+        if (dirPermission.isDownloadable()) {
+            perm += "r";
+        }
+        if (dirPermission.isUploadable()) {
+            perm += "w";
+        }
+        if (dirPermission.isDeletable()) {
+            perm += "d";
+        }
+        if (dirPermission.isRenamable()) {
+            perm += "f";
+        }
+
+        return perm;
+    }
+
+    private String format(File file, FilePermission filePermission) {
         String result;
         if (file.isDirectory()) {
-            result = String.format("Type=%s;Size=%s;Perm=el; %s\n",
+            result = String.format("Type=%s;Size=%s;Perm=%s; %s\n",
                     "dir",
                     file.length(),
+                    getDirPermissionString((DirectoryPermission) filePermission),
                     file.getName());
         } else {
             result = String.format("Type=%s;Size=%s;Perm=%s; %s\n",
                     "file",
                     file.length(),
-                    "r",
+                    getNormalFilePermissionString((NormalFilePermission) filePermission),
                     file.getName());
         }
         return result;
     }
 
-    private String listFormatImplementation(File file, FileFilter fileFilter) {
+    private String listFormatImplementation(File file, FileFilter fileFilter, FilePermissionGetter filePermissionGetter) {
         String result = "";
         System.out.println(file.getName());
         File[] files = fileFilter == null ? file.listFiles() : file.listFiles(fileFilter);
@@ -38,21 +69,21 @@ public class MLSDFormatter {
             return "";
         }
         for (File f : files) {
-            result += format(f);
+            result += format(f, filePermissionGetter.getFilePermission(f));
 
         }
         return result;
     }
 
-    public String listFormat(File file) {
-        return listFormatImplementation(file, null);
+    public String listFormat(File file, FilePermissionGetter filePermissionGetter) {
+        return listFormatImplementation(file, null, filePermissionGetter);
     }
 
-    public String listFormat(File file, FileFilter fileFilter) {
-        return listFormatImplementation(file, fileFilter);
+    public String listFormat(File file, FileFilter fileFilter, FilePermissionGetter filePermissionGetter) {
+        return listFormatImplementation(file, fileFilter, filePermissionGetter);
     }
 
-    public String formatSingleFile(File file) {
-        return format(file);
+    public String formatSingleFile(File file, FilePermission filePermission) {
+        return format(file, filePermission);
     }
 }

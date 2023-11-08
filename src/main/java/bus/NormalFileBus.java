@@ -36,7 +36,6 @@ public class NormalFileBus {
     private static final ShareFilesDao shareFilesDao = new ShareFilesDao();
     private static final UserDao userDao = new UserDao();
     private static final FileBus fileBus = new FileBus();
-    private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     public boolean createNormalFile(String fromRootFilePath, String username) {
         User user = userDao.getUserByUsername(username);
@@ -159,9 +158,8 @@ public class NormalFileBus {
                         fileInDb,
                         appliedUser)
         );
-        
+
         // Todo: Send mail
-        
         return success;
 
     }

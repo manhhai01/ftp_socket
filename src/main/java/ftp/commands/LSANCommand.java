@@ -27,11 +27,11 @@ public class LSANCommand implements Command {
 
     private static final FileBus fileBus = new FileBus();
 
-    private String formatSingleFile(File file, String pathStartWithFtpRoot) {
+    private String formatSingleFile(File file, String pathStartWithFtpRoot, String username) {
         MLSDFormatter formatter = new MLSDFormatter();
-
+        FilePermissionGetter filePermissionGetter = new DefaultFilePermissionGetter(username);
         // Remove new line
-        return formatter.formatSingleFile(file).replace("\n", "")
+        return formatter.formatSingleFile(file, filePermissionGetter.getFilePermission(file)).replace("\n", "")
                 // Add file path and remove ftp root path so string will be in the form "/path/to/file.txt"
                 // instead of "path/to-ftp-root/path/to/file.txt"
                 + " " + pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")
@@ -54,12 +54,12 @@ public class LSANCommand implements Command {
             String result = "";
             for (var dir : files.directories) {
                 File file = new File(dir.getPath());
-                result += formatSingleFile(file, dir.getPath());
+                result += formatSingleFile(file, dir.getPath(), session.getUsername());
             }
 
             for (var f : files.files) {
                 File file = new File(f.getPath());
-                result += formatSingleFile(file, f.getPath());
+                result += formatSingleFile(file, f.getPath(), session.getUsername());
             }
 
             SocketUtils.writeLineAndFlush(result, dataWriter);

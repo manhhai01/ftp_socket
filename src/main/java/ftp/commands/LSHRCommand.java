@@ -24,14 +24,14 @@ import payload.GetSharedFilesResultDto;
  */
 public class LSHRCommand implements Command {
 
-    private String formatSingleFile(File file, String pathStartWithFtpRoot) {
+    private String formatSingleFile(File file, String pathStartWithFtpRoot, String username) {
         MLSDFormatter formatter = new MLSDFormatter();
-
+        FilePermissionGetter filePermissionGetter = new DefaultFilePermissionGetter(username);
         // Remove new line
-        return formatter.formatSingleFile(file).replace("\n", "")
+        return formatter.formatSingleFile(file, filePermissionGetter.getFilePermission(file)).replace("\n", "")
                 // Add file path and remove ftp root path so string will be in the form "/path/to/file.txt"
                 // instead of "path/to-ftp-root/path/to/file.txt"
-                + " " + pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "") 
+                + " " + pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")
                 // Add new line back
                 + "\n";
     }
@@ -54,12 +54,12 @@ public class LSHRCommand implements Command {
 
             for (var dir : sharedFiles.directories) {
                 File file = new File(dir.getPath());
-                result += formatSingleFile(file, dir.getPath());
+                result += formatSingleFile(file, dir.getPath(), session.getUsername());
             }
 
             for (var f : sharedFiles.files) {
                 File file = new File(f.getPath());
-                result += formatSingleFile(file, f.getPath());
+                result += formatSingleFile(file, f.getPath(), session.getUsername());
             }
 
             SocketUtils.writeLineAndFlush(result, dataWriter);

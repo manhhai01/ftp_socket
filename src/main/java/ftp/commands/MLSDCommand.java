@@ -37,16 +37,11 @@ public class MLSDCommand implements Command {
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
             FtpFileUtils ftpFileUtils = new FtpFileUtils();
-            String fileData = formatter.listFormat(file, (File childFile) -> {
-                FileBus fileService = new FileBus();
-
-                FilePermission filePermission = fileService.getFilePermission(
-                        //                        pathname.getPath().replace("\\", "/"), 
-                        ftpFileUtils.convertJavaPathToFtpPath(childFile.getPath()),
-                        session.getUsername(),
-                        childFile.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
-                return filePermission.isReadable();
-            });
+            String fileData = formatter.listFormat(
+                    file,
+                    new DefaultMLSDFilter(session.getUsername()),
+                    new DefaultFilePermissionGetter(session.getUsername())
+            );
             System.out.println("FileData: " + fileData);
 //                    dataSocketWriter.write("Type=cdir;Modify=19981107085215;Perm=el; tmp\n" +
 //"Type=cdir;Modify=19981107085215;Perm=el; /tmp\n" +
