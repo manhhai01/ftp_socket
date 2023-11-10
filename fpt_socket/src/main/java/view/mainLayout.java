@@ -11,11 +11,16 @@ import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import socket.socketManager;
 import view.custom.HighlightPanel;
 import view.page.information;
+import view.page.loginForm;
 import view.page.myWorkingSpace;
 import view.page.share;
 import view.page.trash;
@@ -28,7 +33,7 @@ public class mainLayout extends javax.swing.JFrame {
     /**
      * Creates new form mainLayouta
      */
-    public mainLayout() {
+    public mainLayout() throws IOException {
         lightTheme();
         initComponents();
         centerLocation();
@@ -73,6 +78,11 @@ public class mainLayout extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 255));
 
@@ -402,7 +412,11 @@ public class mainLayout extends javax.swing.JFrame {
 
     private void page1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page1MouseClicked
         active(page1);
-        getContent(new myWorkingSpace());
+        try {
+            getContent(new myWorkingSpace());
+        } catch (IOException ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_page1MouseClicked
 
     private void page2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page2MouseClicked
@@ -421,16 +435,37 @@ public class mainLayout extends javax.swing.JFrame {
     }//GEN-LAST:event_page4MouseClicked
 
     private void page5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page5MouseClicked
-        active(page5);
+        try {
+            socketManager.getInstance().disconnect();
+            dispose();
+            new loginForm().setVisible(true);
+        } catch (IOException ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_page5MouseClicked
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
-        System.exit(0);
+        
+        try {
+            socketManager.getInstance().disconnect();
+            System.exit(0);
+        } catch (IOException ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jLabel1MouseClicked
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         this.setState(Frame.ICONIFIED);
     }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            socketManager.getInstance().disconnect();
+        } catch (IOException ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
     public void lightTheme(){
         normalPanel= new java.awt.Color(204,204,255);
         normalText= new java.awt.Color(0,0,0);
@@ -503,7 +538,11 @@ public class mainLayout extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new mainLayout().setVisible(true);
+                try {
+                    new mainLayout().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

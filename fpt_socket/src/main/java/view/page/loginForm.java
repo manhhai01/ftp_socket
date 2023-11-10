@@ -8,7 +8,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
+import socket.socketManager;
 
 /**
  *
@@ -50,6 +54,11 @@ public class loginForm extends javax.swing.JFrame {
         setBackground(null);
         setLocation(new java.awt.Point(400, 200));
         setUndecorated(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
         roundPanel1.setPreferredSize(new java.awt.Dimension(450, 443));
@@ -248,6 +257,14 @@ public class loginForm extends javax.swing.JFrame {
             isLogin=true;
         }
     }//GEN-LAST:event_naviBtnMouseClicked
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            socketManager.getInstance().disconnect();
+        } catch (IOException ex) {
+            Logger.getLogger(loginForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
         private void OpenChildForm(JPanel panel){
         holder.removeAll();

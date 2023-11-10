@@ -7,13 +7,22 @@ package view.page;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.*;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import payloads.DataResponse;
+import socket.StatusCode;
+import socket.socketManager;
 import view.custom.IconRenderer;
 import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
@@ -25,24 +34,32 @@ import view.custom.customDialog;
  * @author Bum
  */
 public class myWorkingSpace extends javax.swing.JPanel {
-    private final customDialog customDialog;
-    private final Frame parentFrame;
+    private customDialog customDialog;
+    private Frame parentFrame;
+    private String currentWorkingDirectory;
+    private String oldName;
+
     /**
      * Creates new form page1
      */
-    public myWorkingSpace() {
+    public myWorkingSpace() throws IOException {
         initComponents();
         setTable();
-        parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-        customDialog = new customDialog(parentFrame);
-        customDialog.setDialogContent(renamePanel);
+        createCustomdialog();
+        generateMyFile();
+        
     }
+    
     public void setTable(){
         table.setTableHeader(null);               
         TableActionEvent event = new TableActionEvent() {
             @Override
             public void onRename(int row) {
-                renameField.setText("");// nên gán tên của row đó vào
+                renameTitle.setText("Đổi tên");
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                // lưu lại tên cũ 
+                oldName = model.getValueAt(row,1 ).toString();
+                renameField.setText(oldName);
                 customDialog.setVisible(true);
             }
 
@@ -90,6 +107,15 @@ public class myWorkingSpace extends javax.swing.JPanel {
         Object[] row = new Object[]{new ImageIcon(getClass().getResource("/view/img/cloud-upload.png")),"Row 2","","",""};
         model.addRow(row);
     }
+    public void createCustomdialog(){
+        parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        customDialog = new customDialog(parentFrame);
+        customDialog.setDialogContent(renamePanel);
+    }
+    public void closeDialog(){
+        customDialog.setVisible(false);
+        renameField.setText("");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -100,16 +126,16 @@ public class myWorkingSpace extends javax.swing.JPanel {
     private void initComponents() {
 
         renamePanel = new javax.swing.JPanel();
-        renameField = new view.custom.passwordField();
         renameConfirm = new view.custom.Button();
         renameCancel = new view.custom.Button();
-        jLabel18 = new javax.swing.JLabel();
+        renameTitle = new javax.swing.JLabel();
+        renameField = new view.custom.textField();
         roundPanel1 = new view.custom.RoundPanel();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel1 = new javax.swing.JLabel();
+        title = new javax.swing.JLabel();
         roundPanel3 = new view.custom.RoundPanel();
-        jTextField1 = new javax.swing.JTextField();
-        imageIcon1 = new view.custom.imageIcon();
+        searchField = new javax.swing.JTextField();
+        searchBtn = new view.custom.imageIcon();
         highlightPanel1 = new view.custom.HighlightPanel();
         roundPanel4 = new view.custom.RoundPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -128,17 +154,22 @@ public class myWorkingSpace extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
+        highlightPanel3 = new view.custom.HighlightPanel();
+        jLabel12 = new javax.swing.JLabel();
 
         renamePanel.setBackground(new java.awt.Color(255, 255, 255));
         renamePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(216, 216, 216)));
-
-        renameField.setLabelText("Tên mới");
 
         renameConfirm.setText("Xác nhận");
         renameConfirm.setColor(new java.awt.Color(204, 204, 255));
         renameConfirm.setColorClick(new java.awt.Color(153, 153, 153));
         renameConfirm.setColorOver(new java.awt.Color(102, 102, 102));
         renameConfirm.setRadius(10);
+        renameConfirm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renameConfirmActionPerformed(evt);
+            }
+        });
 
         renameCancel.setText("Hủy");
         renameCancel.setColor(new java.awt.Color(204, 204, 255));
@@ -151,9 +182,11 @@ public class myWorkingSpace extends javax.swing.JPanel {
             }
         });
 
-        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel18.setText("Đổi tên");
+        renameTitle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        renameTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        renameTitle.setText("Nhập tên");
+
+        renameField.setLabelText("Nhập tên");
 
         javax.swing.GroupLayout renamePanelLayout = new javax.swing.GroupLayout(renamePanel);
         renamePanel.setLayout(renamePanelLayout);
@@ -162,19 +195,19 @@ public class myWorkingSpace extends javax.swing.JPanel {
             .addGroup(renamePanelLayout.createSequentialGroup()
                 .addGap(94, 94, 94)
                 .addGroup(renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(renameTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(renamePanelLayout.createSequentialGroup()
                         .addComponent(renameConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(119, Short.MAX_VALUE))
         );
         renamePanelLayout.setVerticalGroup(
             renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(renamePanelLayout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addComponent(jLabel18)
+                .addComponent(renameTitle)
                 .addGap(18, 18, 18)
                 .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(43, 43, 43)
@@ -191,24 +224,24 @@ public class myWorkingSpace extends javax.swing.JPanel {
 
         jSeparator1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Thư mục của tôi >");
+        title.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        title.setText("Thư mục của tôi >");
 
         roundPanel3.setBackground(new java.awt.Color(204, 204, 204));
         roundPanel3.setPreferredSize(new java.awt.Dimension(300, 40));
         roundPanel3.setRadius(40);
 
-        jTextField1.setBackground(new java.awt.Color(204, 204, 204));
-        jTextField1.setToolTipText("Nhập tên tệp cần tìm");
-        jTextField1.setBorder(null);
-        jTextField1.setName("Nhập tên tệp cần tìm"); // NOI18N
-        jTextField1.setPreferredSize(new java.awt.Dimension(64, 25));
-        jTextField1.setRequestFocusEnabled(false);
+        searchField.setBackground(new java.awt.Color(204, 204, 204));
+        searchField.setToolTipText("Nhập tên tệp cần tìm");
+        searchField.setBorder(null);
+        searchField.setName("Nhập tên tệp cần tìm"); // NOI18N
+        searchField.setPreferredSize(new java.awt.Dimension(64, 25));
+        searchField.setRequestFocusEnabled(false);
 
-        imageIcon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/magnifying-glass.png"))); // NOI18N
-        imageIcon1.addMouseListener(new java.awt.event.MouseAdapter() {
+        searchBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/magnifying-glass.png"))); // NOI18N
+        searchBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                imageIcon1MouseClicked(evt);
+                searchBtnMouseClicked(evt);
             }
         });
 
@@ -218,9 +251,9 @@ public class myWorkingSpace extends javax.swing.JPanel {
             roundPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundPanel3Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
+                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(imageIcon1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17))
         );
         roundPanel3Layout.setVerticalGroup(
@@ -228,8 +261,8 @@ public class myWorkingSpace extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel3Layout.createSequentialGroup()
                 .addContainerGap(9, Short.MAX_VALUE)
                 .addGroup(roundPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(imageIcon1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(searchBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -237,6 +270,11 @@ public class myWorkingSpace extends javax.swing.JPanel {
         highlightPanel1.setColorClick(new java.awt.Color(153, 153, 153));
         highlightPanel1.setColorOver(new java.awt.Color(204, 204, 204));
         highlightPanel1.setPreferredSize(new java.awt.Dimension(171, 40));
+        highlightPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                highlightPanel1MouseClicked(evt);
+            }
+        });
 
         roundPanel4.setBackground(new java.awt.Color(51, 204, 0));
         roundPanel4.setRadius(24);
@@ -277,9 +315,9 @@ public class myWorkingSpace extends javax.swing.JPanel {
             .addGroup(highlightPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(highlightPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                     .addComponent(roundPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         highlightPanel5.setBackground(new java.awt.Color(255, 255, 255));
@@ -433,7 +471,7 @@ public class myWorkingSpace extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(24, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
@@ -449,6 +487,37 @@ public class myWorkingSpace extends javax.swing.JPanel {
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        highlightPanel3.setColor(java.awt.Color.white);
+        highlightPanel3.setColorClick(new java.awt.Color(153, 153, 153));
+        highlightPanel3.setColorOver(new java.awt.Color(204, 204, 204));
+        highlightPanel3.setPreferredSize(new java.awt.Dimension(171, 40));
+        highlightPanel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                highlightPanel3MouseClicked(evt);
+            }
+        });
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 2, 14)); // NOI18N
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("< quay lại");
+
+        javax.swing.GroupLayout highlightPanel3Layout = new javax.swing.GroupLayout(highlightPanel3);
+        highlightPanel3.setLayout(highlightPanel3Layout);
+        highlightPanel3Layout.setHorizontalGroup(
+            highlightPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(highlightPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+        highlightPanel3Layout.setVerticalGroup(
+            highlightPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(highlightPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addContainerGap(8, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
         roundPanel1Layout.setHorizontalGroup(
@@ -458,30 +527,35 @@ public class myWorkingSpace extends javax.swing.JPanel {
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addContainerGap(19, Short.MAX_VALUE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1041, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 1041, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(roundPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(71, 71, 71)
-                        .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(52, 52, 52)
+                                .addComponent(roundPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(71, 71, 71)
+                                .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1031, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(roundPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1031, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(75, 75, 75)
+                .addComponent(highlightPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         roundPanel1Layout.setVerticalGroup(
             roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -490,11 +564,13 @@ public class myWorkingSpace extends javax.swing.JPanel {
                     .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(31, 31, 31)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(highlightPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(70, Short.MAX_VALUE))
+                .addGap(40, 40, 40))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -512,30 +588,124 @@ public class myWorkingSpace extends javax.swing.JPanel {
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
         // sự kiện double click lên 1 row
         if (evt.getClickCount() == 2) {
-                    JTable target = (JTable) evt.getSource();
-                    int row = target.getSelectedRow();
-                    JOptionPane.showMessageDialog(null, "Double Clicked: row " + row);
+            JTable target = (JTable) evt.getSource();
+            int row = target.getSelectedRow();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            String name = model.getValueAt(row,1 ).toString();
+            if(name.split("\\.").length==1){
+                // nếu row được chọn là thư mục
+                try {
+                    socketManager.getInstance().changeDirectory(name);
+                    generateMyFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }else{
+                // nếu row được chọn là file
+            }
         }
     }//GEN-LAST:event_tableMouseClicked
 
-    private void imageIcon1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageIcon1MouseClicked
-        String input=jTextField1.getText();
-    }//GEN-LAST:event_imageIcon1MouseClicked
+    private void searchBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchBtnMouseClicked
+        //Tìm kiếm
+        String input=searchField.getText();
+    }//GEN-LAST:event_searchBtnMouseClicked
 
     private void renameCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameCancelActionPerformed
-        customDialog.setVisible(false);
+        closeDialog();
     }//GEN-LAST:event_renameCancelActionPerformed
 
+    private void highlightPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel1MouseClicked
+        renameTitle.setText("Tạo thư mục");
+        customDialog.setVisible(true);
 
+    }//GEN-LAST:event_highlightPanel1MouseClicked
+
+    private void renameConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirmActionPerformed
+        if(renameTitle.getText().equals("Tạo thư mục")){
+            //Tạo thư mục
+            if(!renameField.getText().isEmpty()){
+            String name = renameField.getText();
+                System.out.println(name);
+                DataResponse response;
+                try {
+                    response = socketManager.getInstance().createNewFolder(name);
+                    System.out.println(response.getStatus());
+                    if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
+                        generateMyFile();
+                    }else JOptionPane.showMessageDialog(parentFrame, response.getMessage());
+                } catch (IOException ex) {
+                    Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        
+            
+        }else {
+            //Đổi tên file
+            if(!renameField.getText().isEmpty()){
+                try {
+                    String newName = renameField.getText();
+                    DataResponse res = socketManager.getInstance().rename(oldName, newName);
+                    if(res.getStatus()==StatusCode.FILE_ACTION_OK){
+                        JOptionPane.showMessageDialog(parentFrame, "Đổi tên thành công!", "Thông báo",INFORMATION_MESSAGE);
+                        generateMyFile();
+                    }else {
+                        JOptionPane.showMessageDialog(parentFrame, res.getMessage(), "Thông báo",WARNING_MESSAGE);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        closeDialog();
+    }//GEN-LAST:event_renameConfirmActionPerformed
+
+    private void highlightPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel3MouseClicked
+        String newDirectory= currentWorkingDirectory.substring(0, currentWorkingDirectory.lastIndexOf("/"));
+        if(!newDirectory.isEmpty()){
+            try {
+                socketManager.getInstance().changeDirectory(newDirectory);
+                generateMyFile();
+            } catch (IOException ex) {
+                Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_highlightPanel3MouseClicked
+    public void generateMyFile() throws IOException{
+        currentWorkingDirectory = socketManager.getInstance().getCurrentWorkingDirectory();
+        title.setText(currentWorkingDirectory);
+        String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
+        setModelFile(fileList);
+    }
+    public void setModelFile(String fileList){
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        if(fileList.length()!=0){
+            String[] lines = fileList.split("\n");
+            for(String line : lines){
+                String[] parts = line.split(";");
+                String type = parts[0].split("=")[1].trim();
+                String size = parts[1].split("=")[1].trim();
+                String perm = parts[2].split("=")[1].trim();
+                String name = parts[3].trim();
+                ImageIcon img;
+                if(type.equals("dir"))
+                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
+                else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
+                Object[] row=new Object[]{img,name,perm,"ahihi",size+"kb"};
+                model.addRow(row);
+        }
+        }       
+              
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private view.custom.HighlightPanel highlightPanel1;
+    private view.custom.HighlightPanel highlightPanel3;
     private view.custom.HighlightPanel highlightPanel5;
     private view.custom.HighlightPanel highlightPanel6;
-    private view.custom.imageIcon imageIcon1;
     private view.custom.imageIcon imageIcon4;
     private view.custom.imageIcon imageIcon5;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -548,14 +718,17 @@ public class myWorkingSpace extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTextField jTextField1;
     private view.custom.Button renameCancel;
     private view.custom.Button renameConfirm;
-    private view.custom.passwordField renameField;
+    private view.custom.textField renameField;
     private javax.swing.JPanel renamePanel;
+    private javax.swing.JLabel renameTitle;
     private view.custom.RoundPanel roundPanel1;
     private view.custom.RoundPanel roundPanel3;
     private view.custom.RoundPanel roundPanel4;
+    private view.custom.imageIcon searchBtn;
+    private javax.swing.JTextField searchField;
     private javax.swing.JTable table;
+    private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 }

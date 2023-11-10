@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import org.apache.commons.io.IOUtils;
+import payloads.DataResponse;
 
 /**
  *
@@ -41,20 +42,20 @@ public class socketManager {
         }
         return instance;
     }
-    public String loginCommand(String user,String password) throws IOException{
+    public DataResponse login(String user,String password) throws IOException{
         //testuser2 test2
         writeLineAndFlush("USER "+user, commandWriter);
         commandReader.readLine();
         writeLineAndFlush("PASS "+password, commandWriter);
         String message = commandReader.readLine();
-        return message;
+        
+        return new DataResponse(message);
     }
     public void openNewDataPort() throws IOException{
         commandWriter.write("EPSV");
         commandWriter.newLine();
         commandWriter.flush();
         String epsvResponse = commandReader.readLine();
-        System.out.println("EPSV response: " + epsvResponse);
         int dataPort = Integer.parseInt(epsvResponse
                 .replace("229 Entering Extended Passive Mode (|||", "")
                 .replace("|)", ""));
@@ -64,15 +65,49 @@ public class socketManager {
     }
     
     public String getSharedFiles() throws IOException{
+        openNewDataPort();
         writeLineAndFlush("LSHR", commandWriter);
         String response=IOUtils.toString(dataReader);
+        closeDataPort();
         return response;
     }
+    public String getCurrentWorkingDirectory() throws IOException{
+        writeLineAndFlush("PWD", commandWriter);
+        String response=commandReader.readLine();
+        String[] message = response.split(" ");
+        if(message[0].equals(String.valueOf(StatusCode.CURRENT_WORKING_DIRECTORY)))
+            return message[1].replace("\"", "");
+        return message[1];    
+    }
+    public String getFileList(String path) throws IOException{
+        openNewDataPort();
+        writeLineAndFlush("MLSD "+path, commandWriter);
+        commandReader.readLine();
+        String response=IOUtils.toString(dataReader);
+        closeDataPort();
+        return response;
+    }
+    public DataResponse changeDirectory(String path) throws IOException{
+        writeLineAndFlush("CWD "+path, commandWriter);
+        String response=commandReader.readLine();
+        return new DataResponse(response);
+    }
+    public DataResponse createNewFolder(String path) throws IOException{
+        writeLineAndFlush("MKD "+path, commandWriter);
+        String response=commandReader.readLine();
+        System.out.println(response);
+        return new DataResponse(response);
+    }
     
-    
-    
-    
-    
+    public DataResponse rename(String oldName,String newName) throws IOException{
+        writeLineAndFlush("RNFR "+oldName, commandWriter);
+        DataResponse res = new DataResponse(commandReader.readLine());
+        if(res.getStatus()==StatusCode.FILE_ACTION_REQUIRES_INFO){
+            writeLineAndFlush("RNTO "+newName, commandWriter);
+            res = new DataResponse(commandReader.readLine());
+        }
+        return res;
+    }
     
     
     public void closeDataPort() throws IOException{
