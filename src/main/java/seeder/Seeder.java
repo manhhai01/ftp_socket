@@ -1,6 +1,5 @@
 package seeder;
 
-import bus.UserBus;
 import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
@@ -16,7 +15,6 @@ import model.ShareDirectories;
 import model.ShareFiles;
 import model.User;
 import model.ids.ShareDirectoriesId;
-import model.ids.ShareFilesId;
 import utils.MP5Utils;
 
 /*
@@ -57,11 +55,11 @@ public class Seeder {
     public static void main(String[] args) throws IOException {
         MP5Utils md5Utils = new MP5Utils();
 
-        User rootUser = new User();
-        rootUser.setUsername("root");
-        rootUser.setPassword(md5Utils.getMD5Hash("root"));
-        rootUser.setIsActive(1);
-        userDao.save(rootUser);
+//        User rootUser = new User();
+//        rootUser.setUsername("root");
+//        rootUser.setPassword(md5Utils.getMD5Hash("root"));
+//        rootUser.setIsActive(1);
+//        userDao.save(rootUser);
 
         User user1 = new User();
         user1.setUsername("testuser");
@@ -79,7 +77,7 @@ public class Seeder {
         file.mkdirs();
         
         
-        createDir(AppConfig.SERVER_FTP_USERS_PATH, rootUser, null);
+//        createDir(AppConfig.SERVER_FTP_USERS_PATH, rootUser, null);
         Directory userHomeDirectory = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/abc", user1, null);

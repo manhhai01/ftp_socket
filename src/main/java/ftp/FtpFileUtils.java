@@ -5,6 +5,9 @@
 package ftp;
 
 import config.AppConfig;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,6 +49,8 @@ public class FtpFileUtils {
         } else {
             filePath = joinPath(workingDirAbsolutePath, publicPath);
         }
+        
+        filePath = URLDecoder.decode(filePath, StandardCharsets.UTF_8);
 
         return filePath;
     }
