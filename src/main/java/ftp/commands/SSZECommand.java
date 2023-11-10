@@ -19,7 +19,7 @@ import payload.UserFileLimits;
  *
  * @author User
  */
-public class SIZECommand implements Command {
+public class SSZECommand implements Command {
 
     private final UserBus userBus = new UserBus();
     
@@ -49,7 +49,7 @@ public class SIZECommand implements Command {
                         commandSocketWriter
                 );
             } catch (IOException ex) {
-                Logger.getLogger(SIZECommand.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SSZECommand.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
@@ -59,7 +59,7 @@ public class SIZECommand implements Command {
                         commandSocketWriter
                 );
             } catch (IOException ex) {
-                Logger.getLogger(SIZECommand.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SSZECommand.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

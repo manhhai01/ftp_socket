@@ -65,6 +65,11 @@ public class DirectoryBus {
         if (file.exists()) {
             return true;
         }
+        
+        if (user.getUsedKb() >= user.getQuotaInKb()) {
+            return false;
+        }
+        
 
         boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
         if (success) {
@@ -151,10 +156,10 @@ public class DirectoryBus {
         return success;
     }
 
-    public double getHomeDirectorySizeKb(String username) {
-        String homeDirPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
-        File homeDir = new File(homeDirPath);
-        // Convert byte to kb
-        return homeDir.length() * 1024;
-    }
+//    public double getHomeDirectorySizeKb(String username) {
+//        String homeDirPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
+//        File homeDir = new File(homeDirPath);
+//        // Convert byte to kb
+//        return homeDir.length() * 1024;
+//    }
 }

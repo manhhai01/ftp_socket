@@ -24,14 +24,17 @@ public class STORCommand implements Command {
     private final NormalFileBus normalFileBus = new NormalFileBus();
     private final FtpFileUtils ftpFileUtils = new FtpFileUtils();
     private final UserDao userDao = new UserDao();
+    private final FileBus fileBus = new FileBus();
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
 
         String inputFilePath = arguments[0];
+
+        User user = userDao.getUserByUserName(session.getUsername());
         String path = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), inputFilePath);
+
         if (path.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
-            User user = userDao.getUserByUserName(session.getUsername());
             if (!user.isAnonymous()) {
                 try {
                     SocketUtils.respondCommandSocket(

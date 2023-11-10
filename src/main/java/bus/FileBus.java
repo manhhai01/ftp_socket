@@ -31,6 +31,9 @@ public class FileBus {
 
     public static final String DIRECTORY_TYPE = "directory";
     public static final String NORMAL_FILE_TYPE = "file";
+    public static final String CHECK_FILE_SIZE_EXCEED_QUOTA = "File vượt quá tổng dung lượng lưu trữ cho phép";
+    public static final String CHECK_FILE_SIZE_EXCEED_UPLOAD_SIZE = "File vượt quá dung lượng upload tối đa";
+    public static final String CHECK_FILE_SIZE_OK = "";
 
     private static final FileDao fileDao = new FileDao();
     private static final DirectoryDao directoryDao = new DirectoryDao();
@@ -251,6 +254,22 @@ public class FileBus {
         }
 
         return result;
+    }
+
+    public String checkFileSize(String fromRootFilePath, int uploadKb, String username) {
+        File file = new File(fromRootFilePath);
+        User user = userDao.getUserByUserName(username);
+        long oldFileSize = (long) (file.length() / 1000.0);
+        if (uploadKb > user.getMaxUploadFileSizeKb()) {
+            return CHECK_FILE_SIZE_EXCEED_UPLOAD_SIZE;
+        }
+
+        long newUsedKb = (long) (uploadKb - oldFileSize + user.getUsedKb());
+        if (newUsedKb > user.getQuotaInKb()) {
+            return CHECK_FILE_SIZE_EXCEED_QUOTA;
+        }
+
+        return CHECK_FILE_SIZE_OK;
     }
 
 }

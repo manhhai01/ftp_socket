@@ -1,6 +1,6 @@
 package ftp;
 
-import ftp.commands.SIZECommand;
+import ftp.commands.SSZECommand;
 import ftp.commands.TYPECommand;
 import ftp.commands.USERCommand;
 import ftp.commands.RNTOCommand;
@@ -25,18 +25,14 @@ import ftp.commands.RMDCommand;
 import ftp.commands.SHRECommand;
 import ftp.commands.SOTPCommand;
 import ftp.commands.USHRCommand;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import threading.ThreadManager;
@@ -145,7 +141,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
         ftpServerBuilder.addCommand("USHR", new USHRCommand());
         ftpServerBuilder.addCommand("LSAN", new LSANCommand());
-        ftpServerBuilder.addCommand("SIZE", new SIZECommand());
+        ftpServerBuilder.addCommand("SSZE", new SSZECommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override

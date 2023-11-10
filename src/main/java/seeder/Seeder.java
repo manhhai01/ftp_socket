@@ -27,7 +27,6 @@ import utils.MP5Utils;
  *
  * @author User
  */
-// REMEMBER TO CREATE ROOT FOLDER IN FILE SYSTEM FIRST! (for example: ftp)
 public class Seeder {
 
     private static DirectoryDao directoryDao = new DirectoryDao();
@@ -40,7 +39,7 @@ public class Seeder {
         Directory directory = new Directory(0, path, user, sharePermissions);
         directoryDao.save(directory);
         File file = new File(path);
-        file.mkdir();
+        file.mkdirs();
         return directory;
     }
 
@@ -75,17 +74,21 @@ public class Seeder {
         user2.setPassword(md5Utils.getMD5Hash("test2"));
         user2.setIsActive(1);
         userDao.save(user2);
+        
+        File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
+        file.mkdirs();
+        
+        
+        createDir(AppConfig.SERVER_FTP_USERS_PATH, rootUser, null);
+        Directory userHomeDirectory = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/abc", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/def", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser2", user2, null);
 
-        createDir(AppConfig.SERVER_FTP_FILE_PATH, rootUser, null);
-        Directory userHomeDirectory = createDir(AppConfig.SERVER_FTP_FILE_PATH + "/testuser", user1, null);
-        createDir(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/aaaa", user1, null);
-        createDir(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/abc", user1, null);
-        createDir(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/def", user1, null);
-        createDir(AppConfig.SERVER_FTP_FILE_PATH + "/testuser2", user2, null);
-
-        model.File sharedFile1 = createFile(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/aaaa/test.txt", "Hello", user1, null);
-        model.File sharedFile2 = createFile(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/log-login-successfully.txt", "log 111", user1, null);
-        createFile(AppConfig.SERVER_FTP_FILE_PATH + "/testuser/log2.txt", "log 112", user1, null);
+        model.File sharedFile1 = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa/test.txt", "Hello", user1, null);
+        model.File sharedFile2 = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log-login-successfully.txt", "log 111", user1, null);
+        createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log2.txt", "log 112", user1, null);
 
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, false, true, userHomeDirectory, user2));
     }

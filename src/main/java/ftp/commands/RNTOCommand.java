@@ -45,13 +45,7 @@ public class RNTOCommand implements Command {
                     session.getWorkingDirAbsolutePath(),
                     inputNewFilePath
             );
-//            // Absolute path
-//            if (inputNewFilePath.startsWith("/")) {
-//                newFilePath = inputNewFilePath.replaceFirst("/", AppConfig.SERVER_FTP_FILE_PATH);
-//            }// File name only
-//            else {
-//                newFilePath = ftpFileUtils.joinPath(session.getWorkingDirAbsolutePath(), inputNewFilePath);
-//            }
+
             File fileWithNewName = new File(newFilePath);
             if (fileWithNewName.exists()) {
                 SocketUtils.respondCommandSocket(

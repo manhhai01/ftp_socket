@@ -26,7 +26,7 @@ public class UserBus {
     public static final String LOGIN_ACCOUNT_NOT_VERIFIED_MSG = "Tài khoản chưa xác thực";
     public static final String LOGIN_SUCCESS_MSG = "";
     public static final String SET_FILE_LIMITS_USER_NOT_FOUND = "Không tìm thấy user";
-    public static final String SET_FILE_LIMITS_QUOTA_SMALLER_THAN_DIR_SIZE = "Dung lượng tối đa không được nhỏ hơn dung lượng hiện tại của thư mục";
+    public static final String SET_FILE_LIMITS_QUOTA_SMALLER_THAN_USED_KB = "Dung lượng tối đa không được nhỏ hơn dung lượng hiện tại của thư mục";
     public static final String SET_FILE_LIMITS_SUCCESSFULLY = "Thành công";
 
     private final UserDao userDao = new UserDao();
@@ -176,8 +176,8 @@ public class UserBus {
         
         if(limits.getQuotaKb() != null) {
             int quotaKb = limits.getQuotaKb();
-            if(directoryBus.getHomeDirectorySizeKb(username) < quotaKb) {
-                return SET_FILE_LIMITS_QUOTA_SMALLER_THAN_DIR_SIZE;
+            if(quotaKb < user.getUsedKb()) {
+                return SET_FILE_LIMITS_QUOTA_SMALLER_THAN_USED_KB;
             }
             
             user.setQuotaInKb(quotaKb);          

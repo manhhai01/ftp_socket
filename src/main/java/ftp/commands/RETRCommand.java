@@ -30,6 +30,8 @@ public class RETRCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
         UserDao userDao = new UserDao();
+        User user = userDao.getUserByUserName(session.getUsername());
+        FileBus fileService = new FileBus();
 
         try {
             SocketUtils.respondCommandSocket(
@@ -45,7 +47,6 @@ public class RETRCommand implements Command {
             );
 
             if (filePath.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
-                User user = userDao.getUserByUserName(session.getUsername());
                 if (!user.isAnonymous()) {
                     SocketUtils.respondCommandSocket(
                             StatusCode.FILE_ACTION_NOT_TAKEN,
@@ -56,7 +57,15 @@ public class RETRCommand implements Command {
                 }
             }
             File file = new File(filePath);
-            FileBus fileService = new FileBus();
+
+            if (file.length() / 1000.0 > user.getMaxDownloadFileSizeKb()) {
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.", commandSocketWriter);
+                return;
+            }
+
+            fileService = new FileBus();
             FilePermission filePermission = fileService.getFilePermission(
                     filePath,
                     session.getUsername(),
