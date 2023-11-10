@@ -55,12 +55,14 @@ public class RNTOCommand implements Command {
                 );
                 return;
             }
+            
+            File oldFile = new File(oldFilePath);
 
             boolean success = fileService.changeFilePath(
                     oldFilePath,
                     newFilePath,
                     session.getUsername(),
-                    fileWithNewName.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
+                    oldFile.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
             if (success) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,

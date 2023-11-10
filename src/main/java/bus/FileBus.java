@@ -101,8 +101,17 @@ public class FileBus {
 
         File destination = new File(newFilePath);
         reparentFilePathInDb(file, parentPath);
-        file.renameTo(destination);
 
+        file.renameTo(destination);
+        if (fileType.equals(NORMAL_FILE_TYPE)) {
+            model.File fileInDb = fileDao.getFileByPath(oldFilePath);
+            fileInDb.setPath(newFilePath);
+            fileDao.save(fileInDb);
+        } else {
+            Directory directory = directoryDao.getDirectoryByPath(oldFilePath);
+            directory.setPath(newFilePath);
+            directoryDao.save(directory);
+        }
         return true;
     }
 
