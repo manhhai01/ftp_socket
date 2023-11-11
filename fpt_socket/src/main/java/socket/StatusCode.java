@@ -27,4 +27,5 @@ public class StatusCode {
     public static final int SYSTEM_HELP_REPLY = 211;
     public static final int FILE_ACTION_NOT_TAKEN = 450;
     public static final int ACTION_FAILED = 450;
+    public static final int OTP_NEEDED = 336;
 }

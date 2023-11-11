@@ -33,17 +33,19 @@ import view.custom.customDialog;
  *
  * @author Bum
  */
-public class myWorkingSpace extends javax.swing.JPanel {
+public class ftpContent extends javax.swing.JPanel {
     private customDialog customDialog;
     private Frame parentFrame;
+    private String type;
     private String currentWorkingDirectory;
     private String oldName;
 
     /**
      * Creates new form page1
      */
-    public myWorkingSpace() throws IOException {
+    public ftpContent(String type) throws IOException {
         initComponents();
+        this.type = type;
         setTable();
         createCustomdialog();
         generateMyFile();
@@ -72,10 +74,6 @@ public class myWorkingSpace extends javax.swing.JPanel {
                 model.removeRow(row);                
             }
 
-            @Override
-            public void onCopy(int row) {
-                System.out.println("copy row : " + row);
-            }
 
             @Override
             public void onMove(int row) {
@@ -598,7 +596,7 @@ public class myWorkingSpace extends javax.swing.JPanel {
                     socketManager.getInstance().changeDirectory(name);
                     generateMyFile();
                 } catch (IOException ex) {
-                    Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }else{
                 // nếu row được chọn là file
@@ -630,12 +628,11 @@ public class myWorkingSpace extends javax.swing.JPanel {
                 DataResponse response;
                 try {
                     response = socketManager.getInstance().createNewFolder(name);
-                    System.out.println(response.getStatus());
                     if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
                         generateMyFile();
                     }else JOptionPane.showMessageDialog(parentFrame, response.getMessage());
                 } catch (IOException ex) {
-                    Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         
@@ -645,15 +642,15 @@ public class myWorkingSpace extends javax.swing.JPanel {
             if(!renameField.getText().isEmpty()){
                 try {
                     String newName = renameField.getText();
+                    System.out.println("old name: "+oldName+"; newName: "+newName);
                     DataResponse res = socketManager.getInstance().rename(oldName, newName);
                     if(res.getStatus()==StatusCode.FILE_ACTION_OK){
-                        JOptionPane.showMessageDialog(parentFrame, "Đổi tên thành công!", "Thông báo",INFORMATION_MESSAGE);
                         generateMyFile();
                     }else {
                         JOptionPane.showMessageDialog(parentFrame, res.getMessage(), "Thông báo",WARNING_MESSAGE);
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -667,15 +664,20 @@ public class myWorkingSpace extends javax.swing.JPanel {
                 socketManager.getInstance().changeDirectory(newDirectory);
                 generateMyFile();
             } catch (IOException ex) {
-                Logger.getLogger(myWorkingSpace.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_highlightPanel3MouseClicked
     public void generateMyFile() throws IOException{
-        currentWorkingDirectory = socketManager.getInstance().getCurrentWorkingDirectory();
-        title.setText(currentWorkingDirectory);
-        String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
-        setModelFile(fileList);
+        DataResponse response = socketManager.getInstance().getCurrentWorkingDirectory();
+        if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){
+            currentWorkingDirectory = response.getMessage().replace("\"", "");
+            title.setText(currentWorkingDirectory);
+            String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
+            setModelFile(fileList);
+        }else {
+            JOptionPane.showMessageDialog(parentFrame, "Lỗi xảy ra trong lúc tìm thư mục hiện hành", "Thông báo",WARNING_MESSAGE);
+        }
     }
     public void setModelFile(String fileList){
         DefaultTableModel model = (DefaultTableModel) table.getModel();

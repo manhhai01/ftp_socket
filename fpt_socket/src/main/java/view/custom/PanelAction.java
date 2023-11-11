@@ -36,14 +36,12 @@ public class PanelAction extends javax.swing.JPanel {
         separatorPanel2.setBackground(new java.awt.Color(204, 204, 204));
         renameOption = new customMenuItem("<html><b>Đổi tên</b></html>", new ImageIcon(getClass().getResource("/view/img/edit.png")));
         moveOption = new customMenuItem("<html><b>Di chuyển</b></html>", new ImageIcon(getClass().getResource("/view/img/move.png")));
-        copyOption = new customMenuItem("<html><b>Sao chép</b></html>", new ImageIcon(getClass().getResource("/view/img/copy.png")));
         deleteOption = new customMenuItem("<html><b>Chuyển vào thùng rác</b></html>", new ImageIcon(getClass().getResource("/view/img/delete.png")));
         downloadOption = new customMenuItem("<html><b>Tải xuống</b></html>", new ImageIcon(getClass().getResource("/view/img/downloads.png")));
         shareOption = new customMenuItem("<html><b>Chia sẻ</b></html>", new ImageIcon(getClass().getResource("/view/img/share.png")));
         optionMenu.add(renameOption);
         optionMenu.add(separatorPanel);
         optionMenu.add(moveOption);
-        optionMenu.add(copyOption);
         optionMenu.add(deleteOption);
         optionMenu.add(separatorPanel2);
         optionMenu.add(downloadOption);
@@ -62,12 +60,6 @@ public class PanelAction extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 event.onMove(row);
-            }
-        });
-        copyOption.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                event.onCopy(row);
             }
         });
         deleteOption.addActionListener(new ActionListener() {

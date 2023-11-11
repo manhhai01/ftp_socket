@@ -4,17 +4,38 @@
  */
 package view.page;
 
+import java.awt.Frame;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Pattern;
+import javax.swing.JFrame;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import javax.swing.SwingUtilities;
+import payloads.DataResponse;
+import socket.socketManager;
+import view.custom.customDialog;
+import socket.StatusCode;
+
+
 /**
  *
  * @author Bum
  */
-public class register extends javax.swing.JPanel {
+public final class register extends javax.swing.JPanel {
+    private customDialog customDialog;
+    private Frame parentFrame;
+    String username=null,password=null;
 
     /**
      * Creates new form register
      */
     public register() {
         initComponents();
+        createCustomdialog();
     }
 
     /**
@@ -26,53 +47,122 @@ public class register extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        otpVerifyPanel = new javax.swing.JPanel();
+        verifyConfirm = new view.custom.Button();
+        verifyCancel = new view.custom.Button();
+        verifyTitle = new javax.swing.JLabel();
+        verifyField = new view.custom.textField();
+        genderSelection = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
-        textField1 = new view.custom.textField();
-        passwordField1 = new view.custom.passwordField();
-        passwordField2 = new view.custom.passwordField();
-        textField2 = new view.custom.textField();
-        checkBox1 = new view.custom.checkBox();
-        checkBox2 = new view.custom.checkBox();
-        jCalendarComboBox1 = new de.wannawork.jcalendar.JCalendarComboBox();
+        firstnameField = new view.custom.textField();
+        verifyPasswordField = new view.custom.passwordField();
+        passwordField = new view.custom.passwordField();
+        usernameField = new view.custom.textField();
+        birthdayField = new de.wannawork.jcalendar.JCalendarComboBox();
         jLabel1 = new javax.swing.JLabel();
-        button1 = new view.custom.Button();
+        regBtn = new view.custom.Button();
+        lastnameField = new view.custom.textField();
+        male = new javax.swing.JRadioButton();
+        female = new javax.swing.JRadioButton();
+
+        otpVerifyPanel.setBackground(new java.awt.Color(255, 255, 255));
+        otpVerifyPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(216, 216, 216)));
+
+        verifyConfirm.setText("Xác nhận");
+        verifyConfirm.setColor(new java.awt.Color(204, 204, 255));
+        verifyConfirm.setColorClick(new java.awt.Color(153, 153, 153));
+        verifyConfirm.setColorOver(new java.awt.Color(102, 102, 102));
+        verifyConfirm.setRadius(10);
+        verifyConfirm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verifyConfirmActionPerformed(evt);
+            }
+        });
+
+        verifyCancel.setText("Hủy");
+        verifyCancel.setColor(new java.awt.Color(204, 204, 255));
+        verifyCancel.setColorClick(new java.awt.Color(153, 153, 153));
+        verifyCancel.setColorOver(new java.awt.Color(102, 102, 102));
+        verifyCancel.setRadius(10);
+        verifyCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verifyCancelActionPerformed(evt);
+            }
+        });
+
+        verifyTitle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        verifyTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        verifyTitle.setText("Xác thực OTP");
+
+        verifyField.setLabelText("OTP");
+
+        javax.swing.GroupLayout otpVerifyPanelLayout = new javax.swing.GroupLayout(otpVerifyPanel);
+        otpVerifyPanel.setLayout(otpVerifyPanelLayout);
+        otpVerifyPanelLayout.setHorizontalGroup(
+            otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(otpVerifyPanelLayout.createSequentialGroup()
+                .addGap(94, 94, 94)
+                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(verifyTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                    .addGroup(otpVerifyPanelLayout.createSequentialGroup()
+                        .addComponent(verifyConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(verifyCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(verifyField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(119, Short.MAX_VALUE))
+        );
+        otpVerifyPanelLayout.setVerticalGroup(
+            otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(otpVerifyPanelLayout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(verifyTitle)
+                .addGap(27, 27, 27)
+                .addComponent(verifyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(verifyCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(verifyConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(49, Short.MAX_VALUE))
+        );
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMinimumSize(new java.awt.Dimension(100, 378));
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 400));
         jPanel1.setRequestFocusEnabled(false);
 
-        textField1.setLabelText("Họ tên");
+        firstnameField.setLabelText("Họ");
 
-        passwordField1.setLabelText("Xác nhận mật khẩu");
+        verifyPasswordField.setLabelText("Xác nhận mật khẩu");
 
-        passwordField2.setLabelText("Mật khẩu");
-        passwordField2.addActionListener(new java.awt.event.ActionListener() {
+        passwordField.setLabelText("Mật khẩu");
+        passwordField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordField2ActionPerformed(evt);
+                passwordFieldActionPerformed(evt);
             }
         });
 
-        textField2.setLabelText("email");
-
-        checkBox1.setBackground(new java.awt.Color(255, 255, 255));
-        checkBox1.setText("Nam");
-
-        checkBox2.setBackground(new java.awt.Color(255, 255, 255));
-        checkBox2.setText("Nữ");
+        usernameField.setLabelText("email");
 
         jLabel1.setForeground(new java.awt.Color(153, 153, 153));
         jLabel1.setText("Ngày sinh");
 
-        button1.setBackground(new java.awt.Color(204, 204, 255));
-        button1.setText("Đăng kí");
-        button1.setColor(new java.awt.Color(204, 204, 255));
-        button1.setColorOver(new java.awt.Color(255, 204, 204));
-        button1.addActionListener(new java.awt.event.ActionListener() {
+        regBtn.setBackground(new java.awt.Color(204, 204, 255));
+        regBtn.setText("Đăng kí");
+        regBtn.setColor(new java.awt.Color(204, 204, 255));
+        regBtn.setColorOver(new java.awt.Color(255, 204, 204));
+        regBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button1ActionPerformed(evt);
+                regBtnActionPerformed(evt);
             }
         });
+
+        lastnameField.setLabelText("Tên");
+
+        genderSelection.add(male);
+        male.setText("Nam");
+
+        genderSelection.add(female);
+        female.setText("Nữ");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -80,44 +170,53 @@ public class register extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(85, 85, 85)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(regBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(usernameField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(verifyPasswordField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCalendarComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(textField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(textField2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(passwordField2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(passwordField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(firstnameField, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lastnameField, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(checkBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(72, 72, 72)
-                        .addComponent(checkBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(85, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(birthdayField, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(male)
+                                .addGap(18, 18, 18)
+                                .addComponent(female)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap(80, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(firstnameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lastnameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(checkBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(male)
+                    .addComponent(female))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addComponent(jCalendarComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(birthdayField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(passwordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(passwordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(verifyPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addComponent(regBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -136,25 +235,120 @@ public class register extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void passwordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordField2ActionPerformed
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_passwordField2ActionPerformed
+    }//GEN-LAST:event_passwordFieldActionPerformed
 
-    private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_button1ActionPerformed
+    private void regBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regBtnActionPerformed
+        if(checkInputField()){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String birthday = dateFormat.format(birthdayField.getDate());
+            username = usernameField.getText();password = passwordField.getText();
+            String gender = male.isSelected()?"Nam":"Nữ";
+            String firstname = firstnameField.getText();
+            String lastname = lastnameField.getText();
+            String data=String.format("{\n"
+                + "            \"username\": \"%s\",\n"
+                + "            \"password\": \"%s\";\n"
+                + "            \"firstName\": \"%s\",\n"
+                + "            \"lastName\": \"%s\",\n"
+                + "            \"gender\": \"%s\",\n"
+                + "            \"birthday\": \"%s\"\n"
+                + "        }",username,password,firstname,lastname,gender,birthday);
+            try {
+                DataResponse response =socketManager.getInstance().register(data);
+                if(response.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+                    customDialog.setVisible(true);
+                }else{
+                    JOptionPane.showMessageDialog(this,"username đã tồn tại!! ","Thông báo",WARNING_MESSAGE);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(register.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_regBtnActionPerformed
 
+    private void verifyConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyConfirmActionPerformed
+        String otp = verifyField.getText();
+        if(!otp.isEmpty()){
+            try {
+                DataResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
+                if(response.getStatus() == StatusCode.COMMAND_OK){
+                    customDialog.setVisible(false);
+                    reLogin();
+                }else{
+                    JOptionPane.showMessageDialog(this, response.getMessage(),"Thông báo",WARNING_MESSAGE);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_verifyConfirmActionPerformed
+
+    private void verifyCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyCancelActionPerformed
+        customDialog.setVisible(false);
+        verifyField.setText("");
+        JOptionPane.showMessageDialog(this,"Tài khoản đăng ký thành công, Vui lòng xác thực OTP ở lần đăng nhập kế tiếp","Thông báo",WARNING_MESSAGE);
+        reLogin();
+    }//GEN-LAST:event_verifyCancelActionPerformed
+    public void createCustomdialog(){
+        parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        customDialog = new customDialog(parentFrame);
+        customDialog.setDialogContent(otpVerifyPanel);
+    }
+    
+    public boolean checkInputField(){
+        String checkPassword = passwordField.getText();
+        if(usernameField.getText().isEmpty()||checkPassword.isEmpty()||firstnameField.getText().isEmpty()||lastnameField.getText().isEmpty()){
+            JOptionPane.showMessageDialog(this,"Vui lòng không để trống thông tin","Thông báo",WARNING_MESSAGE);
+            return false;
+        }
+        Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+        if(!EMAIL_PATTERN.matcher(usernameField.getText()).matches()){
+            JOptionPane.showMessageDialog(this,"Vui lòng nhập đúng định dạng email!!","Thông báo",WARNING_MESSAGE);
+            return false;
+        }
+        Date date = birthdayField.getDate();
+        if(date.after(new Date())){
+            JOptionPane.showMessageDialog(this,"Vui lòng nhập ngày tháng năm sinh chính xác!!","Thông báo",WARNING_MESSAGE);
+            return false;
+        }   
+        if(checkPassword.length()<4){
+            JOptionPane.showMessageDialog(this,"Mật khẩu tối thiểu 4 ký tự!!","Thông báo",WARNING_MESSAGE);
+            return false;
+        }
+        if(!checkPassword.equals(verifyPasswordField.getText())){
+            JOptionPane.showMessageDialog(this,"Mật khẩu không khớp!!","Thông báo",WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+    
+    public void reLogin(){
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        frame.dispose();
+        new loginForm().setVisible(true);
+    }
+        
+        
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private view.custom.Button button1;
-    private view.custom.checkBox checkBox1;
-    private view.custom.checkBox checkBox2;
-    private de.wannawork.jcalendar.JCalendarComboBox jCalendarComboBox1;
+    private de.wannawork.jcalendar.JCalendarComboBox birthdayField;
+    private javax.swing.JRadioButton female;
+    private view.custom.textField firstnameField;
+    private javax.swing.ButtonGroup genderSelection;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private view.custom.passwordField passwordField1;
-    private view.custom.passwordField passwordField2;
-    private view.custom.textField textField1;
-    private view.custom.textField textField2;
+    private view.custom.textField lastnameField;
+    private javax.swing.JRadioButton male;
+    private javax.swing.JPanel otpVerifyPanel;
+    private view.custom.passwordField passwordField;
+    private view.custom.Button regBtn;
+    private view.custom.textField usernameField;
+    private view.custom.Button verifyCancel;
+    private view.custom.Button verifyConfirm;
+    private view.custom.textField verifyField;
+    private view.custom.passwordField verifyPasswordField;
+    private javax.swing.JLabel verifyTitle;
     // End of variables declaration//GEN-END:variables
 }

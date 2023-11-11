@@ -4,7 +4,6 @@
  */
 package payloads;
 import lombok.Getter;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;

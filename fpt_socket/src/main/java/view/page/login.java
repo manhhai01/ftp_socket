@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
 import payloads.DataResponse;
 import socket.StatusCode;
@@ -24,6 +25,7 @@ import view.mainLayout;
 public class login extends javax.swing.JPanel {
     private customDialog customDialog;
     private Frame parentFrame;
+    private String username=null,password=null;
     /**
      * Creates new form login
      */
@@ -43,10 +45,10 @@ public class login extends javax.swing.JPanel {
     private void initComponents() {
 
         otpVerifyPanel = new javax.swing.JPanel();
-        renameField = new view.custom.passwordField();
-        renameConfirm = new view.custom.Button();
-        renameCancel = new view.custom.Button();
-        jLabel18 = new javax.swing.JLabel();
+        verifyConfirm = new view.custom.Button();
+        verifyCancel = new view.custom.Button();
+        verifyTitle = new javax.swing.JLabel();
+        verifyField = new view.custom.textField();
         userField = new view.custom.textField();
         passwordField = new view.custom.passwordField();
         button1 = new view.custom.Button();
@@ -54,28 +56,33 @@ public class login extends javax.swing.JPanel {
         otpVerifyPanel.setBackground(new java.awt.Color(255, 255, 255));
         otpVerifyPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(216, 216, 216)));
 
-        renameField.setLabelText("Nhập mã otp");
-
-        renameConfirm.setText("Xác nhận");
-        renameConfirm.setColor(new java.awt.Color(204, 204, 255));
-        renameConfirm.setColorClick(new java.awt.Color(153, 153, 153));
-        renameConfirm.setColorOver(new java.awt.Color(102, 102, 102));
-        renameConfirm.setRadius(10);
-
-        renameCancel.setText("Hủy");
-        renameCancel.setColor(new java.awt.Color(204, 204, 255));
-        renameCancel.setColorClick(new java.awt.Color(153, 153, 153));
-        renameCancel.setColorOver(new java.awt.Color(102, 102, 102));
-        renameCancel.setRadius(10);
-        renameCancel.addActionListener(new java.awt.event.ActionListener() {
+        verifyConfirm.setText("Xác nhận");
+        verifyConfirm.setColor(new java.awt.Color(204, 204, 255));
+        verifyConfirm.setColorClick(new java.awt.Color(153, 153, 153));
+        verifyConfirm.setColorOver(new java.awt.Color(102, 102, 102));
+        verifyConfirm.setRadius(10);
+        verifyConfirm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renameCancelActionPerformed(evt);
+                verifyConfirmActionPerformed(evt);
             }
         });
 
-        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel18.setText("Xác thực OTP");
+        verifyCancel.setText("Hủy");
+        verifyCancel.setColor(new java.awt.Color(204, 204, 255));
+        verifyCancel.setColorClick(new java.awt.Color(153, 153, 153));
+        verifyCancel.setColorOver(new java.awt.Color(102, 102, 102));
+        verifyCancel.setRadius(10);
+        verifyCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verifyCancelActionPerformed(evt);
+            }
+        });
+
+        verifyTitle.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        verifyTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        verifyTitle.setText("Xác thực OTP");
+
+        verifyField.setLabelText("OTP");
 
         javax.swing.GroupLayout otpVerifyPanelLayout = new javax.swing.GroupLayout(otpVerifyPanel);
         otpVerifyPanel.setLayout(otpVerifyPanelLayout);
@@ -83,26 +90,26 @@ public class login extends javax.swing.JPanel {
             otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(otpVerifyPanelLayout.createSequentialGroup()
                 .addGap(94, 94, 94)
-                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(verifyTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                     .addGroup(otpVerifyPanelLayout.createSequentialGroup()
-                        .addComponent(renameConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(verifyConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(verifyCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(verifyField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(119, Short.MAX_VALUE))
         );
         otpVerifyPanelLayout.setVerticalGroup(
             otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(otpVerifyPanelLayout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addComponent(jLabel18)
-                .addGap(18, 18, 18)
-                .addComponent(renameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(43, 43, 43)
+                .addComponent(verifyTitle)
+                .addGap(27, 27, 27)
+                .addComponent(verifyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
                 .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(renameConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(verifyCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(verifyConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(49, Short.MAX_VALUE))
         );
 
@@ -152,43 +159,70 @@ public class login extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
-        String user = userField.getText();
-        String password = passwordField.getText();
-        if(!user.isEmpty() && !password.isEmpty()){
+        username = userField.getText();
+        password = passwordField.getText();
+        if(!username.isEmpty() && !password.isEmpty()){
             try {
-                DataResponse dataResponse = socketManager.getInstance().login(user, password);                
-
+                DataResponse dataResponse = socketManager.getInstance().login(username, password);                
                 if(dataResponse.getStatus() == StatusCode.LOGGED_IN){
-                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                    frame.dispose();
-                    new mainLayout().setVisible(true);
-           
-                }else {
+                    loginSuccess();
+                }
+                else if(dataResponse.getStatus() == StatusCode.OTP_NEEDED){
+                    customDialog.setVisible(true);
+                }
+                else {
                     JOptionPane.showMessageDialog(this, dataResponse.getMessage());
                 }
             } catch (IOException ex) {
                 Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Vui lòng không để trống thông tin!!!");
+        }
     }//GEN-LAST:event_button1ActionPerformed
 
-    private void renameCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameCancelActionPerformed
+    private void verifyCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyCancelActionPerformed
         customDialog.setVisible(false);
-    }//GEN-LAST:event_renameCancelActionPerformed
+        verifyField.setText("");
+    }//GEN-LAST:event_verifyCancelActionPerformed
+
+    private void verifyConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verifyConfirmActionPerformed
+        String otp = verifyField.getText();
+        if(!otp.isEmpty()){
+            try {
+                DataResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
+                if(response.getStatus() == StatusCode.COMMAND_OK){
+                    customDialog.setVisible(false);
+                    loginSuccess();
+                }else{
+                    JOptionPane.showMessageDialog(this, response.getMessage(),"Thông báo",WARNING_MESSAGE);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_verifyConfirmActionPerformed
     public void createCustomdialog(){
         parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(otpVerifyPanel);
     }
+    public void loginSuccess() throws IOException{
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        frame.dispose();
+        new mainLayout().setVisible(true);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private view.custom.Button button1;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JPanel otpVerifyPanel;
     private view.custom.passwordField passwordField;
-    private view.custom.Button renameCancel;
-    private view.custom.Button renameConfirm;
-    private view.custom.passwordField renameField;
     private view.custom.textField userField;
+    private view.custom.Button verifyCancel;
+    private view.custom.Button verifyConfirm;
+    private view.custom.textField verifyField;
+    private javax.swing.JLabel verifyTitle;
     // End of variables declaration//GEN-END:variables
 }

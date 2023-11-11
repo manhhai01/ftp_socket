@@ -21,7 +21,7 @@ import socket.socketManager;
 import view.custom.HighlightPanel;
 import view.page.information;
 import view.page.loginForm;
-import view.page.myWorkingSpace;
+import view.page.ftpContent;
 import view.page.share;
 import view.page.trash;
 
@@ -41,7 +41,7 @@ public class mainLayout extends javax.swing.JFrame {
 //        pack();
 //        setSize(screenSize.width,screenSize.height);
         active(page1);
-        getContent(new myWorkingSpace());
+        getContent(new ftpContent("myWorkingSpace"));
     }
 
     /**
@@ -413,7 +413,7 @@ public class mainLayout extends javax.swing.JFrame {
     private void page1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page1MouseClicked
         active(page1);
         try {
-            getContent(new myWorkingSpace());
+            getContent(new ftpContent("myWorkingSpace"));
         } catch (IOException ex) {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -421,7 +421,11 @@ public class mainLayout extends javax.swing.JFrame {
 
     private void page2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page2MouseClicked
         active(page2);
-        getContent(new share());
+        try {
+            getContent(new ftpContent("share"));
+        } catch (IOException ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_page2MouseClicked
 
     private void page3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page3MouseClicked

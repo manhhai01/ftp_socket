@@ -42,8 +42,8 @@ public class socketManager {
         }
         return instance;
     }
+/*--------------------------------Login,register command-----------------------------------------*/    
     public DataResponse login(String user,String password) throws IOException{
-        //testuser2 test2
         writeLineAndFlush("USER "+user, commandWriter);
         commandReader.readLine();
         writeLineAndFlush("PASS "+password, commandWriter);
@@ -51,33 +51,34 @@ public class socketManager {
         
         return new DataResponse(message);
     }
-    public void openNewDataPort() throws IOException{
-        commandWriter.write("EPSV");
-        commandWriter.newLine();
-        commandWriter.flush();
-        String epsvResponse = commandReader.readLine();
-        int dataPort = Integer.parseInt(epsvResponse
-                .replace("229 Entering Extended Passive Mode (|||", "")
-                .replace("|)", ""));
-        dataSocket = new Socket("localhost", dataPort);
-        dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
-        dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+    
+    public DataResponse register(String data) throws IOException{
+        openNewDataPort();
+        writeLineAndFlush("REG", commandWriter);
+        System.out.println(commandReader.readLine());
+        writeLineAndFlush(data, dataWriter);
+        return new DataResponse(commandReader.readLine());
     }
     
+    public DataResponse verifyOTP(String username,String password, String otp) throws IOException{
+        writeLineAndFlush("SOTP "+username +" "+password+ " "+otp, commandWriter);
+        return new DataResponse(commandReader.readLine());
+    }
+/*------------------------------------------------------------------------------------------*/  
+    
+    
+/*--------------------------------file manager command--------------------------------------*/         
     public String getSharedFiles() throws IOException{
         openNewDataPort();
         writeLineAndFlush("LSHR", commandWriter);
+        commandReader.readLine();
         String response=IOUtils.toString(dataReader);
         closeDataPort();
         return response;
     }
-    public String getCurrentWorkingDirectory() throws IOException{
+    public DataResponse getCurrentWorkingDirectory() throws IOException{
         writeLineAndFlush("PWD", commandWriter);
-        String response=commandReader.readLine();
-        String[] message = response.split(" ");
-        if(message[0].equals(String.valueOf(StatusCode.CURRENT_WORKING_DIRECTORY)))
-            return message[1].replace("\"", "");
-        return message[1];    
+        return new DataResponse(commandReader.readLine());
     }
     public String getFileList(String path) throws IOException{
         openNewDataPort();
@@ -98,7 +99,6 @@ public class socketManager {
         System.out.println(response);
         return new DataResponse(response);
     }
-    
     public DataResponse rename(String oldName,String newName) throws IOException{
         writeLineAndFlush("RNFR "+oldName, commandWriter);
         DataResponse res = new DataResponse(commandReader.readLine());
@@ -108,7 +108,21 @@ public class socketManager {
         }
         return res;
     }
+/*------------------------------------------------------------------------------------------*/     
     
+/*---------------------------------EPSV command---------------------------------------------*/ 
+    public void openNewDataPort() throws IOException{
+        commandWriter.write("EPSV");
+        commandWriter.newLine();
+        commandWriter.flush();
+        String epsvResponse = commandReader.readLine();
+        int dataPort = Integer.parseInt(epsvResponse
+                .replace("229 Entering Extended Passive Mode (|||", "")
+                .replace("|)", ""));
+        dataSocket = new Socket("localhost", dataPort);
+        dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
+        dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+    }    
     
     public void closeDataPort() throws IOException{
         dataWriter.close();
@@ -116,10 +130,12 @@ public class socketManager {
         dataSocket.close();
         commandReader.readLine();
     }
+/*------------------------------------------------------------------------------------------*/     
     public void disconnect() throws IOException{
         commandReader.close();
         commandWriter.close();
         commandSocket.close();
+        instance=null;
     }
     public void writeLineAndFlush(String content, BufferedWriter writer) throws IOException {
         writer.append(content);

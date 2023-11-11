@@ -18,18 +18,19 @@ import socket.socketManager;
  *
  * @author Bum
  */
-public class loginForm extends javax.swing.JFrame {
+public class loginForm extends javax.swing.JFrame{
 
     /**
      * Creates new form login
      */
-    public loginForm() {
+    public loginForm()  {
         initComponents();
         isLogin = true;
         centerLocation();
 //        setBackground(new Color(0,0,0,0));
         OpenChildForm(new login());
         setVisible(true);
+        
     }
 
     /**
@@ -266,7 +267,7 @@ public class loginForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-        private void OpenChildForm(JPanel panel){
+        public void OpenChildForm(JPanel panel){
         holder.removeAll();
         holder.setLayout(new BorderLayout());
         holder.add(panel);

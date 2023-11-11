@@ -21,14 +21,14 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel18" alignment="0" min="-2" pref="300" max="-2" attributes="0"/>
-                      <Component id="renameField" alignment="0" min="-2" pref="300" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="verifyTitle" alignment="0" pref="300" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="renameConfirm" min="-2" max="-2" attributes="0"/>
+                          <Component id="verifyConfirm" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="renameCancel" min="-2" max="-2" attributes="0"/>
+                          <Component id="verifyCancel" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="verifyField" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="119" max="32767" attributes="0"/>
               </Group>
@@ -38,13 +38,13 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
-                  <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="renameField" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
+                  <Component id="verifyTitle" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                  <Component id="verifyField" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="renameCancel" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
-                      <Component id="renameConfirm" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                      <Component id="verifyCancel" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                      <Component id="verifyConfirm" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="49" max="32767" attributes="0"/>
               </Group>
@@ -52,12 +52,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="view.custom.passwordField" name="renameField">
-          <Properties>
-            <Property name="labelText" type="java.lang.String" value="Nh&#x1ead;p m&#xe3; otp"/>
-          </Properties>
-        </Component>
-        <Component class="view.custom.Button" name="renameConfirm">
+        <Component class="view.custom.Button" name="verifyConfirm">
           <Properties>
             <Property name="text" type="java.lang.String" value="X&#xe1;c nh&#x1ead;n"/>
             <Property name="color" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -71,8 +66,11 @@
             </Property>
             <Property name="radius" type="int" value="10"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="verifyConfirmActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="view.custom.Button" name="renameCancel">
+        <Component class="view.custom.Button" name="verifyCancel">
           <Properties>
             <Property name="text" type="java.lang.String" value="H&#x1ee7;y"/>
             <Property name="color" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -87,16 +85,21 @@
             <Property name="radius" type="int" value="10"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="renameCancelActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="verifyCancelActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel18">
+        <Component class="javax.swing.JLabel" name="verifyTitle">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="18" style="1"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="X&#xe1;c th&#x1ef1;c OTP"/>
+          </Properties>
+        </Component>
+        <Component class="view.custom.textField" name="verifyField">
+          <Properties>
+            <Property name="labelText" type="java.lang.String" value="OTP"/>
           </Properties>
         </Component>
       </SubComponents>

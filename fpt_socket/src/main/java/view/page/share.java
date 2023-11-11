@@ -53,10 +53,6 @@ public class share extends javax.swing.JPanel {
                 model.removeRow(row);                
             }
 
-            @Override
-            public void onCopy(int row) {
-                System.out.println("copy row : " + row);
-            }
 
             @Override
             public void onMove(int row) {
