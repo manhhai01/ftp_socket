@@ -32,7 +32,7 @@ import view.custom.customDialog;
 /**
  *
  * @author Bum
- */
+ */ 
 public class ftpContent extends javax.swing.JPanel {
     private customDialog customDialog;
     private Frame parentFrame;
@@ -48,7 +48,8 @@ public class ftpContent extends javax.swing.JPanel {
         this.type = type;
         setTable();
         createCustomdialog();
-        generateMyFile();
+        if(getCurrentDir())
+            generateMyFile();
         
     }
     
@@ -71,7 +72,17 @@ public class ftpContent extends javax.swing.JPanel {
                     table.getCellEditor().stopCellEditing();
                 }
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
-                model.removeRow(row);                
+                String name = model.getValueAt(row,1 ).toString(); 
+                try{
+                    DataResponse res = socketManager.getInstance().delete(name);
+                    if(res.getStatus()== StatusCode.FILE_ACTION_OK){
+                        JOptionPane.showMessageDialog(parentFrame, "đã xóa!", "Success", INFORMATION_MESSAGE);
+                        generateMyFile();
+                    }
+                }catch (IOException e){
+                    Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, e);
+     
+                }
             }
 
 
@@ -594,7 +605,8 @@ public class ftpContent extends javax.swing.JPanel {
                 // nếu row được chọn là thư mục
                 try {
                     socketManager.getInstance().changeDirectory(name);
-                    generateMyFile();
+                    if(getCurrentDir())
+                        generateMyFile();
                 } catch (IOException ex) {
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -662,22 +674,34 @@ public class ftpContent extends javax.swing.JPanel {
         if(!newDirectory.isEmpty()){
             try {
                 socketManager.getInstance().changeDirectory(newDirectory);
+                getCurrentDir();
                 generateMyFile();
             } catch (IOException ex) {
                 Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_highlightPanel3MouseClicked
-    public void generateMyFile() throws IOException{
-        DataResponse response = socketManager.getInstance().getCurrentWorkingDirectory();
-        if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){
-            currentWorkingDirectory = response.getMessage().replace("\"", "");
-            title.setText(currentWorkingDirectory);
-            String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
-            setModelFile(fileList);
-        }else {
-            JOptionPane.showMessageDialog(parentFrame, "Lỗi xảy ra trong lúc tìm thư mục hiện hành", "Thông báo",WARNING_MESSAGE);
+    public boolean getCurrentDir(){
+        DataResponse response;
+        try {
+            response = socketManager.getInstance().getCurrentWorkingDirectory();
+            if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){
+                String dir = response.getMessage().substring(0,response.getMessage().lastIndexOf("\""));       
+                currentWorkingDirectory = dir.replace("\"", "");
+                title.setText(currentWorkingDirectory);
+                return true;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        JOptionPane.showMessageDialog(parentFrame, "Lỗi xảy ra khi tìm thư mục hiện thành", "Thông báo",WARNING_MESSAGE);
+        return false;       
+    }
+    public void generateMyFile() throws IOException{
+        String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
+        setModelFile(fileList);
+
     }
     public void setModelFile(String fileList){
         DefaultTableModel model = (DefaultTableModel) table.getModel();

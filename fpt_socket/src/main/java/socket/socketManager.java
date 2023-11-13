@@ -55,13 +55,18 @@ public class socketManager {
     public DataResponse register(String data) throws IOException{
         openNewDataPort();
         writeLineAndFlush("REG", commandWriter);
-        System.out.println(commandReader.readLine());
+        commandReader.readLine();
         writeLineAndFlush(data, dataWriter);
+        closeDataPort();
         return new DataResponse(commandReader.readLine());
     }
     
     public DataResponse verifyOTP(String username,String password, String otp) throws IOException{
         writeLineAndFlush("SOTP "+username +" "+password+ " "+otp, commandWriter);
+        return new DataResponse(commandReader.readLine());
+    }
+    public DataResponse regenerateOTP(String username,String password) throws IOException{
+        writeLineAndFlush("GOTP "+username +" "+password+ " ", commandWriter);
         return new DataResponse(commandReader.readLine());
     }
 /*------------------------------------------------------------------------------------------*/  
@@ -74,6 +79,7 @@ public class socketManager {
         commandReader.readLine();
         String response=IOUtils.toString(dataReader);
         closeDataPort();
+        commandReader.readLine();// read close connection message
         return response;
     }
     public DataResponse getCurrentWorkingDirectory() throws IOException{
@@ -86,6 +92,7 @@ public class socketManager {
         commandReader.readLine();
         String response=IOUtils.toString(dataReader);
         closeDataPort();
+        commandReader.readLine();// read close connection message
         return response;
     }
     public DataResponse changeDirectory(String path) throws IOException{
@@ -96,7 +103,6 @@ public class socketManager {
     public DataResponse createNewFolder(String path) throws IOException{
         writeLineAndFlush("MKD "+path, commandWriter);
         String response=commandReader.readLine();
-        System.out.println(response);
         return new DataResponse(response);
     }
     public DataResponse rename(String oldName,String newName) throws IOException{
@@ -108,13 +114,17 @@ public class socketManager {
         }
         return res;
     }
+    public DataResponse delete(String path) throws IOException{
+        writeLineAndFlush("DELE "+path, commandWriter);
+        String response=commandReader.readLine();
+        return new DataResponse(response);
+        
+    }
 /*------------------------------------------------------------------------------------------*/     
     
 /*---------------------------------EPSV command---------------------------------------------*/ 
     public void openNewDataPort() throws IOException{
-        commandWriter.write("EPSV");
-        commandWriter.newLine();
-        commandWriter.flush();
+        writeLineAndFlush("EPSV", commandWriter);
         String epsvResponse = commandReader.readLine();
         int dataPort = Integer.parseInt(epsvResponse
                 .replace("229 Entering Extended Passive Mode (|||", "")
@@ -128,7 +138,6 @@ public class socketManager {
         dataWriter.close();
         dataReader.close();
         dataSocket.close();
-        commandReader.readLine();
     }
 /*------------------------------------------------------------------------------------------*/     
     public void disconnect() throws IOException{

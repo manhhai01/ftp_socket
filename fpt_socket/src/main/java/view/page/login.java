@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
 import payloads.DataResponse;
@@ -49,6 +50,7 @@ public class login extends javax.swing.JPanel {
         verifyCancel = new view.custom.Button();
         verifyTitle = new javax.swing.JLabel();
         verifyField = new view.custom.textField();
+        regenerateBtn = new view.custom.Button();
         userField = new view.custom.textField();
         passwordField = new view.custom.passwordField();
         button1 = new view.custom.Button();
@@ -84,19 +86,33 @@ public class login extends javax.swing.JPanel {
 
         verifyField.setLabelText("OTP");
 
+        regenerateBtn.setText("Gửi lại mã");
+        regenerateBtn.setColor(new java.awt.Color(204, 204, 204));
+        regenerateBtn.setColorClick(new java.awt.Color(153, 153, 153));
+        regenerateBtn.setColorOver(new java.awt.Color(102, 102, 102));
+        regenerateBtn.setRadius(5);
+        regenerateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regenerateBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout otpVerifyPanelLayout = new javax.swing.GroupLayout(otpVerifyPanel);
         otpVerifyPanel.setLayout(otpVerifyPanelLayout);
         otpVerifyPanelLayout.setHorizontalGroup(
             otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(otpVerifyPanelLayout.createSequentialGroup()
                 .addGap(94, 94, 94)
-                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(verifyTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(verifyTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(otpVerifyPanelLayout.createSequentialGroup()
                         .addComponent(verifyConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(verifyCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(verifyField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(otpVerifyPanelLayout.createSequentialGroup()
+                        .addComponent(verifyField, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(regenerateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(119, Short.MAX_VALUE))
         );
         otpVerifyPanelLayout.setVerticalGroup(
@@ -105,7 +121,9 @@ public class login extends javax.swing.JPanel {
                 .addGap(23, 23, 23)
                 .addComponent(verifyTitle)
                 .addGap(27, 27, 27)
-                .addComponent(verifyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(verifyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(regenerateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(34, 34, 34)
                 .addGroup(otpVerifyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(verifyCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -168,6 +186,7 @@ public class login extends javax.swing.JPanel {
                     loginSuccess();
                 }
                 else if(dataResponse.getStatus() == StatusCode.OTP_NEEDED){
+                    JOptionPane.showMessageDialog(parentFrame, "Toàn khoản chưa xác thực, hãy kiểm tra email", "Thông báo", WARNING_MESSAGE);
                     customDialog.setVisible(true);
                 }
                 else {
@@ -194,6 +213,7 @@ public class login extends javax.swing.JPanel {
             try {
                 DataResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
                 if(response.getStatus() == StatusCode.COMMAND_OK){
+                    JOptionPane.showMessageDialog(parentFrame, "Xác thực thành công!!","Success",INFORMATION_MESSAGE);
                     customDialog.setVisible(false);
                     loginSuccess();
                 }else{
@@ -204,6 +224,20 @@ public class login extends javax.swing.JPanel {
             }
         }
     }//GEN-LAST:event_verifyConfirmActionPerformed
+
+    private void regenerateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regenerateBtnActionPerformed
+        try {
+            DataResponse res = socketManager.getInstance().regenerateOTP(username, password);
+            if(res.getStatus()==StatusCode.COMMAND_OK){
+                JOptionPane.showMessageDialog(parentFrame, "Đã gửi lại mã OTP, vui lòng check mail","Success",INFORMATION_MESSAGE);
+            }
+            else
+            JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, vui lòng thử lại","Thông báo",WARNING_MESSAGE);
+        } catch (IOException ex) {
+            Logger.getLogger(register.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_regenerateBtnActionPerformed
     public void createCustomdialog(){
         parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
         customDialog = new customDialog(parentFrame);
@@ -219,6 +253,7 @@ public class login extends javax.swing.JPanel {
     private view.custom.Button button1;
     private javax.swing.JPanel otpVerifyPanel;
     private view.custom.passwordField passwordField;
+    private view.custom.Button regenerateBtn;
     private view.custom.textField userField;
     private view.custom.Button verifyCancel;
     private view.custom.Button verifyConfirm;
