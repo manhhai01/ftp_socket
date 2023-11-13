@@ -80,7 +80,7 @@ public class TestLSHR {
         commandReader.readLine();
         
         // Retrieve file
-        SocketUtils.writeLineAndFlush("RETR /testuser/aaaa/test.txt", commandWriter);
+        SocketUtils.writeLineAndFlush("RETR /users/testuser/aaaa/test.txt", commandWriter);
         
         // Start of transfer message
         System.out.println("RETR: " + commandReader.readLine());

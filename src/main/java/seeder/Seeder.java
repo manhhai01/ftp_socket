@@ -60,23 +60,27 @@ public class Seeder {
 //        rootUser.setPassword(md5Utils.getMD5Hash("root"));
 //        rootUser.setIsActive(1);
 //        userDao.save(rootUser);
-
         User user1 = new User();
         user1.setUsername("testuser");
         user1.setPassword(md5Utils.getMD5Hash("test"));
         user1.setIsActive(1);
+        user1.setMaxDownloadFileSizeBytes(300000000); // 300 MB
+        user1.setMaxUploadFileSizeBytes(300000000); // 300 MB
+        user1.setQuotaInBytes(1000000000); // 1 GB
         userDao.save(user1);
 
         User user2 = new User();
         user2.setUsername("testuser2");
         user2.setPassword(md5Utils.getMD5Hash("test2"));
         user2.setIsActive(1);
+        user2.setMaxDownloadFileSizeBytes(300000000); // 300 MB
+        user2.setMaxUploadFileSizeBytes(300000000); // 300 MB
+        user2.setQuotaInBytes(1000000000); // 1 GB
         userDao.save(user2);
-        
+
         File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
         file.mkdirs();
-        
-        
+
 //        createDir(AppConfig.SERVER_FTP_USERS_PATH, rootUser, null);
         Directory userHomeDirectory = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa", user1, null);
