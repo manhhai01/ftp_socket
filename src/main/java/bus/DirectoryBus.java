@@ -66,7 +66,7 @@ public class DirectoryBus {
             return true;
         }
         
-        if (user.getUsedKb() >= user.getQuotaInKb()) {
+        if (user.getUsedBytes() >= user.getQuotaInBytes()) {
             return false;
         }
         

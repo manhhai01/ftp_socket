@@ -58,7 +58,7 @@ public class RETRCommand implements Command {
             }
             File file = new File(filePath);
 
-            if (file.length() / 1000.0 > user.getMaxDownloadFileSizeKb()) {
+            if (file.length() > user.getMaxDownloadFileSizeBytes()) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.", commandSocketWriter);

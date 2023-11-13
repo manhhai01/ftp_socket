@@ -15,12 +15,10 @@ import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
@@ -57,7 +55,7 @@ public class NormalFileBus {
         normalFileBus.createTempFile(new FtpFileUtils().getParentPath(AppConfig.SERVER_FTP_USERS_PATH + "/" + "testuser.txt"));
     }
 
-    public boolean createNormalFile(String fromRootFilePath, String username) {
+    public synchronized boolean createNormalFile(String fromRootFilePath, String username) {
         User user = userDao.getUserByUsername(username);
 
         // Check if upload is allowed
@@ -76,7 +74,7 @@ public class NormalFileBus {
             return true;
         }
 
-        if (user.getUsedKb() >= user.getQuotaInKb()) {
+        if (user.getUsedBytes() >= user.getQuotaInBytes()) {
             return false;
         }
 
@@ -93,7 +91,7 @@ public class NormalFileBus {
         return success;
     }
 
-    public boolean removeNormalFile(String fromRootFilePath, String username) {
+    public synchronized boolean removeNormalFile(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
         if (!file.exists()) {
             return true;
@@ -119,18 +117,18 @@ public class NormalFileBus {
         model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
         boolean success = fileDao.remove(fileFromDb.getId());
         if (success) {
-            long fileSize = (long) (file.length() / 1000.0);
+            long fileSize = file.length();
             file.delete();
 
             User user = userDao.getUserByUserName(username);
-            float usedKb = user.getUsedKb();
-            user.setUsedKb(usedKb - fileSize);
+            long usedBytes = user.getUsedBytes();
+            user.setUsedBytes(usedBytes - fileSize);
             userDao.update(user);
         }
         return success;
     }
 
-    public boolean writeToNormalFile(String fromRootFilePath, String username, InputStream data, String writeMode) {
+    public synchronized boolean writeToNormalFile(String fromRootFilePath, String username, InputStream data, String writeMode) {
         File file = new File(fromRootFilePath);
         NormalFilePermission filePermission = (NormalFilePermission) fileBus.getFilePermission(
                 fromRootFilePath,
@@ -179,16 +177,16 @@ public class NormalFileBus {
         }
 
         // Check max upload size
-        long oldFileSize = (long) (file.length() / 1000.0);
-        long newFileSize = (long) (tempFile.length() / 1000.0);
-        if (newFileSize > user.getMaxUploadFileSizeKb()) {
+        long oldFileSize = file.length();
+        long newFileSize = tempFile.length();
+        if (newFileSize > user.getMaxUploadFileSizeBytes()) {
             tempFile.delete();
             return false;
         }
         
         // Check if exceed quota
-        long newUsedKb = (long) (newFileSize - oldFileSize + user.getUsedKb());
-        if (newUsedKb > user.getQuotaInKb()) {
+        long newUsedBytes = (long) (newFileSize - oldFileSize + user.getUsedBytes());
+        if (newUsedBytes > user.getQuotaInBytes()) {
             tempFile.delete();
             return false;
         }
@@ -202,13 +200,13 @@ public class NormalFileBus {
         }
 
         // Update used kb
-        user.setUsedKb(newUsedKb);
+        user.setUsedBytes(newUsedBytes);
         userDao.update(user);
         
         return true;
     }
 
-    public boolean setShareNormalFilePermission(String fromRootFilePath, String ownerUsername, String appliedUsername, String permission) {
+    public synchronized boolean setShareNormalFilePermission(String fromRootFilePath, String ownerUsername, String appliedUsername, String permission) {
         model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
         if (fileInDb == null) {
             return false;
@@ -233,7 +231,7 @@ public class NormalFileBus {
 
     }
 
-    public boolean unshareNormalFile(String fromRootFilePath, String ownerUsername, String appliedUsername) {
+    public synchronized boolean unshareNormalFile(String fromRootFilePath, String ownerUsername, String appliedUsername) {
         model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
         if (fileInDb == null) {
             return false;

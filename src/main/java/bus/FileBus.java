@@ -265,16 +265,16 @@ public class FileBus {
         return result;
     }
 
-    public String checkFileSize(String fromRootFilePath, int uploadKb, String username) {
+    public String checkFileSize(String fromRootFilePath, int uploadBytes, String username) {
         File file = new File(fromRootFilePath);
         User user = userDao.getUserByUserName(username);
-        long oldFileSize = (long) (file.length() / 1000.0);
-        if (uploadKb > user.getMaxUploadFileSizeKb()) {
+        long oldFileSize = file.length();
+        if (uploadBytes > user.getMaxUploadFileSizeBytes()) {
             return CHECK_FILE_SIZE_EXCEED_UPLOAD_SIZE;
         }
 
-        long newUsedKb = (long) (uploadKb - oldFileSize + user.getUsedKb());
-        if (newUsedKb > user.getQuotaInKb()) {
+        long newUsedBytes = (long) (uploadBytes - oldFileSize + user.getUsedBytes());
+        if (newUsedBytes > user.getQuotaInBytes()) {
             return CHECK_FILE_SIZE_EXCEED_QUOTA;
         }
 

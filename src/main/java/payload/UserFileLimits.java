@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 public class UserFileLimits {
 
-    private Integer quotaKb;
-    private Integer maxDownloadFileSizeKb;
-    private Integer maxUploadFileSizeKb;
+    private Integer quotaBytes;
+    private Integer maxDownloadFileSizeBytes;
+    private Integer maxUploadFileSizeBytes;
 }

@@ -166,21 +166,21 @@ public class UserBus {
             return SET_FILE_LIMITS_USER_NOT_FOUND;
         }
         
-        if (limits.getMaxDownloadFileSizeKb() != null) {
-            user.setMaxDownloadFileSizeKb(limits.getMaxDownloadFileSizeKb());
+        if (limits.getMaxDownloadFileSizeBytes() != null) {
+            user.setMaxDownloadFileSizeBytes(limits.getMaxDownloadFileSizeBytes());
         }
         
-        if (limits.getMaxUploadFileSizeKb() != null) {
-            user.setMaxUploadFileSizeKb(limits.getMaxUploadFileSizeKb());
+        if (limits.getMaxUploadFileSizeBytes() != null) {
+            user.setMaxUploadFileSizeBytes(limits.getMaxUploadFileSizeBytes());
         }
         
-        if(limits.getQuotaKb() != null) {
-            int quotaKb = limits.getQuotaKb();
-            if(quotaKb < user.getUsedKb()) {
+        if(limits.getQuotaBytes() != null) {
+            int quotaKb = limits.getQuotaBytes();
+            if(quotaKb < user.getUsedBytes()) {
                 return SET_FILE_LIMITS_QUOTA_SMALLER_THAN_USED_KB;
             }
             
-            user.setQuotaInKb(quotaKb);          
+            user.setQuotaInBytes(quotaKb);          
         }
         
         userDao.update(user);

@@ -24,11 +24,11 @@ public class UserMapper {
         DateUtils dateUtils = new DateUtils();
         Date birthday = new Date(dateUtils.converDateToLong(userDto.getBirthday()));
         user.setBirthdate(birthday);
-        user.setMaxDownloadFileSizeKb(300000);
-        user.setMaxUploadFileSizeKb(300000);
-        user.setQuotaInKb(1000000);
+        user.setMaxDownloadFileSizeBytes(300000 * 1000); // 300,000 KB = 300 KB
+        user.setMaxUploadFileSizeBytes(300000 * 1000); // 300,000 KB = 300 MB
+        user.setQuotaInBytes(1000000 * 10000); // 1,000,000 KB = 1 GB
         user.setAnonymous(false);
-        user.setUsedKb(0);
+        user.setUsedBytes(0);
         user.setIsActive(0);
         user.setBlock(false);
         user.setBlockUpdown(false);

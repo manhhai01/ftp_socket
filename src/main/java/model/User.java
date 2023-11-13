@@ -58,17 +58,17 @@ public class User {
     @Column(name = "anonymous")
     private boolean anonymous;
     
-    @Column(name = "max_download_file_size_kb")
-    private int maxDownloadFileSizeKb;
+    @Column(name = "max_download_file_size_bytes")
+    private long maxDownloadFileSizeBytes;
     
-    @Column(name = "max_upload_file_size_kb")
-    private int maxUploadFileSizeKb;
+    @Column(name = "max_upload_file_size_bytes")
+    private long maxUploadFileSizeBytes;
     
-    @Column(name = "quota_in_kb")
-    private int quotaInKb;
+    @Column(name = "quota_in_bytes")
+    private long quotaInBytes;
     
-    @Column(name = "used_kb")
-    private float usedKb;
+    @Column(name = "used_bytes")
+    private long usedBytes;
     
     @Column(name = "is_active")
     private int isActive;
