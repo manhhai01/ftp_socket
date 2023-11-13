@@ -50,6 +50,11 @@ public class DirectoryBus {
 
     public boolean createDirectory(String fromRootPath, String username) {
         User user = userDao.getUserByUsername(username);
+        
+        // Check if user is allowed to upload
+        if(user.isBlockUpload()) {
+            return false;
+        }
 
         // Check if upload is allowed
         String parentDirPath = new FtpFileUtils().getParentPath(fromRootPath);

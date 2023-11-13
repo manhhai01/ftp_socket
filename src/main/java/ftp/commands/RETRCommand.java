@@ -31,6 +31,16 @@ public class RETRCommand implements Command {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
         UserDao userDao = new UserDao();
         User user = userDao.getUserByUserName(session.getUsername());
+        if (user.isBlockDownload()) {
+            try {
+                SocketUtils.respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Forbidden.", commandSocketWriter);
+            } catch (IOException ex) {
+                Logger.getLogger(RETRCommand.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return;
+        }
         FileBus fileService = new FileBus();
 
         try {

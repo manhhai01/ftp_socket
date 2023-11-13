@@ -58,6 +58,11 @@ public class NormalFileBus {
     public synchronized boolean createNormalFile(String fromRootFilePath, String username) {
         User user = userDao.getUserByUsername(username);
 
+        // Check if user is able to upload
+        if (user.isBlockUpload()) {
+            return false;
+        }
+
         // Check if upload is allowed
         String parentDirPath = new FtpFileUtils().getParentPath(fromRootFilePath);
         DirectoryPermission parentPermission = (DirectoryPermission) fileBus.getFilePermission(
@@ -129,6 +134,13 @@ public class NormalFileBus {
     }
 
     public synchronized boolean writeToNormalFile(String fromRootFilePath, String username, InputStream data, String writeMode) {
+        User user = userDao.getUserByUserName(username);
+        
+        // Check if user is able to upload
+        if (user.isBlockUpload()) {
+            return false;
+        }
+
         File file = new File(fromRootFilePath);
         NormalFilePermission filePermission = (NormalFilePermission) fileBus.getFilePermission(
                 fromRootFilePath,
@@ -148,10 +160,9 @@ public class NormalFileBus {
         }
 
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
-        User user = userDao.getUserByUserName(username);
         String folderPath = ftpFileUtils.getParentPath(fromRootFilePath);
         File tempFile;
-        
+
         // Create temp file
         try {
             tempFile = createTempFile(folderPath);
@@ -183,7 +194,7 @@ public class NormalFileBus {
             tempFile.delete();
             return false;
         }
-        
+
         // Check if exceed quota
         long newUsedBytes = (long) (newFileSize - oldFileSize + user.getUsedBytes());
         if (newUsedBytes > user.getQuotaInBytes()) {
@@ -202,7 +213,7 @@ public class NormalFileBus {
         // Update used kb
         user.setUsedBytes(newUsedBytes);
         userDao.update(user);
-        
+
         return true;
     }
 

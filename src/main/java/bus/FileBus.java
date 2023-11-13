@@ -103,9 +103,12 @@ public class FileBus {
 
         File destination = new File(newFilePath);
         File[] childFiles = file.listFiles();
-        for (File child : childFiles) {
-            reparentFilePathInDb(child, newFilePath, true);
+        if (childFiles != null) {
+            for (File child : childFiles) {
+                reparentFilePathInDb(child, newFilePath, true);
+            }
         }
+
         reparentFilePathInDb(file, parentPath, false);
 
         file.renameTo(destination);
