@@ -55,7 +55,7 @@ public class FileBus {
         return normalFileBus.removeNormalFile(fromRootFilePath, username);
     }
 
-    private void reparentFilePathInDb(File file, String newParentPath) {
+    private void reparentFilePathInDb(File file, String newParentPath, boolean recursive) {
         String filePath = file.getPath().replace("\\", "/");
         String newFilePath = ftpFileUtils.joinPath(newParentPath, file.getName());
 
@@ -66,17 +66,19 @@ public class FileBus {
         }
 
         if (file.isDirectory()) {
-            File[] childFiles = file.listFiles();
-            Directory directory = directoryDao.getDirectoryByPath(filePath);
-            directory.setPath(newFilePath);
-            directoryDao.update(directory);
+            if (recursive) {
+                File[] childFiles = file.listFiles();
+                Directory directory = directoryDao.getDirectoryByPath(filePath);
+                directory.setPath(newFilePath);
+                directoryDao.update(directory);
 
-            if (childFiles.length == 0) {
-                return;
-            }
+                if (childFiles.length == 0) {
+                    return;
+                }
 
-            for (File child : childFiles) {
-                reparentFilePathInDb(child, newFilePath);
+                for (File child : childFiles) {
+                    reparentFilePathInDb(child, newFilePath, true);
+                }
             }
         }
     }
@@ -100,17 +102,21 @@ public class FileBus {
         }
 
         File destination = new File(newFilePath);
-        reparentFilePathInDb(file, parentPath);
+        File[] childFiles = file.listFiles();
+        for (File child : childFiles) {
+            reparentFilePathInDb(child, newFilePath, true);
+        }
+        reparentFilePathInDb(file, parentPath, false);
 
         file.renameTo(destination);
         if (fileType.equals(NORMAL_FILE_TYPE)) {
             model.File fileInDb = fileDao.getFileByPath(oldFilePath);
             fileInDb.setPath(newFilePath);
-            fileDao.save(fileInDb);
+            fileDao.update(fileInDb);
         } else {
             Directory directory = directoryDao.getDirectoryByPath(oldFilePath);
             directory.setPath(newFilePath);
-            directoryDao.save(directory);
+            directoryDao.update(directory);
         }
         return true;
     }
