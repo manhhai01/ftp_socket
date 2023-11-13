@@ -65,7 +65,7 @@ public class MLSDFormatter {
         String result = "";
         System.out.println(file.getName());
         File[] files = fileFilter == null ? file.listFiles() : file.listFiles(fileFilter);
-        if (files.length == 0) {
+        if (files == null) {
             return "";
         }
         for (File f : files) {
