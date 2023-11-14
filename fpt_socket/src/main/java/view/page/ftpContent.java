@@ -48,8 +48,10 @@ public class ftpContent extends javax.swing.JPanel {
         this.type = type;
         setTable();
         createCustomdialog();
-        if(getCurrentDir())
-            generateMyFile();
+        if(type.equals("myWorkingSpace")){
+            if(getCurrentDir())
+                getFileList();
+        }else getSharedFileList();
         
     }
     
@@ -77,7 +79,7 @@ public class ftpContent extends javax.swing.JPanel {
                     DataResponse res = socketManager.getInstance().delete(name);
                     if(res.getStatus()== StatusCode.FILE_ACTION_OK){
                         JOptionPane.showMessageDialog(parentFrame, "đã xóa!", "Success", INFORMATION_MESSAGE);
-                        generateMyFile();
+                        getFileList();
                     }
                 }catch (IOException e){
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, e);
@@ -234,7 +236,7 @@ public class ftpContent extends javax.swing.JPanel {
         jSeparator1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         title.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        title.setText("Thư mục của tôi >");
+        title.setText("/");
 
         roundPanel3.setBackground(new java.awt.Color(204, 204, 204));
         roundPanel3.setPreferredSize(new java.awt.Dimension(300, 40));
@@ -606,7 +608,7 @@ public class ftpContent extends javax.swing.JPanel {
                 try {
                     socketManager.getInstance().changeDirectory(name);
                     if(getCurrentDir())
-                        generateMyFile();
+                        getFileList();
                 } catch (IOException ex) {
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -641,7 +643,7 @@ public class ftpContent extends javax.swing.JPanel {
                 try {
                     response = socketManager.getInstance().createNewFolder(name);
                     if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
-                        generateMyFile();
+                        getFileList();
                     }else JOptionPane.showMessageDialog(parentFrame, response.getMessage());
                 } catch (IOException ex) {
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
@@ -657,7 +659,7 @@ public class ftpContent extends javax.swing.JPanel {
                     System.out.println("old name: "+oldName+"; newName: "+newName);
                     DataResponse res = socketManager.getInstance().rename(oldName, newName);
                     if(res.getStatus()==StatusCode.FILE_ACTION_OK){
-                        generateMyFile();
+                        getFileList();
                     }else {
                         JOptionPane.showMessageDialog(parentFrame, res.getMessage(), "Thông báo",WARNING_MESSAGE);
                     }
@@ -670,12 +672,19 @@ public class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_renameConfirmActionPerformed
 
     private void highlightPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel3MouseClicked
+        
         String newDirectory= currentWorkingDirectory.substring(0, currentWorkingDirectory.lastIndexOf("/"));
         if(!newDirectory.isEmpty()){
             try {
                 socketManager.getInstance().changeDirectory(newDirectory);
                 getCurrentDir();
-                generateMyFile();
+                getFileList();
+            } catch (IOException ex) {
+                Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else if(type.equals("share")){
+            try {
+                getSharedFileList();
             } catch (IOException ex) {
                 Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -698,17 +707,22 @@ public class ftpContent extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(parentFrame, "Lỗi xảy ra khi tìm thư mục hiện thành", "Thông báo",WARNING_MESSAGE);
         return false;       
     }
-    public void generateMyFile() throws IOException{
+    public void getFileList() throws IOException{
         String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
         setModelFile(fileList);
-
+    }
+    public void getSharedFileList() throws IOException{
+        String fileList = socketManager.getInstance().getSharedFiles();
+        System.out.println(fileList);
+        setModelFile(fileList);
     }
     public void setModelFile(String fileList){
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
-        if(fileList.length()!=0){
+        if(!fileList.isBlank()){
             String[] lines = fileList.split("\n");
             for(String line : lines){
+                if(!line.isBlank()){
                 String[] parts = line.split(";");
                 String type = parts[0].split("=")[1].trim();
                 String size = parts[1].split("=")[1].trim();
@@ -720,7 +734,8 @@ public class ftpContent extends javax.swing.JPanel {
                 else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
                 Object[] row=new Object[]{img,name,perm,"ahihi",size+"kb"};
                 model.addRow(row);
-        }
+                }
+            }
         }       
               
     }

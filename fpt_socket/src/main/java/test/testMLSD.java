@@ -14,11 +14,12 @@ import socket.socketManager;
  */
 public class testMLSD {
     public static void main(String[] args) throws IOException {
-//        socketManager.getInstance().login("testuser", "test");
-//        DataResponse res = socketManager.getInstance().getCurrentWorkingDirectory();
-//        String dir = res.getMessage().substring(0,res.getMessage().lastIndexOf("\""));
-//        System.out.println(dir.replace("\"", ""));
-//        String fileLists = socketManager.getInstance().getFileList(dir);
-//        System.out.println(fileLists);
+        socketManager.getInstance().login("testuser", "test");
+        DataResponse res = socketManager.getInstance().getCurrentWorkingDirectory();
+        String dir = res.getMessage().substring(0,res.getMessage().lastIndexOf("\""));
+        System.out.println(dir.replace("\"", ""));
+        String fileLists = socketManager.getInstance().getFileList(dir);
+        System.out.println(fileLists);
+        System.out.println("aaaaa");
     }
 }

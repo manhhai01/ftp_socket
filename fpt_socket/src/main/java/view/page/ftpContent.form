@@ -223,7 +223,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="18" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Th&#x1b0; m&#x1ee5;c c&#x1ee7;a t&#xf4;i &gt;"/>
+            <Property name="text" type="java.lang.String" value="/"/>
           </Properties>
         </Component>
         <Container class="view.custom.RoundPanel" name="roundPanel3">
