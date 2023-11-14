@@ -9,6 +9,9 @@ import dao.UserDao;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import model.Directory;
 import model.ShareDirectories;
@@ -52,8 +55,9 @@ public class Seeder {
         return fileModel;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         MP5Utils md5Utils = new MP5Utils();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 //        User rootUser = new User();
 //        rootUser.setUsername("root");
@@ -63,6 +67,10 @@ public class Seeder {
         User user1 = new User();
         user1.setUsername("testuser");
         user1.setPassword(md5Utils.getMD5Hash("test"));
+        user1.setBirthdate(dateFormat.parse("31/6/1998"));
+        user1.setFirstName("An");
+        user1.setLastName("Tran Van");
+        user1.setGender("Nam");
         user1.setIsActive(1);
         user1.setMaxDownloadFileSizeBytes(300000000); // 300 MB
         user1.setMaxUploadFileSizeBytes(300000000); // 300 MB
@@ -72,6 +80,10 @@ public class Seeder {
         User user2 = new User();
         user2.setUsername("testuser2");
         user2.setPassword(md5Utils.getMD5Hash("test2"));
+        user2.setBirthdate(dateFormat.parse("22/11/1996"));
+        user2.setFirstName("Tuyet");
+        user2.setLastName("Le Thi");
+        user2.setGender("Nữ");
         user2.setIsActive(1);
         user2.setMaxDownloadFileSizeBytes(300000000); // 300 MB
         user2.setMaxUploadFileSizeBytes(300000000); // 300 MB

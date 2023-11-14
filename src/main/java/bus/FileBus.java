@@ -12,12 +12,14 @@ import payload.GetSharedFilesResultDto;
 import dao.UserDao;
 import ftp.DirectoryPermission;
 import ftp.FilePermission;
+import ftp.FilePermissionWithUser;
 import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
 import ftp.commands.AnonymousDisabledException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import mapper.PublicUserMapper;
 import model.Directory;
 import model.ShareDirectories;
 import model.ShareFiles;
@@ -41,6 +43,7 @@ public class FileBus {
     private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
     private static final NormalFileBus normalFileBus = new NormalFileBus();
     private static final DirectoryBus directoryBus = new DirectoryBus();
+    private static final PublicUserMapper publicUserMapper = new PublicUserMapper();
 
     public boolean removeFile(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
@@ -288,6 +291,55 @@ public class FileBus {
         }
 
         return CHECK_FILE_SIZE_OK;
+    }
+
+    public List<FilePermissionWithUser> getSharedUsersPermissions(String filePath) {
+        List<FilePermissionWithUser> filePermissions = new ArrayList<>();
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+            return filePermissions;
+        }
+
+        if (file.isFile()) {
+            model.File fileInDb = fileDao.getFileByPath(filePath);
+            List<ShareFiles> fileSharePermissionsInDb = fileInDb.getShareFiles();
+
+            if (fileSharePermissionsInDb == null) {
+                return filePermissions;
+            }
+
+            for (ShareFiles fileSharePermission : fileSharePermissionsInDb) {
+                FilePermissionWithUser filePermissionWithUser = new FilePermissionWithUser();
+                filePermissionWithUser.setFileType(NORMAL_FILE_TYPE);
+                filePermissionWithUser.setUserInfo(publicUserMapper.userToPublicUserInfo(fileSharePermission.getUser()));
+                filePermissionWithUser.setPermission(new NormalFilePermission(fileSharePermission.getPermission(), true));
+                filePermissions.add(filePermissionWithUser);
+            }
+        } else {
+            Directory dir = directoryDao.getDirectoryByPath(filePath);
+            List<ShareDirectories> dirSharePermissionInDb = dir.getShareDirectories();
+
+            if (dirSharePermissionInDb == null) {
+                return filePermissions;
+            }
+
+            for (ShareDirectories dirSharePermission : dirSharePermissionInDb) {
+                FilePermissionWithUser filePermissionWithUser = new FilePermissionWithUser();
+                filePermissionWithUser.setFileType(DIRECTORY_TYPE);
+                filePermissionWithUser.setUserInfo(publicUserMapper.userToPublicUserInfo(dirSharePermission.getUser()));
+                filePermissionWithUser.setPermission(new DirectoryPermission(
+                        dirSharePermission.isCanModify(),
+                        dirSharePermission.isUploadPermission(),
+                        dirSharePermission.isDownloadPermission(),
+                        true
+                ));
+
+                filePermissions.add(filePermissionWithUser);
+            }
+        }
+
+        return filePermissions;
     }
 
 }

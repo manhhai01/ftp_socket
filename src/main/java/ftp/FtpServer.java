@@ -1,6 +1,5 @@
 package ftp;
 
-import ftp.commands.SSZECommand;
 import ftp.commands.TYPECommand;
 import ftp.commands.USERCommand;
 import ftp.commands.RNTOCommand;
@@ -20,6 +19,8 @@ import ftp.commands.AUTHCommand;
 import ftp.commands.GOTPCommand;
 import ftp.commands.LSANCommand;
 import ftp.commands.LSHRCommand;
+import ftp.commands.LSURCommand;
+import ftp.commands.PROFCommand;
 import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
 import ftp.commands.SHRECommand;
@@ -141,7 +142,9 @@ public class FtpServer {
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
         ftpServerBuilder.addCommand("USHR", new USHRCommand());
         ftpServerBuilder.addCommand("LSAN", new LSANCommand());
-        ftpServerBuilder.addCommand("SSZE", new SSZECommand());
+//        ftpServerBuilder.addCommand("SSZE", new SSZECommand());
+        ftpServerBuilder.addCommand("PROF", new PROFCommand());
+        ftpServerBuilder.addCommand("LSUR", new LSURCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
