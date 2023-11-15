@@ -30,6 +30,7 @@ import model.User;
 import model.ids.ShareFilesId;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import utils.EmailUtils;
 
 /**
  *
@@ -229,7 +230,7 @@ public class NormalFileBus {
 
         User appliedUser = userDao.getUserByUserName(appliedUsername);
 
-        boolean success = shareFilesDao.update(
+        boolean resUpdate = shareFilesDao.update(
                 new ShareFiles(
                         new ShareFilesId(fileInDb.getId(), appliedUser.getId()),
                         permission,
@@ -238,7 +239,11 @@ public class NormalFileBus {
         );
 
         // Todo: Send mail
-        return success;
+        EmailUtils emailUtils = new EmailUtils();
+        boolean resSendEmail = emailUtils.sendSharingFileNotification(ownerUsername, appliedUsername, permission);
+        
+        
+        return resUpdate && resSendEmail;
 
     }
 

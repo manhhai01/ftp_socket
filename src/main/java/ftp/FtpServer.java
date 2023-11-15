@@ -1,5 +1,6 @@
 package ftp;
 
+import config.IPConfig;
 import ftp.commands.TYPECommand;
 import ftp.commands.USERCommand;
 import ftp.commands.RNTOCommand;
@@ -79,6 +80,8 @@ public class FtpServer {
 
     public void start() {
         try {
+            IPConfig ipConfig = new IPConfig();
+            ipConfig.createServerIP();
             server = new ServerSocket(21);
             System.out.println("Server started on port 21");
         } catch (IOException ex) {

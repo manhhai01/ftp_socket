@@ -18,6 +18,7 @@ import model.Directory;
 import model.ShareDirectories;
 import model.User;
 import model.ids.ShareDirectoriesId;
+import utils.EmailUtils;
 
 /**
  *
@@ -127,7 +128,7 @@ public class DirectoryBus {
 
         User appliedUser = userDao.getUserByUserName(appliedUsername);
 
-        boolean success = shareDirectoriesDao.update(
+        boolean resUpdate = shareDirectoriesDao.update(
                 new ShareDirectories(
                         new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()),
                         canModify,
@@ -138,8 +139,10 @@ public class DirectoryBus {
         );
         
         // Todo: Send mail
+        EmailUtils emailUtils = new EmailUtils();
+        boolean resSendEmail = emailUtils.sendSharingDirectoryNotification(ownerUsername, appliedUsername, canModify, uploadable, downloadable);
         
-        return success;
+        return resUpdate && resSendEmail;
     }
 
     public boolean unshareDirectory(String fromRootDirPath, String ownerUsername, String appliedUsername) {

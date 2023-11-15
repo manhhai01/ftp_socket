@@ -58,6 +58,9 @@ public class FtpSessionWorker extends Thread {
 
     public void matchCommand(String input, BufferedWriter commandSocketWriter, FtpServerSession session) {
         System.out.println("Input: " + input);
+        
+        // Giai ma:
+        
         InputParseResult parsedInput = parseInput(input);
         Command command = commands.get(parsedInput.commandName());
         if (command != null) {
