@@ -15,8 +15,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import payloads.DataResponse;
+import socket.StatusCode;
 import socket.socketManager;
 import view.custom.HighlightPanel;
 import view.page.information;
@@ -30,6 +34,8 @@ import view.page.trash;
  * @author Bum
  */
 public class mainLayout extends javax.swing.JFrame {
+    String rootDir;
+    private final String SHARE_CONTENT="share",MYSPACE_CONTENT="myWorkingSpace";
     /**
      * Creates new form mainLayouta
      */
@@ -37,11 +43,9 @@ public class mainLayout extends javax.swing.JFrame {
         lightTheme();
         initComponents();
         centerLocation();
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        pack();
-//        setSize(screenSize.width,screenSize.height);
+        getRootDir();
         active(page1);
-        getContent(new ftpContent("myWorkingSpace"));
+        getContent(new ftpContent(MYSPACE_CONTENT,rootDir));
     }
 
     /**
@@ -285,6 +289,7 @@ public class mainLayout extends javax.swing.JFrame {
 
         jLabel9.setText("Bộ nhớ đã dùng: 7.5/15GB");
 
+        progressBar1.setToolTipText("");
         progressBar1.setValue(50);
         progressBar1.setStringPainted(false);
 
@@ -413,7 +418,7 @@ public class mainLayout extends javax.swing.JFrame {
     private void page1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page1MouseClicked
         active(page1);
         try {
-            getContent(new ftpContent("myWorkingSpace"));
+            getContent(new ftpContent(MYSPACE_CONTENT,rootDir));
         } catch (IOException ex) {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -422,7 +427,7 @@ public class mainLayout extends javax.swing.JFrame {
     private void page2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page2MouseClicked
         active(page2);
         try {
-            getContent(new ftpContent("share"));
+            getContent(new ftpContent(SHARE_CONTENT,rootDir));
         } catch (IOException ex) {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -510,6 +515,24 @@ public class mainLayout extends javax.swing.JFrame {
             
             // Đặt vị trí của JFrame
             setLocation(x, y);
+    }
+    
+    
+    public boolean getRootDir(){
+        DataResponse response;
+        try {
+            response = socketManager.getInstance().getCurrentWorkingDirectory();
+            if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){
+                String dir = response.getMessage().substring(0,response.getMessage().lastIndexOf("\""));       
+                rootDir = dir.replace("\"", "");                
+                return true;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        JOptionPane.showMessageDialog(this, "Lỗi xảy ra khi tìm thư mục hiện thành", "Thông báo",WARNING_MESSAGE);
+        return false;       
     }
     /**
      * @param args the command line arguments
