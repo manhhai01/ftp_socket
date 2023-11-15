@@ -4,6 +4,7 @@
  */
 package socket;
 
+import config.IPConfig;
 import java.awt.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,8 +12,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.apache.commons.io.IOUtils;
 import payloads.DataResponse;
+import static thread.Client.executor;
+import thread.ReceiveMessage;
+import thread.SendMessage;
 
 /**
  *
@@ -26,8 +32,10 @@ public class socketManager {
     
     private socketManager() {
         try {
+            IPConfig ipConfig = new IPConfig();
+            String ipServer = ipConfig.getIPServer();
             // Khởi tạo kết nối TCP socket
-            commandSocket = new Socket("localhost", 21);
+            commandSocket = new Socket(ipServer, 21);
             // Khởi tạo BufferedReader và BufferedWriter để gửi và nhận dữ liệu
             commandReader = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
             commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
@@ -147,10 +155,15 @@ public class socketManager {
         instance=null;
     }
     public void writeLineAndFlush(String content, BufferedWriter writer) throws IOException {
+        
+        // ma hoa
+        
         writer.append(content);
         writer.newLine();
         writer.flush();
     }
+    
+    
 
     
 }
