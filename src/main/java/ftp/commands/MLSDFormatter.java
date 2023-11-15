@@ -4,8 +4,11 @@
  */
 package ftp.commands;
 
+import dao.DirectoryDao;
+import dao.FileDao;
 import ftp.DirectoryPermission;
 import ftp.FilePermission;
+import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
 import java.io.File;
 import java.io.FileFilter;
@@ -17,6 +20,10 @@ import java.nio.charset.StandardCharsets;
  * @author User
  */
 public class MLSDFormatter {
+
+    private static FileDao fileDao = new FileDao();
+    private static DirectoryDao directoryDao = new DirectoryDao();
+    private static FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     private String getNormalFilePermissionString(NormalFilePermission filePermission) {
         if (filePermission.getPermission().equals(NormalFilePermission.FULL_PERMISSION)) {
@@ -47,15 +54,20 @@ public class MLSDFormatter {
 
     private String format(File file, FilePermission filePermission) {
         String result;
+        String filePath = ftpFileUtils.convertJavaPathToFtpPath(file.getPath());
         if (file.isDirectory()) {
-            result = String.format("Type=%s;Size=%s;Perm=%s; %s\n",
+            result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "dir",
+                    directoryDao.getDirectoryByPath(filePath).getUser().getFirstName(),
+                    file.lastModified(),//
                     file.length(),
                     getDirPermissionString((DirectoryPermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
         } else {
-            result = String.format("Type=%s;Size=%s;Perm=%s; %s\n",
+            result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "file",
+                    fileDao.getFileByPath(filePath).getUser().getFirstName(),
+                    file.lastModified(),//
                     file.length(),
                     getNormalFilePermissionString((NormalFilePermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
