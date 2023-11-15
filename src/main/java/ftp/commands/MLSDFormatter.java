@@ -9,6 +9,8 @@ import ftp.FilePermission;
 import ftp.NormalFilePermission;
 import java.io.File;
 import java.io.FileFilter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -50,13 +52,13 @@ public class MLSDFormatter {
                     "dir",
                     file.length(),
                     getDirPermissionString((DirectoryPermission) filePermission),
-                    file.getName());
+                    URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
         } else {
             result = String.format("Type=%s;Size=%s;Perm=%s; %s\n",
                     "file",
                     file.length(),
                     getNormalFilePermissionString((NormalFilePermission) filePermission),
-                    file.getName());
+                    URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
         }
         return result;
     }

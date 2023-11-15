@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import payload.GetSharedFilesResultDto;
@@ -31,7 +33,7 @@ public class LSHRCommand implements Command {
         return formatter.formatSingleFile(file, filePermissionGetter.getFilePermission(file)).replace("\n", "")
                 // Add file path and remove ftp root path so string will be in the form "/path/to/file.txt"
                 // instead of "path/to-ftp-root/path/to/file.txt"
-                + " " + pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")
+                + " " + URLEncoder.encode(pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, ""), StandardCharsets.UTF_8)
                 // Add new line back
                 + "\n";
     }
