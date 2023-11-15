@@ -34,7 +34,7 @@ public class DirectoryBus {
     private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     public boolean createHomeDirectoryIfNotExist(String username) {
-        String fromRootPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_FILE_PATH, username);
+        String fromRootPath = ftpFileUtils.joinPath(AppConfig.SERVER_FTP_USERS_PATH, username);
         User user = userDao.getUserByUsername(username);
         Directory homeDir = directoryDao.getDirectoryByPath(fromRootPath);
         if (homeDir != null) {

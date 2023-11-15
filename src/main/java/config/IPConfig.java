@@ -16,7 +16,7 @@ public class IPConfig {
     public void createServerIP() {
         try {
             // CODE PHÍA SERVER: lấy local IP bằng cách tạo socket đến 1 website tạm
-        Socket socket = new Socket("http://thongtindaotao.sgu.edu.vn", 80);
+        Socket socket = new Socket("google.com", 80);
         String localIP = socket.getLocalAddress().toString().substring(1);
         // SV tự generate API tại https://retool.com/api-generator/
         String api = "https://retoolapi.dev/ThkBFo/data/1"; // Ghi vào dòng 1 trong DB

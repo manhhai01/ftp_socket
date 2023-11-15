@@ -34,6 +34,7 @@ public class PASSCommand implements Command {
         String message = userBus.checkLogin(username, password);
         if (message.equals(UserBus.LOGIN_SUCCESS_MSG)) {
             try {
+                directoryBus.createHomeDirectoryIfNotExist(username);
                 session.changeWorkingDir(AppConfig.SERVER_FTP_USERS_PATH.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "") + "/" + session.getUsername());
                 SocketUtils.respondCommandSocket(StatusCode.LOGGED_IN, "User logged in, proceed.", commandSocketWriter);
                 return;
