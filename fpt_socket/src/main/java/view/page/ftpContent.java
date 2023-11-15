@@ -9,12 +9,18 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.*;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -33,26 +39,41 @@ import view.custom.customDialog;
  *
  * @author Bum
  */ 
-public class ftpContent extends javax.swing.JPanel {
+public final class ftpContent extends javax.swing.JPanel {
     private customDialog customDialog;
+    private Stack<String> pathHistory = new Stack<>();
     private Frame parentFrame;
-    private String type;
-    private String currentWorkingDirectory;
+    private JPanel panel;
+    private final String CONTENT_TYPE;
+    private final String SHARE_CONTENT="share",MYSPACE_CONTENT="myWorkingSpace";
+    private final String ROOT_DIRECTORY;
+    private String CURRENT_DIRECTORY;
     private String oldName;
 
     /**
      * Creates new form page1
+     * @param type
+     * @param rootDir
      */
-    public ftpContent(String type) throws IOException {
+    public ftpContent(String type, String rootDir) throws IOException {
         initComponents();
-        this.type = type;
+        this.CONTENT_TYPE = type;
         setTable();
+        ROOT_DIRECTORY = rootDir;
+        pathHistory.push(rootDir);
         createCustomdialog();
-        if(type.equals("myWorkingSpace")){
-            if(getCurrentDir())
+        createPasteOption();
+        if(CONTENT_TYPE.equals(MYSPACE_CONTENT)){
+            if(socketManager.getInstance().changeDirectory(ROOT_DIRECTORY).getStatus()==StatusCode.FILE_ACTION_OK){
+                CURRENT_DIRECTORY=ROOT_DIRECTORY;
+                changePathTitle();
                 getFileList();
-        }else getSharedFileList();
-        
+            }
+        }else {
+            CURRENT_DIRECTORY="/";
+            changePathTitle();
+            getSharedFileList();
+        }        
     }
     
     public void setTable(){
@@ -105,8 +126,8 @@ public class ftpContent extends javax.swing.JPanel {
         };
 
         table.getColumnModel().getColumn(0).setCellRenderer(new IconRenderer());
-        table.getColumnModel().getColumn(5).setCellRenderer(new TableActionCellRender());
-        table.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event));
+        table.getColumnModel().getColumn(6).setCellRenderer(new TableActionCellRender());
+        table.getColumnModel().getColumn(6).setCellEditor(new TableActionCellEditor(event));
         table.setDefaultRenderer(Object.class, (JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int column) -> {
             Component component = new DefaultTableCellRenderer().getTableCellRendererComponent(t, value, isSelected, hasFocus, row, column);
             if (isSelected == false ) {
@@ -120,12 +141,28 @@ public class ftpContent extends javax.swing.JPanel {
     }
     public void createCustomdialog(){
         parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        panel = this;
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(renamePanel);
     }
     public void closeDialog(){
         customDialog.setVisible(false);
         renameField.setText("");
+    }
+    public void createPasteOption(){
+        JPopupMenu pasteOption = new JPopupMenu();
+        JMenuItem menuItem = new JMenuItem("Dán");
+        pasteOption.add(menuItem);
+        this.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Xử lý sự kiện khi chuột phải được nhấn
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    pasteOption.show(panel,e.getX(), e.getY());
+                    menuItem.setEnabled(false);
+                }
+            }
+        });
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -413,7 +450,7 @@ public class ftpContent extends javax.swing.JPanel {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, true, false
+                false, false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -441,10 +478,10 @@ public class ftpContent extends javax.swing.JPanel {
             table.getColumnModel().getColumn(2).setPreferredWidth(100);
             table.getColumnModel().getColumn(3).setPreferredWidth(100);
             table.getColumnModel().getColumn(4).setPreferredWidth(50);
-            table.getColumnModel().getColumn(5).setPreferredWidth(10);
-            table.getColumnModel().getColumn(6).setMinWidth(0);
-            table.getColumnModel().getColumn(6).setPreferredWidth(0);
-            table.getColumnModel().getColumn(6).setMaxWidth(0);
+            table.getColumnModel().getColumn(5).setMinWidth(0);
+            table.getColumnModel().getColumn(5).setPreferredWidth(0);
+            table.getColumnModel().getColumn(5).setMaxWidth(0);
+            table.getColumnModel().getColumn(6).setPreferredWidth(10);
         }
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -602,13 +639,25 @@ public class ftpContent extends javax.swing.JPanel {
             JTable target = (JTable) evt.getSource();
             int row = target.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
-            String name = model.getValueAt(row,1 ).toString();
+            String name;
+            if(pathHistory.size() <= 1 && this.CONTENT_TYPE.equals(SHARE_CONTENT))
+                name= model.getValueAt(row,5).toString();
+            else name= model.getValueAt(row,1).toString();
+            System.out.println(name);
             if(name.split("\\.").length==1){
                 // nếu row được chọn là thư mục
                 try {
-                    socketManager.getInstance().changeDirectory(name);
-                    if(getCurrentDir())
+                    if(socketManager.getInstance().changeDirectory(name).getStatus() == StatusCode.FILE_ACTION_OK); 
+                    {
+                        String newPath=null;
+                        if(pathHistory.size() <= 1 && this.CONTENT_TYPE.equals(SHARE_CONTENT))
+                            newPath= name;
+                        else newPath=pathHistory.isEmpty() ? ROOT_DIRECTORY : pathHistory.peek() + "/" + name;
+                        CURRENT_DIRECTORY = newPath;
+                        changePathTitle();
+                        pathHistory.push(newPath);
                         getFileList();
+                    }
                 } catch (IOException ex) {
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -672,32 +721,42 @@ public class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_renameConfirmActionPerformed
 
     private void highlightPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel3MouseClicked
-        
-        String newDirectory= currentWorkingDirectory.substring(0, currentWorkingDirectory.lastIndexOf("/"));
-        if(!newDirectory.isEmpty()){
-            try {
-                socketManager.getInstance().changeDirectory(newDirectory);
-                getCurrentDir();
-                getFileList();
-            } catch (IOException ex) {
-                Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }else if(type.equals("share")){
-            try {
+        try {
+            String newPath = null;
+            if(pathHistory.size()<=1 && this.CONTENT_TYPE.equals("share")){
                 getSharedFileList();
-            } catch (IOException ex) {
+                CURRENT_DIRECTORY="/";
+                changePathTitle();
+                
+            }else{
+                if(pathHistory.size()>1){
+                        pathHistory.pop();
+                        newPath = pathHistory.peek();
+                }else if(!this.CONTENT_TYPE.equals(SHARE_CONTENT))
+                    newPath = ROOT_DIRECTORY;
+
+                if(socketManager.getInstance().changeDirectory(newPath).getStatus() == StatusCode.FILE_ACTION_OK){
+                    CURRENT_DIRECTORY=newPath;
+                    changePathTitle();
+                    getFileList();                
+                }
+
+            }
+        } catch (IOException ex) {
                 Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
     }//GEN-LAST:event_highlightPanel3MouseClicked
+    public void changePathTitle(){
+        title.setText(CURRENT_DIRECTORY);
+    }
     public boolean getCurrentDir(){
         DataResponse response;
         try {
             response = socketManager.getInstance().getCurrentWorkingDirectory();
             if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){
                 String dir = response.getMessage().substring(0,response.getMessage().lastIndexOf("\""));       
-                currentWorkingDirectory = dir.replace("\"", "");
-                title.setText(currentWorkingDirectory);
+                CURRENT_DIRECTORY = dir.replace("\"", "");
+                title.setText(CURRENT_DIRECTORY);
                 return true;
             }
         } catch (IOException ex) {
@@ -708,15 +767,7 @@ public class ftpContent extends javax.swing.JPanel {
         return false;       
     }
     public void getFileList() throws IOException{
-        String fileList = socketManager.getInstance().getFileList(currentWorkingDirectory);
-        setModelFile(fileList);
-    }
-    public void getSharedFileList() throws IOException{
-        String fileList = socketManager.getInstance().getSharedFiles();
-        System.out.println(fileList);
-        setModelFile(fileList);
-    }
-    public void setModelFile(String fileList){
+        String fileList = socketManager.getInstance().getFileList(CURRENT_DIRECTORY);
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         if(!fileList.isBlank()){
@@ -732,7 +783,60 @@ public class ftpContent extends javax.swing.JPanel {
                 if(type.equals("dir"))
                     img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
                 else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
-                Object[] row=new Object[]{img,name,perm,"ahihi",size+"kb"};
+                Object[] row = new Object[]{img,name,perm,"ahihi",size+"kb"};
+                model.addRow(row);
+                }
+            }
+        }
+    }
+    public void getSharedFileList() throws IOException{
+        String fileList = socketManager.getInstance().getSharedFiles();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        if(!fileList.isBlank()){
+            String[] lines = fileList.split("\n");
+            for(String line : lines){
+                if(!line.isBlank()){
+                String[] parts = line.split(";");
+                String type = parts[0].split("=")[1].trim();
+                String size = parts[1].split("=")[1].trim();
+                String perm = parts[2].split("=")[1].trim();
+                parts = parts[3].trim().split(" ");
+                String name = parts[0]; String path = parts[1];
+                ImageIcon img;
+                if(type.equals("dir"))
+                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
+                else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
+                Object[] row;
+                row=new Object[]{img,name,perm,"ahihi",size+"kb",path};
+                model.addRow(row);
+                }
+            }
+        }
+    }
+    public void setModelFile(String fileList){
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        if(!fileList.isEmpty()){
+            String[] lines = fileList.split("\n");
+            for(String line : lines){
+                if(!line.isEmpty()){
+                String[] parts = line.split(";");
+                String type = parts[0].split("=")[1].trim();
+                String size = parts[1].split("=")[1].trim();
+                String perm = parts[2].split("=")[1].trim();
+                String name = parts[3].trim();
+                ImageIcon img;
+                if(type.equals("dir"))
+                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
+                else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
+                Object[] row;
+                if(this.CONTENT_TYPE.equals("share")){
+                    parts = name.split(" ");
+                    name = parts[0]; String path = parts[1];
+                        row=new Object[]{img,name,perm,"ahihi",size+"kb",path};
+                }
+                else row=new Object[]{img,name,perm,"ahihi",size+"kb"};
                 model.addRow(row);
                 }
             }
