@@ -12,10 +12,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.*;
@@ -132,7 +139,6 @@ public final class ftpContent extends javax.swing.JPanel {
                 System.out.println("Share row : " + row);  // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
             }
         };
-
         table.getColumnModel().getColumn(0).setCellRenderer(new IconRenderer());
         table.getColumnModel().getColumn(6).setCellRenderer(new TableActionCellRender());
         table.getColumnModel().getColumn(6).setCellEditor(new TableActionCellEditor(event));
@@ -140,6 +146,9 @@ public final class ftpContent extends javax.swing.JPanel {
             Component component = new DefaultTableCellRenderer().getTableCellRendererComponent(t, value, isSelected, hasFocus, row, column);
             if (isSelected == false ) {
             component.setBackground(Color.WHITE);
+            }
+            if(column==3){
+                ((JLabel) component).setHorizontalAlignment(JLabel.CENTER);
             }
             return component;
         });
@@ -523,9 +532,9 @@ public final class ftpContent extends javax.swing.JPanel {
         if (table.getColumnModel().getColumnCount() > 0) {
             table.getColumnModel().getColumn(0).setMinWidth(40);
             table.getColumnModel().getColumn(0).setMaxWidth(40);
-            table.getColumnModel().getColumn(1).setPreferredWidth(290);
-            table.getColumnModel().getColumn(2).setPreferredWidth(100);
-            table.getColumnModel().getColumn(3).setPreferredWidth(100);
+            table.getColumnModel().getColumn(1).setPreferredWidth(250);
+            table.getColumnModel().getColumn(2).setPreferredWidth(50);
+            table.getColumnModel().getColumn(3).setPreferredWidth(150);
             table.getColumnModel().getColumn(4).setPreferredWidth(50);
             table.getColumnModel().getColumn(5).setMinWidth(0);
             table.getColumnModel().getColumn(5).setPreferredWidth(0);
@@ -562,11 +571,11 @@ public final class ftpContent extends javax.swing.JPanel {
                     .addComponent(jSeparator2)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addGap(364, 364, 364)
+                        .addGap(336, 336, 336)
                         .addComponent(jLabel5)
-                        .addGap(119, 119, 119)
+                        .addGap(174, 174, 174)
                         .addComponent(jLabel6)
-                        .addGap(103, 103, 103)
+                        .addGap(76, 76, 76)
                         .addComponent(jLabel7)
                         .addContainerGap(179, Short.MAX_VALUE))))
         );
@@ -581,10 +590,8 @@ public final class ftpContent extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -858,14 +865,17 @@ public final class ftpContent extends javax.swing.JPanel {
                 if(!line.isBlank()){
                 String[] parts = line.split(";");
                 String type = parts[0].split("=")[1].trim();
-                String size = parts[1].split("=")[1].trim();
-                String perm = parts[2].split("=")[1].trim();
-                String name = parts[3].trim();
+                String owner =parts[1].split("=")[1].trim();
+                String modify=parts[2].split("=")[1].trim();
+                String size = parts[3].split("=")[1].trim();
+                String perm = parts[4].split("=")[1].trim();
+                String name = URLDecoder.decode(parts[5],"UTF-8").trim();
+                modify = convertTimestamp(modify);
                 ImageIcon img;
                 if(type.equals("dir"))
                     img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
                 else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
-                Object[] row = new Object[]{img,name,perm,"ahihi",size+"bytes"};
+                Object[] row = new Object[]{img,name,owner.equals("null")?"Tôi":owner,modify,size+"bytes"};
                 // chia đơn vị mb,kg,Gb ******
                 model.addRow(row);
                 }
@@ -925,6 +935,19 @@ public final class ftpContent extends javax.swing.JPanel {
             }
         }       
               
+    }
+    
+    
+    
+    
+    public String convertTimestamp(String timestamp){
+        long time=Long.parseLong(timestamp);
+        Instant instant = Instant.ofEpochMilli(time);
+        LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        boolean isToday= dateTime.toLocalDate().isEqual(LocalDateTime.now().toLocalDate());
+        String pattern = isToday ? "mm:HH":"dd 'th 'MM, yyyy";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern,new Locale("vi"));
+        return dateTime.format(formatter);
     }
     
     private Frame parentFrame;
