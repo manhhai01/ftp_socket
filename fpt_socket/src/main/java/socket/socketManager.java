@@ -32,10 +32,10 @@ public class socketManager {
     
     private socketManager() {
         try {
-            IPConfig ipConfig = new IPConfig();
-            String ipServer = ipConfig.getIPServer();
+//            IPConfig ipConfig = new IPConfig();
+//            String ipServer = ipConfig.getIPServer();
             // Khởi tạo kết nối TCP socket
-            commandSocket = new Socket(ipServer, 21);
+            commandSocket = new Socket("localhost", 21);
             // Khởi tạo BufferedReader và BufferedWriter để gửi và nhận dữ liệu
             commandReader = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
             commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
@@ -127,6 +127,14 @@ public class socketManager {
         String response=commandReader.readLine();
         return new DataResponse(response);
         
+    }
+    public DataResponse checkPermissionForMoveCommand(String path) throws IOException{
+        writeLineAndFlush("RNFR "+path, commandWriter);
+        return new DataResponse(commandReader.readLine());
+    }
+    public DataResponse move(String path) throws IOException{
+        writeLineAndFlush("RNTO "+path, commandWriter);
+        return new DataResponse(commandReader.readLine());
     }
 /*------------------------------------------------------------------------------------------*/     
     

@@ -26,8 +26,7 @@ import view.custom.HighlightPanel;
 import view.page.information;
 import view.page.loginForm;
 import view.page.ftpContent;
-import view.page.share;
-import view.page.trash;
+
 
 /**
  *
@@ -64,9 +63,6 @@ public class mainLayout extends javax.swing.JFrame {
         page2 = new view.custom.HighlightPanel();
         jLabel4 = new javax.swing.JLabel();
         imageIcon2 = new view.custom.imageIcon();
-        page3 = new view.custom.HighlightPanel();
-        jLabel6 = new javax.swing.JLabel();
-        imageIcon3 = new view.custom.imageIcon();
         page4 = new view.custom.HighlightPanel();
         jLabel7 = new javax.swing.JLabel();
         imageIcon4 = new view.custom.imageIcon();
@@ -168,46 +164,6 @@ public class mainLayout extends javax.swing.JFrame {
                     .addGroup(page2Layout.createSequentialGroup()
                         .addComponent(imageIcon2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-
-        page3.setForeground(normalText);
-        page3.setColor(normalPanel);
-        page3.setColorClick(new java.awt.Color(204, 204, 204));
-        page3.setColorOver(hover);
-        page3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                page3MouseClicked(evt);
-            }
-        });
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel6.setForeground(normalText);
-        jLabel6.setText("Thùng rác");
-
-        imageIcon3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/delete.png"))); // NOI18N
-        imageIcon3.setToolTipText("");
-
-        javax.swing.GroupLayout page3Layout = new javax.swing.GroupLayout(page3);
-        page3.setLayout(page3Layout);
-        page3Layout.setHorizontalGroup(
-            page3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page3Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(imageIcon3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        page3Layout.setVerticalGroup(
-            page3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, page3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(page3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(page3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(imageIcon3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -323,7 +279,6 @@ public class mainLayout extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(page1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(page2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(page3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(page4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(page5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -341,8 +296,6 @@ public class mainLayout extends javax.swing.JFrame {
                 .addComponent(page1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(page2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(page3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -432,11 +385,6 @@ public class mainLayout extends javax.swing.JFrame {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_page2MouseClicked
-
-    private void page3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page3MouseClicked
-        active(page3);
-        getContent(new trash());
-    }//GEN-LAST:event_page3MouseClicked
 
     private void page4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page4MouseClicked
         active(page4);
@@ -580,21 +528,18 @@ public class mainLayout extends javax.swing.JFrame {
     private javax.swing.JPanel contentPanel;
     private view.custom.imageIcon imageIcon1;
     private view.custom.imageIcon imageIcon2;
-    private view.custom.imageIcon imageIcon3;
     private view.custom.imageIcon imageIcon4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private view.custom.HighlightPanel page1;
     private view.custom.HighlightPanel page2;
-    private view.custom.HighlightPanel page3;
     private view.custom.HighlightPanel page4;
     private view.custom.HighlightPanel page5;
     private view.custom.progressBar progressBar1;
