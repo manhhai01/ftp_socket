@@ -69,11 +69,12 @@ public class FileBus {
         }
 
         if (file.isDirectory()) {
+            Directory directory = directoryDao.getDirectoryByPath(filePath);
+            directory.setPath(newFilePath);
+            directoryDao.update(directory);
+
             if (recursive) {
                 File[] childFiles = file.listFiles();
-                Directory directory = directoryDao.getDirectoryByPath(filePath);
-                directory.setPath(newFilePath);
-                directoryDao.update(directory);
 
                 if (childFiles.length == 0) {
                     return;
@@ -115,15 +116,6 @@ public class FileBus {
         reparentFilePathInDb(file, parentPath, false);
 
         file.renameTo(destination);
-        if (fileType.equals(NORMAL_FILE_TYPE)) {
-            model.File fileInDb = fileDao.getFileByPath(oldFilePath);
-            fileInDb.setPath(newFilePath);
-            fileDao.update(fileInDb);
-        } else {
-            Directory directory = directoryDao.getDirectoryByPath(oldFilePath);
-            directory.setPath(newFilePath);
-            directoryDao.update(directory);
-        }
         return true;
     }
 
