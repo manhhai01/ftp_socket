@@ -20,6 +20,13 @@ public class PublicUserMapper {
                 .gender(user.getGender())
                 .username(user.getUsername())
                 .birthdate(user.getBirthdate())
+                .anonymous(user.isAnonymous())
+                .isBlockDownload(user.isBlockDownload())
+                .isBlockUpload(user.isBlockUpload())
+                .maxDownloadSizeBytes(user.getMaxDownloadFileSizeBytes())
+                .maxUploadSizeBytes(user.getMaxUploadFileSizeBytes())
+                .quotaInBytes(user.getQuotaInBytes())
+                .usedBytes(user.getUsedBytes())
                 .build();
     }
 }

@@ -11,12 +11,19 @@ import lombok.Builder;
  *
  * @author User
  */
-
 @Builder
 public class PublicUserInfo {
+
     private String username;
     private String firstName;
     private String lastName;
     private Date birthdate;
     private String gender;
+    private boolean anonymous;
+    private boolean isBlockDownload;
+    private boolean isBlockUpload;
+    private long maxUploadSizeBytes;
+    private long maxDownloadSizeBytes;
+    private long quotaInBytes;
+    private long usedBytes;
 }
