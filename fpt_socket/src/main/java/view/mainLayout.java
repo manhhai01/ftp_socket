@@ -20,6 +20,7 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import payloads.DataResponse;
+import payloads.UserData;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.HighlightPanel;
@@ -43,6 +44,7 @@ public class mainLayout extends javax.swing.JFrame {
         initComponents();
         centerLocation();
         getRootDir();
+        getUserInfo();
         active(page1);
         getContent(new ftpContent(MYSPACE_CONTENT,rootDir));
     }
@@ -388,7 +390,11 @@ public class mainLayout extends javax.swing.JFrame {
 
     private void page4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page4MouseClicked
         active(page4);
-        getContent(new information());
+        try {
+            getContent(new information());
+        } catch (IOException ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_page4MouseClicked
 
     private void page5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_page5MouseClicked
@@ -482,48 +488,37 @@ public class mainLayout extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Lỗi xảy ra khi tìm thư mục hiện thành", "Thông báo",WARNING_MESSAGE);
         return false;       
     }
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(mainLayout.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(mainLayout.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(mainLayout.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(mainLayout.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    new mainLayout().setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+    
+    public void getUserInfo() throws IOException{
+        UserData data = socketManager.getInstance().getUserInfo();
+        double quotaInBytes=data.getQuotaInBytes();
+        double usedBytes=data.getUsedBytes();
+        int percent = (int)(usedBytes/quotaInBytes *100);
+        progressBar1.setValue(percent);
+        jLabel9.setText(String.format("Bộ nhớ đã dùng: %s/%sGb",
+                changeToGigaByte(usedBytes),changeToGigaByte(quotaInBytes)));
     }
+    public String changeToGigaByte(double bytes){
+        return String.format("%.2f", (double) bytes / (1024 * 1024 * 1024));
+    }
+    public String convertBytes(String bytesToString) {
+        long bytes = Long.parseLong(bytesToString);
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return String.format("%.2f KB", (double) bytes / 1024);
+        } else if (bytes < 1024 * 1024 * 1024) {
+            return String.format("%.2f MB", (double) bytes / (1024 * 1024));
+        } else {
+            return String.format("%.2f GB", (double) bytes / (1024 * 1024 * 1024));
+        }
+    }    
+    
+    
     private Color normalPanel,normalText,activePanel,activeText,hover;
     private HighlightPanel actived;
     private int mouseX,mouseY;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contentPanel;
     private view.custom.imageIcon imageIcon1;

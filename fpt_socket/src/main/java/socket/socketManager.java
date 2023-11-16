@@ -4,6 +4,7 @@
  */
 package socket;
 
+import com.google.gson.Gson;
 import config.IPConfig;
 import java.awt.List;
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.io.IOUtils;
 import payloads.DataResponse;
+import payloads.UserData;
 import static thread.Client.executor;
 import thread.ReceiveMessage;
 import thread.SendMessage;
@@ -50,7 +52,7 @@ public class socketManager {
         }
         return instance;
     }
-/*--------------------------------Login,register command-----------------------------------------*/    
+/*--------------------------------Account command-----------------------------------------*/    
     public DataResponse login(String user,String password) throws IOException{
         writeLineAndFlush("USER "+user, commandWriter);
         commandReader.readLine();
@@ -76,6 +78,17 @@ public class socketManager {
     public DataResponse regenerateOTP(String username,String password) throws IOException{
         writeLineAndFlush("GOTP "+username +" "+password+ " ", commandWriter);
         return new DataResponse(commandReader.readLine());
+    }
+    
+    public UserData getUserInfo() throws IOException{
+        openNewDataPort();
+        writeLineAndFlush("PROF", commandWriter);
+        commandReader.readLine();
+        String response=IOUtils.toString(dataReader);
+        closeDataPort();
+        commandReader.readLine();// read close connection message
+        Gson gson = new Gson();
+        return gson.fromJson(response, UserData.class);
     }
 /*------------------------------------------------------------------------------------------*/  
     

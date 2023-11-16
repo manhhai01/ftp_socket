@@ -4,8 +4,12 @@
  */
 package view.page;
 
+import java.io.IOException;
+import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import payloads.UserData;
+import socket.socketManager;
 import view.custom.customDialog;
 
 /**
@@ -17,11 +21,12 @@ public class information extends javax.swing.JPanel {
     /**
      * Creates new form information
      */
-    public information() {
+    public information() throws IOException {
         initComponents();
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(passChangePanel);
+        getUserInfo();
     }
 
     /**
@@ -33,7 +38,7 @@ public class information extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        gender = new javax.swing.ButtonGroup();
+        genderRb = new javax.swing.ButtonGroup();
         passChangePanel = new javax.swing.JPanel();
         oldPass = new view.custom.passwordField();
         newPass = new view.custom.passwordField();
@@ -41,14 +46,12 @@ public class information extends javax.swing.JPanel {
         passCancel = new view.custom.Button();
         jLabel17 = new javax.swing.JLabel();
         roundPanel7 = new view.custom.RoundPanel();
-        jSeparator4 = new javax.swing.JSeparator();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        textField1 = new view.custom.textField();
-        textField2 = new view.custom.textField();
+        lastnameField = new view.custom.textField();
+        firstnameField = new view.custom.textField();
         jLabel7 = new javax.swing.JLabel();
-        jCalendarComboBox1 = new de.wannawork.jcalendar.JCalendarComboBox();
+        birthdateField = new de.wannawork.jcalendar.JCalendarComboBox();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         male = new javax.swing.JRadioButton();
@@ -56,13 +59,23 @@ public class information extends javax.swing.JPanel {
         jSeparator5 = new javax.swing.JSeparator();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        textField3 = new view.custom.textField();
-        jLabel12 = new javax.swing.JLabel();
-        textField4 = new view.custom.textField();
+        emailField = new view.custom.textField();
         jSeparator8 = new javax.swing.JSeparator();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         passChangeBtn = new javax.swing.JButton();
+        jLabel13 = new javax.swing.JLabel();
+        maxuploadField = new view.custom.textField();
+        jLabel14 = new javax.swing.JLabel();
+        maxdownloadField = new view.custom.textField();
+        downloadRb = new javax.swing.JRadioButton();
+        uploadRb = new javax.swing.JRadioButton();
+        anonymousRb = new javax.swing.JRadioButton();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        quotaField = new view.custom.textField();
+        usedField = new view.custom.textField();
+        jLabel20 = new javax.swing.JLabel();
 
         passChangePanel.setBackground(new java.awt.Color(255, 255, 255));
         passChangePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(216, 216, 216)));
@@ -126,27 +139,26 @@ public class information extends javax.swing.JPanel {
 
         roundPanel7.setBackground(new java.awt.Color(255, 255, 255));
 
-        jSeparator4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setText("CẬP NHẬT THÔNG TIN CÁ NHÂN");
-
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel5.setText("Thông tin cơ bản");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Họ:");
 
-        textField1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        textField1.setLabelText("");
+        lastnameField.setFocusable(false);
+        lastnameField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lastnameField.setLabelText("");
 
-        textField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        textField2.setLabelText("");
+        firstnameField.setFocusable(false);
+        firstnameField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        firstnameField.setLabelText("");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Giới tính:");
 
-        jCalendarComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        birthdateField.setEnabled(false);
+        birthdateField.setFocusable(false);
+        birthdateField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Ngày sinh:");
@@ -154,30 +166,31 @@ public class information extends javax.swing.JPanel {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel9.setText("Tên:");
 
-        gender.add(male);
+        genderRb.add(male);
         male.setText("Nam");
+        male.setEnabled(false);
         male.setFocusPainted(false);
+        male.setFocusable(false);
+        male.setRequestFocusEnabled(false);
 
-        gender.add(female);
+        genderRb.add(female);
         female.setText("Nữ");
+        female.setEnabled(false);
         female.setFocusPainted(false);
+        female.setFocusable(false);
+        female.setRolloverEnabled(false);
 
         jSeparator5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel10.setText("Thông tin liên hệ");
+        jLabel10.setText("Trạng thái tài khoản");
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel11.setText("Email:");
 
-        textField3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        textField3.setLabelText("");
-
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel12.setText("Số điện thoại:");
-
-        textField4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        textField4.setLabelText("");
+        emailField.setFocusable(false);
+        emailField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        emailField.setLabelText("");
 
         jSeparator8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
@@ -202,118 +215,220 @@ public class information extends javax.swing.JPanel {
             }
         });
 
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel13.setText("Dung lượng upload tối đa: ");
+
+        maxuploadField.setFocusable(false);
+        maxuploadField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        maxuploadField.setLabelText("");
+        maxuploadField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maxuploadFieldActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel14.setText("Dung lượng download tối đa: ");
+
+        maxdownloadField.setFocusable(false);
+        maxdownloadField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        maxdownloadField.setLabelText("");
+        maxdownloadField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maxdownloadFieldActionPerformed(evt);
+            }
+        });
+
+        downloadRb.setText("Download");
+        downloadRb.setEnabled(false);
+        downloadRb.setFocusable(false);
+
+        uploadRb.setText("upload");
+        uploadRb.setEnabled(false);
+        uploadRb.setFocusable(false);
+
+        anonymousRb.setText("anonymous");
+        anonymousRb.setEnabled(false);
+        anonymousRb.setFocusable(false);
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel18.setText("Quyền:");
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel19.setText("/");
+
+        quotaField.setFocusable(false);
+        quotaField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        quotaField.setLabelText("");
+        quotaField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quotaFieldActionPerformed(evt);
+            }
+        });
+
+        usedField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        usedField.setFocusable(false);
+        usedField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        usedField.setLabelText("");
+        usedField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usedFieldActionPerformed(evt);
+            }
+        });
+
+        jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel20.setText("Bộ nhớ sử dụng:");
+
         javax.swing.GroupLayout roundPanel7Layout = new javax.swing.GroupLayout(roundPanel7);
         roundPanel7.setLayout(roundPanel7Layout);
         roundPanel7Layout.setHorizontalGroup(
             roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator4)
-            .addGroup(roundPanel7Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel7Layout.createSequentialGroup()
+                .addGap(0, 15, Short.MAX_VALUE)
                 .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundPanel7Layout.createSequentialGroup()
-                        .addContainerGap(19, Short.MAX_VALUE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1041, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(roundPanel7Layout.createSequentialGroup()
+                            .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel7Layout.createSequentialGroup()
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(maxdownloadField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel7Layout.createSequentialGroup()
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(33, 33, 33)
+                                    .addComponent(maxuploadField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGap(76, 76, 76)
+                            .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(usedField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(quotaField, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(roundPanel7Layout.createSequentialGroup()
+                            .addComponent(jLabel10)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel7Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 1035, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 1035, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10))
-                    .addGroup(roundPanel7Layout.createSequentialGroup()
-                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
                             .addGroup(roundPanel7Layout.createSequentialGroup()
-                                .addGap(32, 32, 32)
+                                .addGap(26, 26, 26)
                                 .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
                                     .addGroup(roundPanel7Layout.createSequentialGroup()
-                                        .addGap(26, 26, 26)
                                         .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addGroup(roundPanel7Layout.createSequentialGroup()
                                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(textField1, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(lastnameField, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(roundPanel7Layout.createSequentialGroup()
                                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jCalendarComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(birthdateField, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGap(108, 108, 108)
                                         .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(roundPanel7Layout.createSequentialGroup()
                                                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(firstnameField, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(roundPanel7Layout.createSequentialGroup()
                                                 .addComponent(jLabel7)
                                                 .addGap(18, 18, 18)
                                                 .addComponent(male)
                                                 .addGap(18, 18, 18)
-                                                .addComponent(female))))))
+                                                .addComponent(female))))
+                                    .addGroup(roundPanel7Layout.createSequentialGroup()
+                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 1035, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(16, 16, 16))))
+            .addGroup(roundPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jSeparator8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 1035, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel7Layout.createSequentialGroup()
-                                .addGap(29, 29, 29)
-                                .addComponent(jLabel10))
-                            .addGroup(roundPanel7Layout.createSequentialGroup()
-                                .addGap(74, 74, 74)
-                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(textField3, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(30, 30, 30)
-                                .addComponent(jLabel12)
-                                .addGap(18, 18, 18)
-                                .addComponent(textField4, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(roundPanel7Layout.createSequentialGroup()
-                                .addGap(29, 29, 29)
+                                .addGap(14, 14, 14)
                                 .addComponent(jLabel15))
                             .addGroup(roundPanel7Layout.createSequentialGroup()
-                                .addGap(68, 68, 68)
+                                .addGap(53, 53, 53)
                                 .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(passChangeBtn)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addComponent(passChangeBtn))))
+                    .addGroup(roundPanel7Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(jLabel18)
+                        .addGap(28, 28, 28)
+                        .addComponent(downloadRb)
+                        .addGap(18, 18, 18)
+                        .addComponent(uploadRb)
+                        .addGap(18, 18, 18)
+                        .addComponent(anonymousRb)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         roundPanel7Layout.setVerticalGroup(
             roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(roundPanel7Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addGap(18, 18, 18)
                         .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(textField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lastnameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(firstnameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
-                            .addComponent(jCalendarComboBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(birthdateField, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(male)
                         .addComponent(female)))
-                .addGap(34, 34, 34)
-                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(jLabel10)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(53, 53, 53)
+                    .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel10)
+                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(roundPanel7Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(maxuploadField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(maxdownloadField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(roundPanel7Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(usedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(quotaField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(29, 29, 29)
+                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(downloadRb)
+                    .addComponent(uploadRb)
+                    .addComponent(anonymousRb))
+                .addGap(18, 18, 18)
                 .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(passChangeBtn))
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addGap(415, 415, 415))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -324,81 +439,139 @@ public class information extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(roundPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(roundPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void passCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passCancelActionPerformed
+        customDialog.setVisible(false);
+    }//GEN-LAST:event_passCancelActionPerformed
+
+    private void usedFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usedFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usedFieldActionPerformed
+
+    private void quotaFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quotaFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_quotaFieldActionPerformed
+
+    private void maxdownloadFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxdownloadFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_maxdownloadFieldActionPerformed
+
+    private void maxuploadFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxuploadFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_maxuploadFieldActionPerformed
 
     private void passChangeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passChangeBtnActionPerformed
         oldPass.setText("");
         newPass.setText("");
         customDialog.setVisible(true);
     }//GEN-LAST:event_passChangeBtnActionPerformed
-
-    private void passCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passCancelActionPerformed
-        customDialog.setVisible(false);
-    }//GEN-LAST:event_passCancelActionPerformed
-
+    public void getUserInfo() throws IOException{
+        clearField();
+        UserData data = socketManager.getInstance().getUserInfo();
+        long quotaInBytes=data.getQuotaInBytes();
+        long usedBytes=data.getUsedBytes();
+        String email = data.getUsername()+"@gmail.com";
+        String firstname = data.getFirstName();
+        String lastname = data.getLastName();
+        String gender = data.getGender();
+        Date birthdate = data.getBirthdate();
+        boolean anonymous = data.isAnonymous();
+        boolean isBlockDownload = data.isBlockDownload();
+        boolean isBlockUpload = data.isBlockUpload();
+        long maxUploadSizeBytes= data.getMaxUploadSizeBytes();
+        long maxDownloadSizeBytes = data.getMaxDownloadSizeBytes();
+        firstnameField.setText(firstname!=null?firstname:"");
+        lastnameField.setText(lastname!=null?lastname:"");
+        birthdateField.setDate(birthdate!=null?birthdate:new Date());
+        emailField.setText(email);
+        if(gender!=null)
+            if(gender.equals("Nam"))
+                male.setSelected(true);
+            else female.setSelected(true);
+        anonymousRb.setSelected(anonymous);
+        uploadRb.setSelected(!isBlockUpload);
+        downloadRb.setSelected(!isBlockDownload);
+        maxuploadField.setText(convertBytes(maxUploadSizeBytes));
+        maxdownloadField.setText(convertBytes(maxDownloadSizeBytes));
+        usedField.setText(convertBytes(usedBytes));
+        quotaField.setText(convertBytes(quotaInBytes));
+    }
+    
+    public void clearField(){
+        emailField.setText("");
+        firstnameField.setText("");
+        lastnameField.setText("");
+        birthdateField.setDate(new Date());
+        male.setSelected(false);
+        female.setSelected(false);
+        anonymousRb.setSelected(false);
+        uploadRb.setSelected(false);
+        downloadRb.setSelected(false);
+        maxuploadField.setText("");
+        maxdownloadField.setText("");
+        usedField.setText("");
+        quotaField.setText("");
+        
+    }
+    
+    public String changeToGigaByte(double bytes){
+        return String.format("%.2f", (double) bytes / (1024 * 1024 * 1024));
+    }
+    public String convertBytes(long bytes) {
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return String.format("%.2f KB", (double) bytes / 1024);
+        } else if (bytes < 1024 * 1024 * 1024) {
+            return String.format("%.2f MB", (double) bytes / (1024 * 1024));
+        } else {
+            return String.format("%.2f GB", (double) bytes / (1024 * 1024 * 1024));
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton anonymousRb;
+    private de.wannawork.jcalendar.JCalendarComboBox birthdateField;
+    private javax.swing.JRadioButton downloadRb;
+    private view.custom.textField emailField;
     private javax.swing.JRadioButton female;
-    private javax.swing.ButtonGroup gender;
-    private view.custom.imageIcon imageIcon1;
-    private view.custom.imageIcon imageIcon2;
-    private view.custom.imageIcon imageIcon3;
-    private view.custom.imageIcon imageIcon7;
-    private view.custom.imageIcon imageIcon8;
-    private de.wannawork.jcalendar.JCalendarComboBox jCalendarComboBox1;
-    private javax.swing.JLabel jLabel1;
+    private view.custom.textField firstnameField;
+    private javax.swing.ButtonGroup genderRb;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSeparator jSeparator6;
-    private javax.swing.JSeparator jSeparator7;
     private javax.swing.JSeparator jSeparator8;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
+    private view.custom.textField lastnameField;
     private javax.swing.JRadioButton male;
+    private view.custom.textField maxdownloadField;
+    private view.custom.textField maxuploadField;
     private view.custom.passwordField newPass;
     private view.custom.passwordField oldPass;
     private view.custom.Button passCancel;
     private javax.swing.JButton passChangeBtn;
     private javax.swing.JPanel passChangePanel;
     private view.custom.Button passConfirm;
-    private view.custom.RoundPanel roundPanel1;
-    private view.custom.RoundPanel roundPanel10;
-    private view.custom.RoundPanel roundPanel11;
-    private view.custom.RoundPanel roundPanel12;
-    private view.custom.RoundPanel roundPanel13;
-    private view.custom.RoundPanel roundPanel2;
-    private view.custom.RoundPanel roundPanel3;
-    private view.custom.RoundPanel roundPanel4;
-    private view.custom.RoundPanel roundPanel5;
-    private view.custom.RoundPanel roundPanel6;
+    private view.custom.textField quotaField;
     private view.custom.RoundPanel roundPanel7;
-    private view.custom.textField textField1;
-    private view.custom.textField textField2;
-    private view.custom.textField textField3;
-    private view.custom.textField textField4;
+    private javax.swing.JRadioButton uploadRb;
+    private view.custom.textField usedField;
     // End of variables declaration//GEN-END:variables
 }

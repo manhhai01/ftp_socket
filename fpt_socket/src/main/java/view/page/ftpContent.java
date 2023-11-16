@@ -875,7 +875,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 if(type.equals("dir"))
                     img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
                 else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
-                Object[] row = new Object[]{img,name,owner.equals("null")?"Tôi":owner,modify,size+"bytes"};
+                Object[] row = new Object[]{img,name,owner.equals("null")?"Tôi":owner,modify,convertBytes(size)};
                 // chia đơn vị mb,kg,Gb ******
                 model.addRow(row);
                 }
@@ -892,52 +892,28 @@ public final class ftpContent extends javax.swing.JPanel {
                 if(!line.isBlank()){
                 String[] parts = line.split(";");
                 String type = parts[0].split("=")[1].trim();
-                String size = parts[1].split("=")[1].trim();
-                String perm = parts[2].split("=")[1].trim();
-                parts = parts[3].trim().split(" ");
-                String name = parts[0]; String path = parts[1];
+                String owner =parts[1].split("=")[1].trim();
+                String modify=parts[2].split("=")[1].trim();
+                String size = parts[3].split("=")[1].trim();
+                String perm = parts[4].split("=")[1].trim();
+                parts = parts[5].trim().split(" ");
+                String name = URLDecoder.decode(parts[0],"UTF-8").trim();
+                String path = URLDecoder.decode(parts[1],"UTF-8").trim();
+                modify = convertTimestamp(modify);
                 ImageIcon img;
                 if(type.equals("dir"))
                     img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
                 else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
                 Object[] row;
-                row=new Object[]{img,name,perm,"ahihi",size+"kb",path};
+                row=new Object[]{img,name,owner,modify,convertBytes(size),path};
                 model.addRow(row);
                 }
             }
         }
     }
-    public void setModelFile(String fileList){
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0);
-        if(!fileList.isEmpty()){
-            String[] lines = fileList.split("\n");
-            for(String line : lines){
-                if(!line.isEmpty()){
-                String[] parts = line.split(";");
-                String type = parts[0].split("=")[1].trim();
-                String size = parts[1].split("=")[1].trim();
-                String perm = parts[2].split("=")[1].trim();
-                String name = parts[3].trim();
-                ImageIcon img;
-                if(type.equals("dir"))
-                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
-                else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
-                Object[] row;
-                if(this.CONTENT_TYPE.equals("share")){
-                    parts = name.split(" ");
-                    name = parts[0]; String path = parts[1];
-                        row=new Object[]{img,name,perm,"ahihi",size+"kb",path};
-                }
-                else row=new Object[]{img,name,perm,"ahihi",size+"kb"};
-                model.addRow(row);
-                }
-            }
-        }       
+           
               
-    }
-    
-    
+
     
     
     public String convertTimestamp(String timestamp){
@@ -945,10 +921,24 @@ public final class ftpContent extends javax.swing.JPanel {
         Instant instant = Instant.ofEpochMilli(time);
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         boolean isToday= dateTime.toLocalDate().isEqual(LocalDateTime.now().toLocalDate());
-        String pattern = isToday ? "mm:HH":"dd 'th 'MM, yyyy";
+        String pattern = isToday ? "HH:mm":"dd 'th 'MM, yyyy";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern,new Locale("vi"));
         return dateTime.format(formatter);
     }
+    public String convertBytes(String bytesToString) {
+        long bytes = Long.parseLong(bytesToString);
+        if (bytes < 1024) {
+            return bytes + " B";
+        } else if (bytes < 1024 * 1024) {
+            return String.format("%.2f KB", (double) bytes / 1024);
+        } else if (bytes < 1024 * 1024 * 1024) {
+            return String.format("%.2f MB", (double) bytes / (1024 * 1024));
+        } else {
+            return String.format("%.2f GB", (double) bytes / (1024 * 1024 * 1024));
+        }
+    }
+    
+    
     
     private Frame parentFrame;
     private JPanel panel;
