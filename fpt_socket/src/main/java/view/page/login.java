@@ -192,7 +192,7 @@ public class login extends javax.swing.JPanel {
                 else {
                     JOptionPane.showMessageDialog(this, dataResponse.getMessage());
                 }
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -219,7 +219,7 @@ public class login extends javax.swing.JPanel {
                 }else{
                     JOptionPane.showMessageDialog(this, response.getMessage(),"Thông báo",WARNING_MESSAGE);
                 }
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -233,7 +233,7 @@ public class login extends javax.swing.JPanel {
             }
             else
             JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, vui lòng thử lại","Thông báo",WARNING_MESSAGE);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(register.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -243,7 +243,7 @@ public class login extends javax.swing.JPanel {
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(otpVerifyPanel);
     }
-    public void loginSuccess() throws IOException{
+    public void loginSuccess() throws Exception{
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         frame.dispose();
         new mainLayout().setVisible(true);

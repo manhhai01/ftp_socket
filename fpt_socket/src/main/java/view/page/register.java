@@ -282,7 +282,7 @@ public final class register extends javax.swing.JPanel {
                 }else{
                     JOptionPane.showMessageDialog(this,"username đã tồn tại!! ","Thông báo",WARNING_MESSAGE);
                 }
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(register.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -300,7 +300,7 @@ public final class register extends javax.swing.JPanel {
                 }else{
                     JOptionPane.showMessageDialog(this, "OTP không đúng hoặc đã hết hạn!!","Thông báo",WARNING_MESSAGE);
                 }
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -321,7 +321,7 @@ public final class register extends javax.swing.JPanel {
             }
             else
                 JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, vui lòng thử lại","Thông báo",WARNING_MESSAGE);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(register.class.getName()).log(Level.SEVERE, null, ex);
         }
         

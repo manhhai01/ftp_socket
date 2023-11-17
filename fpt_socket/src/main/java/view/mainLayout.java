@@ -39,7 +39,7 @@ public class mainLayout extends javax.swing.JFrame {
     /**
      * Creates new form mainLayouta
      */
-    public mainLayout() throws IOException {
+    public mainLayout() throws Exception {
         lightTheme();
         initComponents();
         centerLocation();
@@ -374,7 +374,7 @@ public class mainLayout extends javax.swing.JFrame {
         active(page1);
         try {
             getContent(new ftpContent(MYSPACE_CONTENT,rootDir));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_page1MouseClicked
@@ -383,7 +383,7 @@ public class mainLayout extends javax.swing.JFrame {
         active(page2);
         try {
             getContent(new ftpContent(SHARE_CONTENT,rootDir));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_page2MouseClicked
@@ -392,7 +392,7 @@ public class mainLayout extends javax.swing.JFrame {
         active(page4);
         try {
             getContent(new information());
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_page4MouseClicked
@@ -481,7 +481,7 @@ public class mainLayout extends javax.swing.JFrame {
                 rootDir = dir.replace("\"", "");                
                 return true;
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -489,7 +489,7 @@ public class mainLayout extends javax.swing.JFrame {
         return false;       
     }
     
-    public void getUserInfo() throws IOException{
+    public void getUserInfo() throws Exception{
         UserData data = socketManager.getInstance().getUserInfo();
         double quotaInBytes=data.getQuotaInBytes();
         double usedBytes=data.getUsedBytes();

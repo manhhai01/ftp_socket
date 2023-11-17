@@ -21,7 +21,7 @@ public class information extends javax.swing.JPanel {
     /**
      * Creates new form information
      */
-    public information() throws IOException {
+    public information() throws Exception {
         initComponents();
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         customDialog = new customDialog(parentFrame);
@@ -470,7 +470,7 @@ public class information extends javax.swing.JPanel {
         newPass.setText("");
         customDialog.setVisible(true);
     }//GEN-LAST:event_passChangeBtnActionPerformed
-    public void getUserInfo() throws IOException{
+    public void getUserInfo() throws Exception{
         clearField();
         UserData data = socketManager.getInstance().getUserInfo();
         long quotaInBytes=data.getQuotaInBytes();

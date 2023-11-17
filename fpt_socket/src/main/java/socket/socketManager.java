@@ -4,6 +4,9 @@
  */
 package socket;
 
+import cipher.AESCipher;
+import cipher.Encrypt;
+import cipher.KeyAES;
 import com.google.gson.Gson;
 import config.IPConfig;
 import java.awt.List;
@@ -39,10 +42,17 @@ public class socketManager {
             // Khởi tạo kết nối TCP socket
             commandSocket = new Socket("localhost", 21);
             // Khởi tạo BufferedReader và BufferedWriter để gửi và nhận dữ liệu
-            commandReader = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
-            commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
+            commandReader = new CustomBufferedReader(new InputStreamReader(commandSocket.getInputStream()));
+            commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));    
             commandReader.readLine();
-        } catch (IOException e) {
+
+            // send key aes to server
+            String keyAES = Encrypt.encriptKey();
+            commandWriter.append(keyAES);
+            commandWriter.newLine();
+            commandWriter.flush();
+            commandReader.readLine();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -53,7 +63,7 @@ public class socketManager {
         return instance;
     }
 /*--------------------------------Account command-----------------------------------------*/    
-    public DataResponse login(String user,String password) throws IOException{
+    public DataResponse login(String user,String password) throws Exception{
         writeLineAndFlush("USER "+user, commandWriter);
         commandReader.readLine();
         writeLineAndFlush("PASS "+password, commandWriter);
@@ -62,7 +72,7 @@ public class socketManager {
         return new DataResponse(message);
     }
     
-    public DataResponse register(String data) throws IOException{
+    public DataResponse register(String data) throws Exception{
         openNewDataPort();
         writeLineAndFlush("REG", commandWriter);
         commandReader.readLine();
@@ -71,16 +81,16 @@ public class socketManager {
         return new DataResponse(commandReader.readLine());
     }
     
-    public DataResponse verifyOTP(String username,String password, String otp) throws IOException{
+    public DataResponse verifyOTP(String username,String password, String otp) throws Exception{
         writeLineAndFlush("SOTP "+username +" "+password+ " "+otp, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
-    public DataResponse regenerateOTP(String username,String password) throws IOException{
+    public DataResponse regenerateOTP(String username,String password) throws Exception{
         writeLineAndFlush("GOTP "+username +" "+password+ " ", commandWriter);
         return new DataResponse(commandReader.readLine());
     }
     
-    public UserData getUserInfo() throws IOException{
+    public UserData getUserInfo() throws Exception{
         openNewDataPort();
         writeLineAndFlush("PROF", commandWriter);
         commandReader.readLine();
@@ -94,7 +104,7 @@ public class socketManager {
     
     
 /*--------------------------------file manager command--------------------------------------*/         
-    public String getSharedFiles() throws IOException{
+    public String getSharedFiles() throws Exception{
         openNewDataPort();
         writeLineAndFlush("LSHR", commandWriter);
         commandReader.readLine();
@@ -103,11 +113,11 @@ public class socketManager {
         commandReader.readLine();// read close connection message
         return response;
     }
-    public DataResponse getCurrentWorkingDirectory() throws IOException{
+    public DataResponse getCurrentWorkingDirectory() throws Exception{
         writeLineAndFlush("PWD", commandWriter);
         return new DataResponse(commandReader.readLine());
     }
-    public String getFileList(String path) throws IOException{
+    public String getFileList(String path) throws Exception{
         openNewDataPort();
         writeLineAndFlush("MLSD "+path, commandWriter);
         commandReader.readLine();
@@ -116,17 +126,17 @@ public class socketManager {
         commandReader.readLine();// read close connection message
         return response;
     }
-    public DataResponse changeDirectory(String path) throws IOException{
+    public DataResponse changeDirectory(String path) throws Exception{
         writeLineAndFlush("CWD "+path, commandWriter);
         String response=commandReader.readLine();
         return new DataResponse(response);
     }
-    public DataResponse createNewFolder(String path) throws IOException{
+    public DataResponse createNewFolder(String path) throws Exception{
         writeLineAndFlush("MKD "+path, commandWriter);
         String response=commandReader.readLine();
         return new DataResponse(response);
     }
-    public DataResponse rename(String oldName,String newName) throws IOException{
+    public DataResponse rename(String oldName,String newName) throws Exception{
         writeLineAndFlush("RNFR "+oldName, commandWriter);
         DataResponse res = new DataResponse(commandReader.readLine());
         if(res.getStatus()==StatusCode.FILE_ACTION_REQUIRES_INFO){
@@ -135,24 +145,24 @@ public class socketManager {
         }
         return res;
     }
-    public DataResponse delete(String path) throws IOException{
+    public DataResponse delete(String path) throws Exception{
         writeLineAndFlush("DELE "+path, commandWriter);
         String response=commandReader.readLine();
         return new DataResponse(response);
         
     }
-    public DataResponse checkPermissionForMoveCommand(String path) throws IOException{
+    public DataResponse checkPermissionForMoveCommand(String path) throws Exception{
         writeLineAndFlush("RNFR "+path, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
-    public DataResponse move(String path) throws IOException{
+    public DataResponse move(String path) throws Exception{
         writeLineAndFlush("RNTO "+path, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
 /*------------------------------------------------------------------------------------------*/     
     
 /*---------------------------------EPSV command---------------------------------------------*/ 
-    public void openNewDataPort() throws IOException{
+    public void openNewDataPort() throws Exception{
         writeLineAndFlush("EPSV", commandWriter);
         String epsvResponse = commandReader.readLine();
         int dataPort = Integer.parseInt(epsvResponse
@@ -160,7 +170,7 @@ public class socketManager {
                 .replace("|)", ""));
         dataSocket = new Socket("localhost", dataPort);
         dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
-        dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+        dataReader = new CustomBufferedReader(new InputStreamReader(dataSocket.getInputStream()));
     }    
     
     public void closeDataPort() throws IOException{
@@ -175,11 +185,12 @@ public class socketManager {
         commandSocket.close();
         instance=null;
     }
-    public void writeLineAndFlush(String content, BufferedWriter writer) throws IOException {
+    public void writeLineAndFlush(String content, BufferedWriter writer) throws Exception {
         
-        // ma hoa
+        byte[] ketAES = KeyAES.getInstance().getKey();
+        String contextAES = AESCipher.encrypt(ketAES, content);
         
-        writer.append(content);
+        writer.append(contextAES);
         writer.newLine();
         writer.flush();
     }
