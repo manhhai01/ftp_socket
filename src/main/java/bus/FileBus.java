@@ -45,17 +45,24 @@ public class FileBus {
     private static final DirectoryBus directoryBus = new DirectoryBus();
     private static final PublicUserMapper publicUserMapper = new PublicUserMapper();
 
-    public boolean removeFile(String fromRootFilePath, String username) {
+    public List<String> removeFile(String fromRootFilePath, String username) {
         File file = new File(fromRootFilePath);
+        List<String> notRemovableFilePaths = new ArrayList<>();
         if (!file.exists()) {
-            return false;
+            notRemovableFilePaths.add(fromRootFilePath);
+            return notRemovableFilePaths;
         }
 
         if (file.isDirectory()) {
             return directoryBus.removeDirectory(fromRootFilePath, username);
         }
 
-        return normalFileBus.removeNormalFile(fromRootFilePath, username);
+        if(!normalFileBus.removeNormalFile(fromRootFilePath, username)) {
+            notRemovableFilePaths.add(fromRootFilePath);
+            return notRemovableFilePaths;
+        }
+        
+        return notRemovableFilePaths;
     }
 
     private void reparentFilePathInDb(File file, String newParentPath, boolean recursive) {
@@ -105,6 +112,7 @@ public class FileBus {
             return false;
         }
 
+        // Reparent children files/directories
         File destination = new File(newFilePath);
         File[] childFiles = file.listFiles();
         if (childFiles != null) {
@@ -113,9 +121,21 @@ public class FileBus {
             }
         }
 
-        reparentFilePathInDb(file, parentPath, false);
-
+        // Rename current file/directory
+        if (file.isFile()) {
+            model.File fileInDb = fileDao.getFileByPath(oldFilePath);
+            fileInDb.setPath(newFilePath);
+            fileDao.update(fileInDb);
+        }
+        if (file.isDirectory()) {
+            Directory directory = directoryDao.getDirectoryByPath(oldFilePath);
+            directory.setPath(newFilePath);
+            directoryDao.update(directory);
+        }        
         file.renameTo(destination);
+        
+        // Reparent current file/directory in db
+        reparentFilePathInDb(file, parentPath, false);
         return true;
     }
 

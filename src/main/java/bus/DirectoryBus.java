@@ -9,11 +9,12 @@ import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
 import dao.ShareDirectoriesDao;
-import dao.ShareFilesDao;
 import dao.UserDao;
 import ftp.DirectoryPermission;
 import ftp.FtpFileUtils;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import model.Directory;
 import model.ShareDirectories;
 import model.User;
@@ -31,6 +32,7 @@ public class DirectoryBus {
     private static final DirectoryDao directoryDao = new DirectoryDao();
     private static final ShareDirectoriesDao shareDirectoriesDao = new ShareDirectoriesDao();
     private static final UserDao userDao = new UserDao();
+    private static final NormalFileBus normalFileBus = new NormalFileBus();
     private static final FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
     public boolean createHomeDirectoryIfNotExist(String username) {
@@ -51,9 +53,9 @@ public class DirectoryBus {
 
     public boolean createDirectory(String fromRootPath, String username) {
         User user = userDao.getUserByUsername(username);
-        
+
         // Check if user is allowed to upload
-        if(user.isBlockUpload()) {
+        if (user.isBlockUpload()) {
             return false;
         }
 
@@ -71,11 +73,10 @@ public class DirectoryBus {
         if (file.exists()) {
             return true;
         }
-        
+
         if (user.getUsedBytes() >= user.getQuotaInBytes()) {
             return false;
         }
-        
 
         boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
         if (success) {
@@ -84,18 +85,35 @@ public class DirectoryBus {
         return success;
     }
 
-    public boolean removeDirectory(String fromRootPath, String username) {
+    public List<String> removeDirectory(String fromRootPath, String username) {
         File file = new File(fromRootPath);
+        List<String> notRemovableFilePaths = new ArrayList<>();
         if (!file.exists()) {
-            return true;
+            notRemovableFilePaths.add(fromRootPath);
+            return notRemovableFilePaths;
         }
 
         if (!file.isDirectory()) {
-            return false;
+            notRemovableFilePaths.add(fromRootPath);
+            return notRemovableFilePaths;
         }
 
-        if (file.list().length > 0) {
-            return false;
+        File[] childFiles = file.listFiles();
+
+        if (childFiles != null) {
+            for (File childFile : childFiles) {
+                String childFilePath = ftpFileUtils.convertJavaPathToFtpPath(childFile.getPath());
+                if (childFile.isDirectory()) {
+                    notRemovableFilePaths.addAll(removeDirectory(
+                            childFilePath,
+                            username
+                    ));
+                } else {
+                    if (!normalFileBus.removeNormalFile(childFilePath, username)) {
+                        notRemovableFilePaths.add(childFilePath);
+                    }
+                }
+            }
         }
 
         DirectoryPermission directoryPermission = (DirectoryPermission) fileBus.getFilePermission(
@@ -105,7 +123,12 @@ public class DirectoryBus {
         );
 
         if (!directoryPermission.isDeletable()) {
-            return false;
+            notRemovableFilePaths.add(0, fromRootPath);
+            return notRemovableFilePaths;
+        }
+
+        if (!notRemovableFilePaths.isEmpty()) {
+            return notRemovableFilePaths;
         }
 
         Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootPath);
@@ -113,7 +136,7 @@ public class DirectoryBus {
         if (success) {
             file.delete();
         }
-        return success;
+        return notRemovableFilePaths;
     }
 
     public boolean setShareDirectoryPermission(String fromRootDirPath, String ownerUsername, String appliedUsername, boolean canModify, boolean uploadable, boolean downloadable) {
@@ -137,11 +160,11 @@ public class DirectoryBus {
                         directoryInDb,
                         appliedUser)
         );
-        
+
         // Todo: Send mail
         EmailUtils emailUtils = new EmailUtils();
         boolean resSendEmail = emailUtils.sendSharingDirectoryNotification(ownerUsername, appliedUsername, canModify, uploadable, downloadable);
-        
+
         return resUpdate && resSendEmail;
     }
 

@@ -125,11 +125,11 @@ public class NormalFileBus {
         if (success) {
             long fileSize = file.length();
             file.delete();
-
-            User user = userDao.getUserByUserName(username);
-            long usedBytes = user.getUsedBytes();
-            user.setUsedBytes(usedBytes - fileSize);
-            userDao.update(user);
+            
+            User owner = fileFromDb.getUser();
+            long usedBytes = owner.getUsedBytes();
+            owner.setUsedBytes(usedBytes - fileSize);
+            userDao.update(owner);
         }
         return success;
     }
@@ -197,8 +197,10 @@ public class NormalFileBus {
         }
 
         // Check if exceed quota
-        long newUsedBytes = (long) (newFileSize - oldFileSize + user.getUsedBytes());
-        if (newUsedBytes > user.getQuotaInBytes()) {
+        model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
+        User owner = fileInDb.getUser();
+        long newUsedBytes = (long) (newFileSize - oldFileSize + owner.getUsedBytes());
+        if (newUsedBytes > owner.getQuotaInBytes()) {
             tempFile.delete();
             return false;
         }
@@ -212,8 +214,8 @@ public class NormalFileBus {
         }
 
         // Update used kb
-        user.setUsedBytes(newUsedBytes);
-        userDao.update(user);
+        owner.setUsedBytes(newUsedBytes);
+        userDao.update(owner);
 
         return true;
     }

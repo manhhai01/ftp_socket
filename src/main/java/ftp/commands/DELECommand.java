@@ -11,8 +11,10 @@ import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collector;
 
 public class DELECommand implements Command {
 
@@ -24,16 +26,22 @@ public class DELECommand implements Command {
         try {
             String filename = arguments[0];
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), filename);
-            if (fileService.removeFile(filePath, session.getUsername())) {
+            List<String> notDeletablePaths = fileService.removeFile(filePath, session.getUsername());
+            if (notDeletablePaths.isEmpty()) {
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,
                         "Command okay.",
                         commandSocketWriter
                 );
             } else {
+                String notDeletablePathMsg = "";
+                for (String path : notDeletablePaths) {
+                    notDeletablePathMsg += path + "\n";
+                }
+
                 SocketUtils.respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
-                        "Forbidden.",
+                        notDeletablePathMsg,
                         commandSocketWriter
                 );
             }
