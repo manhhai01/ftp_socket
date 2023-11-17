@@ -34,7 +34,7 @@ public class DELECommand implements Command {
                         commandSocketWriter
                 );
             } else {
-                String notDeletablePathMsg = "";
+                String notDeletablePathMsg = "Các đường dẫn không xóa được: \n";
                 for (String path : notDeletablePaths) {
                     notDeletablePathMsg += path + "\n";
                 }
