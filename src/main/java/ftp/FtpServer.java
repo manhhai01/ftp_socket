@@ -1,5 +1,7 @@
 package ftp;
 
+import cipher.Config;
+import cipher.RSACipher;
 import config.IPConfig;
 import ftp.commands.TYPECommand;
 import ftp.commands.USERCommand;
@@ -118,6 +120,8 @@ public class FtpServer {
                 } catch (IOException ex) {
                     Logger.getLogger(FtpServer.class
                             .getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

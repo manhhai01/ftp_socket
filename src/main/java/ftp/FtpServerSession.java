@@ -13,6 +13,7 @@ public class FtpServerSession {
     private ServerSocket dataSocket;
     private String RNFRFilename;
     private String type;
+    private byte[] keyAES;
 
     public FtpServerSession() {
 
@@ -83,4 +84,13 @@ public class FtpServerSession {
     public void setType(String type) {
         this.type = type;
     }
+
+    public byte[] getKeyAES() {
+        return keyAES;
+    }
+
+    public void setKeyAES(byte[] keyAES) {
+        this.keyAES = keyAES;
+    }
+   
 }
