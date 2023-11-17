@@ -26,12 +26,23 @@ public class CustomBufferedReader extends BufferedReader{
     public String readLine() throws IOException {
         String messageAES = super.readLine();
         byte[] keyAES = KeyAES.getInstance().getKey();
-        String message = null;
+        String message = "";
         try {
             message = AESCipher.decrypt(keyAES, messageAES);
         } catch (Exception ex) {
             Logger.getLogger(CustomBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
         }   
         return message;
-    }   
+    } 
+    
+    public static void main(String[] args) {
+        String messageAES = "Welcome client";
+        byte[] keyAES = KeyAES.getInstance().getKey();
+        String message = null;
+        try {
+            message = AESCipher.decrypt(keyAES, messageAES);
+        } catch (Exception ex) {
+            Logger.getLogger(CustomBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }
 }
