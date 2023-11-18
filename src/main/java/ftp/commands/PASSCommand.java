@@ -10,7 +10,7 @@ import bus.FileBus;
 import config.AppConfig;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class PASSCommand implements Command {
             try {
                 directoryBus.createHomeDirectoryIfNotExist(username);
                 session.changeWorkingDir(AppConfig.SERVER_FTP_USERS_PATH.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "") + "/" + session.getUsername());
-                SocketUtils.respondCommandSocket(StatusCode.LOGGED_IN, "User logged in, proceed.", commandSocketWriter);
+                session.getSessionSocketUtils().respondCommandSocket(StatusCode.LOGGED_IN, "User logged in, proceed.", commandSocketWriter);
                 return;
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -44,14 +44,14 @@ public class PASSCommand implements Command {
         }
         if (message.equals(UserBus.LOGIN_PASSWORD_MISMATCH_MSG)) {
             try {
-                SocketUtils.respondCommandSocket(StatusCode.NOT_LOGGED_IN, message, commandSocketWriter);
+                session.getSessionSocketUtils().respondCommandSocket(StatusCode.NOT_LOGGED_IN, message, commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (message.equals(UserBus.LOGIN_ACCOUNT_NOT_VERIFIED_MSG)) {
             try {
-                SocketUtils.respondCommandSocket(StatusCode.OTP_NEEDED, message, commandSocketWriter);
+                session.getSessionSocketUtils().respondCommandSocket(StatusCode.OTP_NEEDED, message, commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -3,13 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package ftp;
-
 import ftp.commands.Command;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +22,7 @@ import threading.ThreadManager;
  */
 public class FtpSessionWorker extends Thread {
 
-    private final FtpServerSession sessionData = new FtpServerSession();
+    private final FtpServerSession sessionData;
     private final Socket commandSocket;
     private final List<Command> onSocketConnectCommands;
     private final List<Command> onSocketDisconnectCommands;
@@ -38,6 +35,7 @@ public class FtpSessionWorker extends Thread {
             Map<String, Command> commands
     ) {
         this.commandSocket = commandSocket;
+        this.sessionData = new FtpServerSession(commandSocket);
         this.onSocketConnectCommands = onSocketConnectCommands;
         this.onSocketDisconnectCommands = onSocketDisconnectCommands;
         this.commands = commands;
@@ -58,9 +56,8 @@ public class FtpSessionWorker extends Thread {
 
     public void matchCommand(String input, BufferedWriter commandSocketWriter, FtpServerSession session) {
         System.out.println("Input: " + input);
-        
+
         // Giai ma:
-        
         InputParseResult parsedInput = parseInput(input);
         Command command = commands.get(parsedInput.commandName());
         if (command != null) {
@@ -75,7 +72,7 @@ public class FtpSessionWorker extends Thread {
             );
         } else {
             try {
-                SocketUtils.writeLineAndFlush("500 Command is not recognised.", commandSocketWriter);
+                session.getSessionSocketUtils().writeLineAndFlush("500 Command is not recognised.", commandSocketWriter);
             } catch (IOException ex) {
                 Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -85,9 +82,10 @@ public class FtpSessionWorker extends Thread {
     @Override
     public void run() {
         try {
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
+
             String input = "";
+            BufferedWriter writer = sessionData.getWriter();
+            BufferedReader reader = sessionData.getReader();
 
             // On socket connection listeners
             onSocketConnectCommands.forEach((command) -> {
@@ -95,7 +93,7 @@ public class FtpSessionWorker extends Thread {
             });
 
             // Read and execute commands sent from client
-            while ((input = reader.readLine()) != null) {
+            while ((input = sessionData.getSessionSocketUtils().readLine(reader)) != null) {
                 matchCommand(input, writer, sessionData);
             }
 

@@ -6,7 +6,7 @@ package ftp.commands;
 
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,13 +21,13 @@ public class TYPECommand implements Command {
             String type = arguments[0];
             if (type.equals("A") || type.equals("I")) {
                 session.setType(arguments[0]);
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.COMMAND_OK,
                         "Command TYPE okay.",
                         commandSocketWriter
                 );
             } else {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.COMMAND_UNRECOGNIZED,
                         "Command TYPE only accepts one argument, which is either \"I\" or \"A\"",
                         commandSocketWriter

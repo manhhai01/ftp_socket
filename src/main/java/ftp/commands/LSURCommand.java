@@ -10,7 +10,7 @@ import ftp.FilePermission;
 import ftp.FilePermissionWithUser;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,14 +43,14 @@ public class LSURCommand implements Command {
 
             File file = new File(filePath);
             if (!file.exists()) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.ACTION_FAILED,
                         "File does not exist",
                         commandSocketWriter
                 );
             }
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
                     "About to open data connection",
                     commandSocketWriter
@@ -62,9 +62,9 @@ public class LSURCommand implements Command {
             ServerSocket dataSocketServer = session.getDataSocket();
             Socket dataSocket = dataSocketServer.accept();
             BufferedWriter dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
-            SocketUtils.writeLineAndFlush(responseJson, dataWriter);
+            session.getSessionSocketUtils().writeLineAndFlush(responseJson, dataWriter);
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Closing data connection",
                     commandSocketWriter

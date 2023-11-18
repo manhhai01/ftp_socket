@@ -9,7 +9,7 @@ import bus.FileBus;
 import bus.NormalFileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class USHRCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         if (arguments.length != 3) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Syntax error.",
                         commandSocketWriter
@@ -56,7 +56,7 @@ public class USHRCommand implements Command {
 
         if (success) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,
                         String.format("Unshare file %s successfully.", fileName),
                         commandSocketWriter
@@ -66,7 +66,7 @@ public class USHRCommand implements Command {
             }
         } else {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter

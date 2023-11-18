@@ -4,7 +4,7 @@ import ftp.FilePermission;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,7 +29,7 @@ public class RMDCommand implements Command {
         // Check if path is a directory
         if (!file.isDirectory()) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Not a directory.",
                         commandSocketWriter
@@ -45,7 +45,7 @@ public class RMDCommand implements Command {
         FilePermission filePermission = fileService.getFilePermission(filePath, session.getUsername(), FileBus.DIRECTORY_TYPE);
         if (!filePermission.isDeletable()) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter
@@ -59,7 +59,7 @@ public class RMDCommand implements Command {
         // Check if directory is empty
         try {
             if (Files.list(file.toPath()).findFirst().isPresent()) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Directory must be empty.",
                         commandSocketWriter
@@ -74,7 +74,7 @@ public class RMDCommand implements Command {
         // Proceed to delete the directory
         file.delete();
         try {
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
                     "Command okay.",
                     commandSocketWriter

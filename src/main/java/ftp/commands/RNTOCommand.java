@@ -4,7 +4,7 @@ import config.AppConfig;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,7 +24,7 @@ public class RNTOCommand implements Command {
         String oldFilename = session.getRNFRFilename();
         if (oldFilename == null) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "RNFR command is required before this command.",
                         commandSocketWriter
@@ -48,7 +48,7 @@ public class RNTOCommand implements Command {
 
             File fileWithNewName = new File(newFilePath);
             if (fileWithNewName.exists()) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         String.format("File with %s name already exists.", inputNewFilePath),
                         commandSocketWriter
@@ -64,14 +64,14 @@ public class RNTOCommand implements Command {
                     session.getUsername(),
                     oldFile.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
             if (success) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,
                         "Requested file action okay, completed.",
                         commandSocketWriter
                 );
                 session.setRNFRFilename(null);
             } else {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter

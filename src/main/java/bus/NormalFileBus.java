@@ -6,22 +6,20 @@ package bus;
 
 import static bus.FileBus.DIRECTORY_TYPE;
 import static bus.FileBus.NORMAL_FILE_TYPE;
-import config.AppConfig;
 import dao.FileDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
 import ftp.DirectoryPermission;
 import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +27,6 @@ import model.ShareFiles;
 import model.User;
 import model.ids.ShareFilesId;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import utils.EmailUtils;
 
 /**
@@ -52,8 +49,21 @@ public class NormalFileBus {
     }
 
     public static void main(String[] args) throws IOException {
-        NormalFileBus normalFileBus = new NormalFileBus();
-        normalFileBus.createTempFile(new FtpFileUtils().getParentPath(AppConfig.SERVER_FTP_USERS_PATH + "/" + "testuser.txt"));
+        File file = new File("ftp/users/testuser/bai3_3119410300_saudaiphat.png");
+        File newFile = new File("bai3_3119410300_saudaiphat.png");
+        byte[] readFileToByteArray = FileUtils.readFileToByteArray(file);
+//        for (byte b : readFileToByteArray) {
+//            System.out.println(b);
+//        }
+        Charset charset = StandardCharsets.US_ASCII;
+        byte[] newBytes = Base64.getDecoder().decode(Base64.getEncoder().encodeToString(readFileToByteArray));
+        for (int i = 0; i < newBytes.length; i++) {
+            if (newBytes[i] != readFileToByteArray[i]) {
+                System.out.println(newBytes[i] + " and " + readFileToByteArray[i]);
+            } else {
+                System.out.println(newBytes[i] == readFileToByteArray[i]);
+            }
+        }
     }
 
     public synchronized boolean createNormalFile(String fromRootFilePath, String username) {
@@ -125,7 +135,7 @@ public class NormalFileBus {
         if (success) {
             long fileSize = file.length();
             file.delete();
-            
+
             User owner = fileFromDb.getUser();
             long usedBytes = owner.getUsedBytes();
             owner.setUsedBytes(usedBytes - fileSize);
@@ -134,9 +144,9 @@ public class NormalFileBus {
         return success;
     }
 
-    public synchronized boolean writeToNormalFile(String fromRootFilePath, String username, InputStream data, String writeMode) {
+    public synchronized boolean writeToNormalFile(String fromRootFilePath, String username, String data, String writeMode) {
         User user = userDao.getUserByUserName(username);
-        
+
         // Check if user is able to upload
         if (user.isBlockUpload()) {
             return false;
@@ -174,14 +184,20 @@ public class NormalFileBus {
         // Write to temp file so we can check the size of the file later
         try {
             if (writeMode.equals("A")) {
-                FileWriter fileWriter = new FileWriter(tempFile);
-                BufferedReader dataReader = new BufferedReader(new InputStreamReader(data));
-                dataReader.transferTo(fileWriter);
-                dataReader.close();
-                fileWriter.close();
+                FileUtils.write(tempFile, data, StandardCharsets.UTF_8);
+//                FileWriter fileWriter = new FileWriter(tempFile);
+//                BufferedReader dataReader = new BufferedReader(new InputStreamReader(data));
+//                dataReader.transferTo(fileWriter);
+//                dataReader.close();
+//                fileWriter.close();
             } else {
-                byte[] dataBytes = IOUtils.toByteArray(data);
-                FileUtils.writeByteArrayToFile(tempFile, dataBytes);
+//                byte[] dataBytes = IOUtils.toByteArray(
+//                        new BufferedReader(new InputStreamReader(data)),
+//                        StandardCharsets.UTF_8
+//                );
+//                FileUtils.writeByteArrayToFile(tempFile, dataBytes);
+                FileUtils.writeByteArrayToFile(tempFile, Base64.getDecoder().decode(data));
+
             }
         } catch (IOException ex) {
             Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
@@ -243,8 +259,7 @@ public class NormalFileBus {
         // Todo: Send mail
         EmailUtils emailUtils = new EmailUtils();
         boolean resSendEmail = emailUtils.sendSharingFileNotification(ownerUsername, appliedUsername, permission);
-        
-        
+
         return resUpdate && resSendEmail;
 
     }

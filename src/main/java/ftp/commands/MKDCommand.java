@@ -4,7 +4,7 @@ import bus.DirectoryBus;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -27,13 +27,13 @@ public class MKDCommand implements Command {
             String newDirPath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), dirName);
             boolean success = directoryBus.createDirectory(newDirPath, session.getUsername());
             if (success) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.DIRECTORY_CREATED,
                         String.format("\"%s\" Created.", dirName),
                         commandSocketWriter
                 );
             } else {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter

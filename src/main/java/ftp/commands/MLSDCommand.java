@@ -9,7 +9,7 @@ import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,7 +26,7 @@ public class MLSDCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             System.out.println("User working directory: " + session.getWorkingDirAbsolutePath());
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
                     "File status okay; about to open data connection.",
                     commandSocketWriter
@@ -56,13 +56,14 @@ public class MLSDCommand implements Command {
 //"Type=file;Size=17867;Modify=19961025135602;Perm=r; timelord.1.4.sit.hqx\n" +
 //"Type=file;Size=224907;Modify=19980615100045;Perm=r; uar.1.2.3.sit.hqx\n" +
 //"Type=file;Size=1024990;Modify=19980130010322;Perm=r; cap60.pl198.tar.gz\n");
-            dataSocketWriter.write(fileData);
-            dataSocketWriter.flush();
-            dataSocketWriter.close();
+session.getSessionSocketUtils().writeLineAndFlush(fileData, dataSocketWriter);
+//            dataSocketWriter.write(fileData);
+//            dataSocketWriter.flush();
+//            dataSocketWriter.close();
             socket.close();
             session.getDataSocket().close();
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Closing data connection.",
                     commandSocketWriter

@@ -10,11 +10,13 @@ import config.AppConfig;
 import dao.UserDao;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
 import ftp.StatusCode;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.User;
@@ -37,7 +39,7 @@ public class STORCommand implements Command {
         if (path.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
             if (!user.isAnonymous()) {
                 try {
-                    SocketUtils.respondCommandSocket(
+                    session.getSessionSocketUtils().respondCommandSocket(
                             StatusCode.FILE_ACTION_NOT_TAKEN,
                             "Anonymous disabled.",
                             commandSocketWriter
@@ -53,14 +55,14 @@ public class STORCommand implements Command {
             // Create file if it doesn't exist
             boolean fileCreationSuccess = normalFileBus.createNormalFile(path, session.getUsername());
             if (!fileCreationSuccess) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter
                 );
                 return;
             }
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.FILE_ACTION_OK,
                     "Requested file action okay.",
                     commandSocketWriter
@@ -71,10 +73,20 @@ public class STORCommand implements Command {
             normalFileBus.writeToNormalFile(
                     path,
                     session.getUsername(),
-                    socket.getInputStream(),
+                    session.getSessionSocketUtils().readAll(
+                            socket.getInputStream(),
+                            session.getType().equals("I")
+                    ),
                     session.getType()
             );
-            SocketUtils.respondCommandSocket(
+//            normalFileBus.writeToNormalFile(
+//                    path,
+//                    session.getUsername(),
+//                    socket.getInputStream(),
+//                    session.getType(),
+//                    session.getAESKey()
+//            );
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Closing data connection.",
                     commandSocketWriter

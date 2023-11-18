@@ -6,7 +6,7 @@ package ftp.commands;
 
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import ftp.commands.Command;
 import java.io.BufferedWriter;
@@ -22,7 +22,7 @@ public class PWDCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.CURRENT_WORKING_DIRECTORY,
                     String.format("\"%s\" is current directory.", session.getWorkingDir()),
                     commandSocketWriter);

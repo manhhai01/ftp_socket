@@ -6,7 +6,7 @@ package ftp.commands;
 
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class USERCommand implements Command {
         try {
             String username = arguments[0];
             session.setUsername(username);
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.USERNAME_OK,
                     "User name okay, need password for " + username + ".",
                     commandSocketWriter

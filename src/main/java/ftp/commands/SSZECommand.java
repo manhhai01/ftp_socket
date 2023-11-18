@@ -43,7 +43,7 @@
 //        
 //        if (setFileLimitsResponse.equals(UserBus.SET_FILE_LIMITS_SUCCESSFULLY)) {
 //            try {
-//                SocketUtils.respondCommandSocket(
+//                session.getSocketUtils().respondCommandSocket(
 //                        StatusCode.FILE_ACTION_OK,
 //                        UserBus.SET_FILE_LIMITS_SUCCESSFULLY,
 //                        commandSocketWriter
@@ -53,7 +53,7 @@
 //            }
 //        } else {
 //            try {
-//                SocketUtils.respondCommandSocket(
+//                session.getSocketUtils().respondCommandSocket(
 //                        StatusCode.FILE_ACTION_NOT_TAKEN,
 //                        setFileLimitsResponse,
 //                        commandSocketWriter

@@ -6,7 +6,7 @@ package ftp.commands;
 
 import bus.UserBus;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class GOTPCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         if (arguments.length != 2) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.SYNTAX_ERROR,
                         "Syntax error.",
                         commandSocketWriter
@@ -39,7 +39,7 @@ public class GOTPCommand implements Command {
         boolean success = userBus.reGenerateOtp(username, password);
         if (success) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.COMMAND_OK,
                         "Regenerate OTP successfully.",
                         commandSocketWriter
@@ -49,7 +49,7 @@ public class GOTPCommand implements Command {
             }
         } else {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.ACTION_FAILED,
                         "Failed to regenerate OTP.",
                         commandSocketWriter

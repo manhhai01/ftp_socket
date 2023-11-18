@@ -8,7 +8,7 @@ import bus.FileBus;
 import ftp.DirectoryPermission;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -32,12 +32,12 @@ public class CWDCommand implements Command {
             );
             if (directoryPermission.isReadable()) {
                 session.changeWorkingDir(newDir);
-                SocketUtils.respondCommandSocket(StatusCode.FILE_ACTION_OK,
+                session.getSessionSocketUtils().respondCommandSocket(StatusCode.FILE_ACTION_OK,
                         "Okay.",
                         commandSocketWriter
                 );
             } else {
-                SocketUtils.respondCommandSocket(StatusCode.FILE_ACTION_NOT_TAKEN,
+                session.getSessionSocketUtils().respondCommandSocket(StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter
                 );

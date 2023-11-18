@@ -8,7 +8,7 @@ import ftp.FilePermission;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,7 +29,7 @@ public class RNFRCommand implements Command {
             );
             File file = new File(filePath);
             if (!file.exists()) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "File doesn't exist.",
                         commandSocketWriter
@@ -43,7 +43,7 @@ public class RNFRCommand implements Command {
                     file.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE
             );
             if (!filePermission.isRenamable()) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Forbidden.",
                         commandSocketWriter
@@ -51,7 +51,7 @@ public class RNFRCommand implements Command {
                 return;
             }
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.FILE_ACTION_REQUIRES_INFO,
                     "RNFR accepted. Please supply new name for RNTO.",
                     commandSocketWriter

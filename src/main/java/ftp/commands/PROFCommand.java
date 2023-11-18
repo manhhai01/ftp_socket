@@ -3,7 +3,7 @@ package ftp.commands;
 import com.google.gson.Gson;
 import dao.UserDao;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class PROFCommand implements Command {
             PublicUserInfo profileDto = new PublicUserMapper().userToPublicUserInfo(user);
             String responseJson = gson.toJson(profileDto);
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
                     "About to open data connection",
                     commandSocketWriter
@@ -45,9 +45,9 @@ public class PROFCommand implements Command {
             Socket dataSocket = dataSocketServer.accept();
             BufferedWriter dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
 
-            SocketUtils.writeLineAndFlush(responseJson, dataWriter);
+            session.getSessionSocketUtils().writeLineAndFlush(responseJson, dataWriter);
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Closing data connection",
                     commandSocketWriter
@@ -58,7 +58,7 @@ public class PROFCommand implements Command {
         } catch (IOException ex) {
             Logger.getLogger(PROFCommand.class.getName()).log(Level.SEVERE, null, ex);
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.ACTION_FAILED,
                         "Forbidden.",
                         commandSocketWriter

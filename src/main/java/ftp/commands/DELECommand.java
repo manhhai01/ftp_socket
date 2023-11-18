@@ -7,7 +7,7 @@ package ftp.commands;
 import bus.FileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class DELECommand implements Command {
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), filename);
             List<String> notDeletablePaths = fileService.removeFile(filePath, session.getUsername());
             if (notDeletablePaths.isEmpty()) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_OK,
                         "Command okay.",
                         commandSocketWriter
@@ -39,7 +39,7 @@ public class DELECommand implements Command {
                     notDeletablePathMsg += path + "\n";
                 }
 
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         notDeletablePathMsg,
                         commandSocketWriter

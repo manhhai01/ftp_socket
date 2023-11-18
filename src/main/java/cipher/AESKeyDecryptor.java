@@ -8,7 +8,7 @@ package cipher;
  *
  * @author lamanhhai
  */
-public class Decrypt {
+public class AESKeyDecryptor {
     public static String decryptKey(String encrypt) throws Exception {
         byte[] decrypt = RSACipher.decrypt(Config.SERVER_PRIVATE_KEY, encrypt.getBytes());
         return new String(decrypt);

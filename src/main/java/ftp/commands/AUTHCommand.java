@@ -6,7 +6,7 @@ package ftp.commands;
 
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class AUTHCommand implements Command {
         if (arguments[0].equals("TLS")) {
             try {
                 System.out.println("431 Service is unavailable.");
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.SECURITY_METHOD_UNAVAILABLE,
                         "431 Service is unavailable.",
                         commandSocketWriter
@@ -35,7 +35,7 @@ public class AUTHCommand implements Command {
         if (arguments[0].equals("SSL")) {
             try {
                 System.out.println("431 Service is unavailable.");
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.SECURITY_METHOD_UNAVAILABLE,
                         "431 Service is unavailable.",
                         commandSocketWriter
@@ -46,7 +46,7 @@ public class AUTHCommand implements Command {
             }
         }
         try {
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.COMMAND_UNRECOGNIZED,
                     "500 Command is not recognised.",
                     commandSocketWriter

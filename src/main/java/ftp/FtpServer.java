@@ -20,6 +20,7 @@ import ftp.commands.DELECommand;
 import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
 import ftp.commands.GOTPCommand;
+import ftp.commands.KEYCommand;
 import ftp.commands.LSANCommand;
 import ftp.commands.LSHRCommand;
 import ftp.commands.LSURCommand;
@@ -115,7 +116,7 @@ public class FtpServer {
             @Override
             public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
                 try {
-                    SocketUtils.writeLineAndFlush("220 Service ready for new user.", commandSocketWriter);
+                    session.getSessionSocketUtils().writeLineAndFlush("220 Service ready for new user.", commandSocketWriter);
 
                 } catch (IOException ex) {
                     Logger.getLogger(FtpServer.class
@@ -152,6 +153,7 @@ public class FtpServer {
 //        ftpServerBuilder.addCommand("SSZE", new SSZECommand());
         ftpServerBuilder.addCommand("PROF", new PROFCommand());
         ftpServerBuilder.addCommand("LSUR", new LSURCommand());
+        ftpServerBuilder.addCommand("KEY", new KEYCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override

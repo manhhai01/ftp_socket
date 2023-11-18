@@ -6,7 +6,7 @@ package ftp.commands;
 
 import bus.UserBus;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class SOTPCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         if (arguments.length != 3) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.SYNTAX_ERROR,
                         "Syntax error.",
                         commandSocketWriter
@@ -41,7 +41,7 @@ public class SOTPCommand implements Command {
         
         if (success) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.COMMAND_OK,
                         "OTP matches.",
                         commandSocketWriter
@@ -51,7 +51,7 @@ public class SOTPCommand implements Command {
             }
         } else {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.ACTION_FAILED,
                         "OTP doesn't match.",
                         commandSocketWriter

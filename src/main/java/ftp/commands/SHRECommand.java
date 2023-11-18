@@ -10,7 +10,7 @@ import bus.NormalFileBus;
 import ftp.FtpFileUtils;
 import ftp.FtpServerSession;
 import ftp.NormalFilePermission;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class SHRECommand implements Command {
                 if (!permission.equals(NormalFilePermission.FULL_PERMISSION)
                         && !permission.equals(NormalFilePermission.NULL_PERMISSION)
                         && !permission.equals(NormalFilePermission.READABLE_PERMISSION)) {
-                    SocketUtils.respondCommandSocket(
+                    session.getSessionSocketUtils().respondCommandSocket(
                             StatusCode.FILE_ACTION_NOT_TAKEN,
                             "Syntax error.",
                             commandSocketWriter
@@ -61,7 +61,7 @@ public class SHRECommand implements Command {
 
                 if (isSuccess) {
                     try {
-                        SocketUtils.respondCommandSocket(
+                        session.getSessionSocketUtils().respondCommandSocket(
                                 StatusCode.FILE_ACTION_OK,
                                 String.format("Shared file %s successfully.", fileName),
                                 commandSocketWriter
@@ -71,7 +71,7 @@ public class SHRECommand implements Command {
                     }
                 } else {
                     try {
-                        SocketUtils.respondCommandSocket(
+                        session.getSessionSocketUtils().respondCommandSocket(
                                 StatusCode.FILE_ACTION_NOT_TAKEN,
                                 "Forbidden.",
                                 commandSocketWriter
@@ -98,7 +98,7 @@ public class SHRECommand implements Command {
 
                 if (isSuccess) {
                     try {
-                        SocketUtils.respondCommandSocket(
+                        session.getSessionSocketUtils().respondCommandSocket(
                                 StatusCode.FILE_ACTION_OK,
                                 String.format("Shared file %s successfully.", fileName),
                                 commandSocketWriter
@@ -108,7 +108,7 @@ public class SHRECommand implements Command {
                     }
                 } else {
                     try {
-                        SocketUtils.respondCommandSocket(
+                        session.getSessionSocketUtils().respondCommandSocket(
                                 StatusCode.FILE_ACTION_NOT_TAKEN,
                                 "Forbidden.",
                                 commandSocketWriter
@@ -123,7 +123,7 @@ public class SHRECommand implements Command {
             Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ArrayIndexOutOfBoundsException ex) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Syntax error.",
                         commandSocketWriter

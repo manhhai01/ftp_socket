@@ -1,7 +1,13 @@
 package ftp;
 
 import config.AppConfig;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,9 +19,18 @@ public class FtpServerSession {
     private ServerSocket dataSocket;
     private String RNFRFilename;
     private String type;
-    private byte[] keyAES;
+    private SessionSocketUtils socketUtils = new SessionSocketUtils(null);
+    private byte[] AESKey;
+    private BufferedWriter writer;
+    private BufferedReader reader;
 
-    public FtpServerSession() {
+    public FtpServerSession(Socket commandSocket) {
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
     }
 
@@ -85,12 +100,25 @@ public class FtpServerSession {
         this.type = type;
     }
 
-    public byte[] getKeyAES() {
-        return keyAES;
+    public byte[] getAESKey() {
+        return AESKey;
     }
 
-    public void setKeyAES(byte[] keyAES) {
-        this.keyAES = keyAES;
+    public void setAESKey(byte[] AESKey) {
+        this.AESKey = AESKey;
+        socketUtils.setAESKey(AESKey);
     }
-   
+
+    public SessionSocketUtils getSessionSocketUtils() {
+        return socketUtils;
+    }
+
+    public BufferedWriter getWriter() {
+        return writer;
+    }
+
+    public BufferedReader getReader() {
+        return reader;
+    }
+
 }

@@ -17,7 +17,7 @@ public class Config {
             "fmukUxN+EliKkg0TwswylVroLBW9OKN70Zd62dc+gfkA3Vu8cDoRKzz6BKpo4yDo" +
             "0D3FOsbNEj80opjmtQIDAQAB";
 
-    public static final String SERVER_PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAPGkxlAJPKR3BRxT\n" +
+    public static final String SERVER_PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAPGkxlAJPKR3BRxT" +
             "PIeB3pDv117j8XbpuEik5UIOlY3GUtAV1sad5NNDUAnP/DB80yAQ8ycm9Xdkutuo" +
             "f25Xlb7w0bRQNpfJlijx9eF8PsB6t63r8KAfWJlqbNHgN8AMK9P5XzVyN4YiEnUl" +
             "Jh/EYiwLiYzflNnmnnfRrI4nUo8fAgMBAAECgYEAvwTxm81heeV4Tcbi33/jUBG4" +

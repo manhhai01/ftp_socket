@@ -9,7 +9,7 @@ import payload.GetAnonymousFilesResult;
 import bus.UserBus;
 import config.AppConfig;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,7 +45,7 @@ public class LSANCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             GetAnonymousFilesResult files = fileBus.getAnonymousFiles(session.getUsername());
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
                     "About to open data connection.",
                     commandSocketWriter
@@ -64,12 +64,12 @@ public class LSANCommand implements Command {
                 result += formatSingleFile(file, f.getPath(), session.getUsername());
             }
 
-            SocketUtils.writeLineAndFlush(result, dataWriter);
+            session.getSessionSocketUtils().writeLineAndFlush(result, dataWriter);
             dataWriter.close();
 
         } catch (AnonymousDisabledException ex) {
             try {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.FILE_ACTION_NOT_TAKEN,
                         "Anonymous disabled.",
                         commandSocketWriter

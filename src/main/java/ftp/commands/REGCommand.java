@@ -5,11 +5,7 @@
 package ftp.commands;
 
 import bus.UserBus;
-import config.AppConfig;
-import dao.UserDao;
-import bus.FileBus;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,8 +15,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -31,7 +25,7 @@ public class REGCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
                     "Waiting for register info",
                     commandSocketWriter
@@ -39,18 +33,17 @@ public class REGCommand implements Command {
 
             Socket dataSocket = session.getDataSocket().accept();
             UserBus userBus = new UserBus();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
 
-            String jsonData = IOUtils.toString(dataSocket.getInputStream(), StandardCharsets.UTF_8);
+            String jsonData = session.getSessionSocketUtils().readAll(dataSocket.getInputStream(), false);
             boolean success = userBus.registerUser(jsonData);
             if (success) {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.CLOSING_DATA_CONNECTION,
                         "Account created successfully.",
                         commandSocketWriter
                 );
             } else {
-                SocketUtils.respondCommandSocket(
+                session.getSessionSocketUtils().respondCommandSocket(
                         StatusCode.ACTION_FAILED,
                         "Registration failed.",
                         commandSocketWriter

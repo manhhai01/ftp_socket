@@ -7,7 +7,7 @@ package ftp.commands;
 import config.AppConfig;
 import dao.UserDao;
 import ftp.FtpServerSession;
-import ftp.SocketUtils;
+import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,7 +41,7 @@ public class LSHRCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION,
                     "About to open data connection.",
                     commandSocketWriter
@@ -64,10 +64,10 @@ public class LSHRCommand implements Command {
                 result += formatSingleFile(file, f.getPath(), session.getUsername());
             }
 
-            SocketUtils.writeLineAndFlush(result, dataWriter);
+            session.getSessionSocketUtils().writeLineAndFlush(result, dataWriter);
             dataWriter.close();
 
-            SocketUtils.respondCommandSocket(
+            session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.CLOSING_DATA_CONNECTION,
                     "Data connection closed.",
                     commandSocketWriter
