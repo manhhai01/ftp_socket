@@ -8,10 +8,14 @@ import convertor.UserConvertor;
 import dao.UserDao;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import mapper.UserMapper;
 import model.User;
 import payload.UserDto;
 import payload.UserFileLimits;
+import payload.response.UserDetailResponse;
+import payload.response.UserResponse;
 import utils.EmailUtils;
 import utils.MP5Utils;
 import utils.OtpUtils;
@@ -186,30 +190,75 @@ public class UserBus {
         userDao.update(user);
         return SET_FILE_LIMITS_SUCCESSFULLY;
     }
+    
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userDao.getAllUsers();
+        List<UserResponse> userResponses = new ArrayList<>();
+        for(User u: users) {
+            UserResponse user = new UserResponse();
+            user.setUsername(u.getUsername());
+            user.setCreate_date(u.getCreateDateOtp());
+            user.setIsActive(u.getIsActive());
+            
+            userResponses.add(user);
+        }
+        return userResponses;
+    }
+   
+    public UserDetailResponse getUserByUsername(String username) {
+        User user = userDao.getUserByUserName(username);
+        UserDetailResponse udrs = new UserDetailResponse();
+        
+        udrs.setFirstName(user.getFirstName());
+        udrs.setLastName(user.getLastName());
+        udrs.setBirthdate(user.getBirthdate());
+        udrs.setGender(user.getGender());
+        udrs.setUsername(user.getUsername());
+        udrs.setQuotaInBytes(user.getQuotaInBytes());
+        udrs.setUsedBytes(user.getUsedBytes());
+        udrs.setMaxDownloadFileSizeBytes(user.getMaxDownloadFileSizeBytes());
+        udrs.setMaxUploadFileSizeBytes(user.getMaxUploadFileSizeBytes());
+        udrs.setAnonymous(user.isAnonymous());
+        udrs.setBlockDownload(user.isBlockDownload());
+        udrs.setBlockUpload(user.isBlockUpload());
+        
+        return udrs;
+    }
 
     public static void main(String[] args) {
 
         UserBus userBus = new UserBus();
-        String jsonUserRegister = "{\n"
-                + "            \"username\": \"lequoctai201201@gmail.com\",\n"
-                + "            \"password\": \"123\";\n"
-                + "            \"firstName\": \"Nguyễn Văn\",\n"
-                + "            \"lastName\": \"C\",\n"
-                + "            \"gender\": \"Nam\",\n"
-                + "            \"birthday\": \"12/12/1999\"\n"
-                + "        }";
+//        String jsonUserRegister = "{\n"
+//                + "            \"username\": \"lequoctai201201@gmail.com\",\n"
+//                + "            \"password\": \"123\";\n"
+//                + "            \"firstName\": \"Nguyễn Văn\",\n"
+//                + "            \"lastName\": \"C\",\n"
+//                + "            \"gender\": \"Nam\",\n"
+//                + "            \"birthday\": \"12/12/1999\"\n"
+//                + "        }";
+//
+//        boolean res = userBus.registerUser(jsonUserRegister);
+//        System.out.println("Kiem tra register: " + res);
+//
+//        boolean res1 = userBus.verifyOtp("lahai7744@gmail.com", "123", "424873");
+//        System.out.println("Kiem tra verify otp: " + res1);
+//
+//        boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com", "123");
+//        System.out.println("Kiem tra regen: " + res2);
+//
+//        String res3 = userBus.checkLogin("lequoctai201201@gmail.com", "123");
+//        System.out.println("Kiem tra login: " + res3);
 
-        boolean res = userBus.registerUser(jsonUserRegister);
-        System.out.println("Kiem tra register: " + res);
-
-        boolean res1 = userBus.verifyOtp("lahai7744@gmail.com", "123", "424873");
-        System.out.println("Kiem tra verify otp: " + res1);
-
-        boolean res2 = userBus.reGenerateOtp("lahai7744@gmail.com", "123");
-        System.out.println("Kiem tra regen: " + res2);
-
-        String res3 = userBus.checkLogin("lequoctai201201@gmail.com", "123");
-        System.out.println("Kiem tra login: " + res3);
+          List<UserResponse> users = userBus.getAllUsers();
+          for(UserResponse u: users) {
+              System.out.println(u.toString());
+          }
+          
+          UserDetailResponse u = userBus.getUserByUsername("Lahai7744@gmail.com");
+          System.out.println(u.toString());
+        
+        
     }
-
+    
+    
 }

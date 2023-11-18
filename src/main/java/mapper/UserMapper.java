@@ -7,6 +7,7 @@ package mapper;
 import java.util.Date;
 import model.User;
 import payload.UserDto;
+import payload.response.UserResponse;
 import utils.DateUtils;
 
 /**
