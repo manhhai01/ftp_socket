@@ -4,12 +4,9 @@
  */
 package test;
 
-import antlr.StringUtils;
 import cipher.AESCipher;
-import ftp.SessionSocketUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -21,9 +18,9 @@ import utils.SocketUtils;
  *
  * @author User
  */
-public class TestPROF {
+public class TestRETRDir {
 
-    public static void main(String[] args) throws IOException, Exception {
+    public static void main(String[] args) throws Exception {
         Socket commandSocket = new Socket("localhost", 21);
         BufferedWriter commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
         BufferedReader commandReader = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
@@ -35,9 +32,9 @@ public class TestPROF {
         // Login
         SocketUtils.writeLineAndFlush("KEY 5AvUqDNEYLoh3oYBifCSZz7aGWeaDHS2kpnBZXycNBDBRtx9u4YXx3HJfrNctccRs6Bgno4zTyHIv9VWJYucu2h7piyM0eDlmC/sBvmFxPuxbpXLVdvslibf2n5twSj23+xIgtNEbrqtOQQ29JaJvEYBIeJwrBVN0pIVPT7Vy2Q=", commandWriter);
         commandReader.readLine();
-        SocketUtils.writeLineAndFlush(AESCipher.encrypt(AESKey.getBytes() ,"USER testuser"), commandWriter);
+        SocketUtils.writeLineAndFlush(AESCipher.encrypt(AESKey.getBytes(), "USER testuser"), commandWriter);
         commandReader.readLine();
-        SocketUtils.writeLineAndFlush(AESCipher.encrypt(AESKey.getBytes() ,"PASS test"), commandWriter);
+        SocketUtils.writeLineAndFlush(AESCipher.encrypt(AESKey.getBytes(), "PASS test"), commandWriter);
         commandReader.readLine();
 
         // Open new data port
@@ -53,8 +50,8 @@ public class TestPROF {
         BufferedWriter dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
         BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream(), StandardCharsets.UTF_8));
 
-        // Call PROF command to get profile data
-        commandWriter.write(AESCipher.encrypt(AESKey.getBytes(), "PROF"));
+        // Call RETR command on directory path
+        commandWriter.write(AESCipher.encrypt(AESKey.getBytes(), "RETR /users/testuser"));
         commandWriter.newLine();
         commandWriter.flush();
         System.out.println(AESCipher.decrypt(AESKey.getBytes(), commandReader.readLine()));
@@ -63,7 +60,7 @@ public class TestPROF {
         // Remove the final new line at the end of the string
         data = data.replaceFirst("[\n\r]+$", "");
 
-        System.out.println("Profile data: " + AESCipher.decrypt(AESKey.getBytes(), data));
+        System.out.println("RETR data: " + AESCipher.decrypt(AESKey.getBytes(), data));
         System.out.println(AESCipher.decrypt(AESKey.getBytes(), commandReader.readLine()));
     }
 }
