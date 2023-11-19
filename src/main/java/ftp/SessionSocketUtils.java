@@ -56,7 +56,7 @@ public class SessionSocketUtils {
                     ? Base64.getEncoder().encodeToString(inputStream.readAllBytes())
                     : IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         }
-        String encryptedMessage = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        String encryptedMessage = IOUtils.toString(inputStream, StandardCharsets.UTF_8).replaceFirst("[\n\r]+$", "");
         String message = "";
         try {
             message = AESCipher.decrypt(AESKey, encryptedMessage);
