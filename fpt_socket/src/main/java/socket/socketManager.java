@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.io.IOUtils;
@@ -48,7 +50,7 @@ public class socketManager {
 
             // send key aes to server
             String keyAES = Encrypt.encriptKey();
-            commandWriter.append(keyAES);
+            commandWriter.append("KEY " + keyAES);
             commandWriter.newLine();
             commandWriter.flush();
             commandReader.readLine();
@@ -94,7 +96,7 @@ public class socketManager {
         openNewDataPort();
         writeLineAndFlush("PROF", commandWriter);
         commandReader.readLine();
-        String response=IOUtils.toString(dataReader);
+        String response=dataReader.readLine();
         closeDataPort();
         commandReader.readLine();// read close connection message
         Gson gson = new Gson();
@@ -108,7 +110,7 @@ public class socketManager {
         openNewDataPort();
         writeLineAndFlush("LSHR", commandWriter);
         commandReader.readLine();
-        String response=IOUtils.toString(dataReader);
+        String response=dataReader.readLine();
         closeDataPort();
         commandReader.readLine();// read close connection message
         return response;
@@ -118,45 +120,53 @@ public class socketManager {
         return new DataResponse(commandReader.readLine());
     }
     public String getFileList(String path) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
         openNewDataPort();
-        writeLineAndFlush("MLSD "+path, commandWriter);
+        writeLineAndFlush("MLSD "+pathURLEncode, commandWriter);
         commandReader.readLine();
-        String response=IOUtils.toString(dataReader);
+        String response=dataReader.readLine();
         closeDataPort();
         commandReader.readLine();// read close connection message
         return response;
     }
     public DataResponse changeDirectory(String path) throws Exception{
-        writeLineAndFlush("CWD "+path, commandWriter);
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        writeLineAndFlush("CWD "+pathURLEncode, commandWriter);
         String response=commandReader.readLine();
         return new DataResponse(response);
     }
     public DataResponse createNewFolder(String path) throws Exception{
-        writeLineAndFlush("MKD "+path, commandWriter);
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        writeLineAndFlush("MKD "+pathURLEncode, commandWriter);
         String response=commandReader.readLine();
         return new DataResponse(response);
     }
     public DataResponse rename(String oldName,String newName) throws Exception{
-        writeLineAndFlush("RNFR "+oldName, commandWriter);
+        String oldNameURLEncode = URLEncoder.encode(oldName, StandardCharsets.UTF_8);
+        String newNameURLEncode = URLEncoder.encode(newName, StandardCharsets.UTF_8);
+        writeLineAndFlush("RNFR "+oldNameURLEncode, commandWriter);
         DataResponse res = new DataResponse(commandReader.readLine());
         if(res.getStatus()==StatusCode.FILE_ACTION_REQUIRES_INFO){
-            writeLineAndFlush("RNTO "+newName, commandWriter);
+            writeLineAndFlush("RNTO "+newNameURLEncode, commandWriter);
             res = new DataResponse(commandReader.readLine());
         }
         return res;
     }
     public DataResponse delete(String path) throws Exception{
-        writeLineAndFlush("DELE "+path, commandWriter);
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        writeLineAndFlush("DELE "+pathURLEncode, commandWriter);
         String response=commandReader.readLine();
         return new DataResponse(response);
         
     }
     public DataResponse checkPermissionForMoveCommand(String path) throws Exception{
-        writeLineAndFlush("RNFR "+path, commandWriter);
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        writeLineAndFlush("RNFR "+pathURLEncode, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
     public DataResponse move(String path) throws Exception{
-        writeLineAndFlush("RNTO "+path, commandWriter);
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        writeLineAndFlush("RNTO "+pathURLEncode, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
 /*------------------------------------------------------------------------------------------*/     
