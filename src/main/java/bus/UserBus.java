@@ -207,22 +207,13 @@ public class UserBus {
    
     public UserDetailResponse getUserByUsername(String username) {
         User user = userDao.getUserByUserName(username);
-        UserDetailResponse udrs = new UserDetailResponse();
-        
-        udrs.setFirstName(user.getFirstName());
-        udrs.setLastName(user.getLastName());
-        udrs.setBirthdate(user.getBirthdate());
-        udrs.setGender(user.getGender());
-        udrs.setUsername(user.getUsername());
-        udrs.setQuotaInBytes(user.getQuotaInBytes());
-        udrs.setUsedBytes(user.getUsedBytes());
-        udrs.setMaxDownloadFileSizeBytes(user.getMaxDownloadFileSizeBytes());
-        udrs.setMaxUploadFileSizeBytes(user.getMaxUploadFileSizeBytes());
-        udrs.setAnonymous(user.isAnonymous());
-        udrs.setBlockDownload(user.isBlockDownload());
-        udrs.setBlockUpload(user.isBlockUpload());
-        
-        return udrs;
+        UserMapper userMapper = new UserMapper();
+        return userMapper.userToUserDetailResponse(user);
+    }
+    
+    public boolean saveUserDetail(UserDetailResponse userDetail) {
+        UserMapper userMapper = new UserMapper();  
+        return userDao.save(userMapper.userDetailResponseToUser(userDetail));
     }
 
     public static void main(String[] args) {

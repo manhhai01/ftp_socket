@@ -7,6 +7,7 @@ package mapper;
 import java.util.Date;
 import model.User;
 import payload.UserDto;
+import payload.response.UserDetailResponse;
 import payload.response.UserResponse;
 import utils.DateUtils;
 
@@ -33,6 +34,42 @@ public class UserMapper {
         user.setIsActive(0);
         user.setBlockDownload(false);
         user.setBlockUpload(false);
+        return user;
+    }
+    
+    public UserDetailResponse userToUserDetailResponse(User user) {
+        UserDetailResponse udrs = new UserDetailResponse();
+        
+        udrs.setFirstName(user.getFirstName());
+        udrs.setLastName(user.getLastName());
+        udrs.setBirthdate(user.getBirthdate());
+        udrs.setGender(user.getGender());
+        udrs.setUsername(user.getUsername());
+        udrs.setQuotaInBytes(user.getQuotaInBytes());
+        udrs.setUsedBytes(user.getUsedBytes());
+        udrs.setMaxDownloadFileSizeBytes(user.getMaxDownloadFileSizeBytes());
+        udrs.setMaxUploadFileSizeBytes(user.getMaxUploadFileSizeBytes());
+        udrs.setAnonymous(user.isAnonymous());
+        udrs.setBlockDownload(user.isBlockDownload());
+        udrs.setBlockUpload(user.isBlockUpload());
+        
+        return udrs;
+    }
+    
+    public User userDetailResponseToUser(UserDetailResponse userDetail) {
+        User user = new User();
+        user.setFirstName(userDetail.getFirstName());
+        user.setLastName(userDetail.getLastName());
+        user.setBirthdate(userDetail.getBirthdate());
+        user.setGender(userDetail.getGender());
+        user.setUsername(userDetail.getUsername());
+        user.setQuotaInBytes(userDetail.getQuotaInBytes());
+        user.setUsedBytes(userDetail.getUsedBytes());
+        user.setMaxDownloadFileSizeBytes(userDetail.getMaxDownloadFileSizeBytes());
+        user.setMaxUploadFileSizeBytes(userDetail.getMaxUploadFileSizeBytes());
+        user.setAnonymous(userDetail.isAnonymous());
+        user.setBlockDownload(userDetail.isBlockDownload());
+        user.setBlockUpload(userDetail.isBlockUpload());
         return user;
     }
 }
