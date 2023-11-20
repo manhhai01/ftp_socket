@@ -212,8 +212,20 @@ public class UserBus {
     }
     
     public boolean saveUserDetail(UserDetailResponse userDetail) {
-        UserMapper userMapper = new UserMapper();  
-        return userDao.save(userMapper.userDetailResponseToUser(userDetail));
+        User user = userDao.getUserByUserName(userDetail.getUsername());
+        user.setFirstName(userDetail.getFirstName());
+        user.setLastName(userDetail.getLastName());
+        user.setBirthdate(userDetail.getBirthdate());
+        user.setGender(userDetail.getGender());
+        user.setUsername(userDetail.getUsername());
+        user.setQuotaInBytes(userDetail.getQuotaInBytes());
+        user.setUsedBytes(userDetail.getUsedBytes());
+        user.setMaxDownloadFileSizeBytes(userDetail.getMaxDownloadFileSizeBytes());
+        user.setMaxUploadFileSizeBytes(userDetail.getMaxUploadFileSizeBytes());
+        user.setAnonymous(userDetail.isAnonymous());
+        user.setBlockDownload(userDetail.isBlockDownload());
+        user.setBlockUpload(userDetail.isBlockUpload());
+        return userDao.update(user);
     }
 
     public static void main(String[] args) {
@@ -240,13 +252,21 @@ public class UserBus {
 //        String res3 = userBus.checkLogin("lequoctai201201@gmail.com", "123");
 //        System.out.println("Kiem tra login: " + res3);
 
-          List<UserResponse> users = userBus.getAllUsers();
-          for(UserResponse u: users) {
-              System.out.println(u.toString());
-          }
-          
-          UserDetailResponse u = userBus.getUserByUsername("Lahai7744@gmail.com");
-          System.out.println(u.toString());
+//          List<UserResponse> users = userBus.getAllUsers();
+//          for(UserResponse u: users) {
+//              System.out.println(u.toString());
+//          }
+//          
+//          UserDetailResponse u = userBus.getUserByUsername("Lahai7744@gmail.com");
+//          System.out.println(u.toString());
+        
+        UserDetailResponse detailResponse = new UserDetailResponse();
+        detailResponse.setFirstName("La");
+        detailResponse.setLastName("Mạnh Hải");
+        detailResponse.setGender("Nữ");
+        detailResponse.setUsername("testuser2");
+        boolean res = userBus.saveUserDetail(detailResponse);
+        System.out.println("Kiem tra: " + res);
         
         
     }

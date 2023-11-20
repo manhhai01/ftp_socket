@@ -8,7 +8,6 @@ import java.util.Date;
 import model.User;
 import payload.UserDto;
 import payload.response.UserDetailResponse;
-import payload.response.UserResponse;
 import utils.DateUtils;
 
 /**
@@ -39,7 +38,6 @@ public class UserMapper {
     
     public UserDetailResponse userToUserDetailResponse(User user) {
         UserDetailResponse udrs = new UserDetailResponse();
-        
         udrs.setFirstName(user.getFirstName());
         udrs.setLastName(user.getLastName());
         udrs.setBirthdate(user.getBirthdate());
