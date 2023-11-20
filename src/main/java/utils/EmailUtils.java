@@ -77,7 +77,7 @@ public class EmailUtils {
     public boolean sendSharingFileNotification(String sender, String receiver, String permission) {
         boolean isSended = false;
         String subject = "Thông báo: Chia sẻ Quyền Truy Cập File/Folder qua FTP";
-        String messagePermission = permission.equalsIgnoreCase(NormalFilePermission.FULL_PERMISSION) ? "Quyền đọc và ghi" : "Chỉ quền đọc";
+        String messagePermission = permission.equalsIgnoreCase(NormalFilePermission.FULL_PERMISSION) ? "Quyền đọc và ghi" : "Chỉ quyền đọc";
         String body = "<p>Xin chào,</p>\n"
                 + "    \n"
                 + "    <p>Chúng tôi gửi thông báo này để thông báo về việc " + sender + " chia sẻ quyền truy cập file thông qua dịch vụ FTP. Dưới đây là các chi tiết cần thiết:</p>\n"
