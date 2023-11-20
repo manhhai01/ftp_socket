@@ -12,6 +12,8 @@ import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +25,7 @@ public class CWDCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            String newDir = arguments[0];
+            String newDir = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
             String newDirPath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), newDir);
             DirectoryPermission directoryPermission = (DirectoryPermission) fileBus.getFilePermission(
                     newDirPath,

@@ -9,6 +9,8 @@ import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +21,7 @@ public class RMDCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
 
-        String dirName = arguments[0];
+        String dirName = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
         String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                 session.getWorkingDirAbsolutePath(),
                 dirName

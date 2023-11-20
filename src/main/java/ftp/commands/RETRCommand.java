@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class RETRCommand implements Command {
 
     private void executeFile(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) throws IOException {
         Socket socket = session.getDataSocket().accept();
-        String inputFilePath = arguments[0];
+        String inputFilePath = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
         String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                 session.getWorkingDirAbsolutePath(),
                 inputFilePath
@@ -116,7 +117,7 @@ public class RETRCommand implements Command {
 
     private void executeDirectory(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) throws IOException {
         Socket socket = session.getDataSocket().accept();
-        String inputFilePath = arguments[0];
+        String inputFilePath = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
         String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                 session.getWorkingDirAbsolutePath(),
                 inputFilePath

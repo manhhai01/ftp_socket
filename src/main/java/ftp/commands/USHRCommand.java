@@ -13,6 +13,8 @@ import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +43,7 @@ public class USHRCommand implements Command {
             }
         }
         String type = arguments[0];
-        String fileName = arguments[1];
+        String fileName = URLDecoder.decode(arguments[1], StandardCharsets.UTF_8);
         String appliedUsername = arguments[2];
         String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                 session.getWorkingDirAbsolutePath(),

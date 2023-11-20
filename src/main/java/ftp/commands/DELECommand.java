@@ -11,6 +11,8 @@ import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +26,7 @@ public class DELECommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            String filename = arguments[0];
+            String filename = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), filename);
             List<String> notDeletablePaths = fileService.removeFile(filePath, session.getUsername());
             if (notDeletablePaths.isEmpty()) {

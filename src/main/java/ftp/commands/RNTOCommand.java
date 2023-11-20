@@ -9,6 +9,8 @@ import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +22,7 @@ public class RNTOCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
 
-        String inputNewFilePath = arguments[0];
+        String inputNewFilePath = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
         String oldFilename = session.getRNFRFilename();
         if (oldFilename == null) {
             try {

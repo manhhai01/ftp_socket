@@ -8,6 +8,8 @@ import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +25,7 @@ public class MKDCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            String dirName = arguments[0];
+            String dirName = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
             String newDirPath = ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), dirName);
             boolean success = directoryBus.createDirectory(newDirPath, session.getUsername());
             if (success) {

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +37,7 @@ public class LSURCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            String fileName = arguments[0];
+            String fileName = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);;
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                     session.getWorkingDirAbsolutePath(),
                     fileName

@@ -13,6 +13,8 @@ import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +24,7 @@ public class RNFRCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
         try {
-            String fileName = arguments[0];
+            String fileName = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                     session.getWorkingDirAbsolutePath(),
                     fileName
