@@ -27,4 +27,12 @@ public class CustomFileUtils {
             default -> "I";
         };
     }
+    public static String determineType(String filePath){
+        String filetype= filePath.split("\\.")[1];
+        return switch (filetype) {
+            case "jpg", "png" -> "I";
+            case "txt", "doc" -> "A";
+            default -> "I";
+        };
+    }
 }

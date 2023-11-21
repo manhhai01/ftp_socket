@@ -133,7 +133,37 @@ public final class ftpContent extends javax.swing.JPanel {
 
             @Override
             public void onDownload(int row) {
-                System.out.println("Download row : " + row); ; 
+                try{
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    int returnValue = fileChooser.showOpenDialog(null);
+                    if (returnValue == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = fileChooser.getSelectedFile();
+                        String localPath = selectedFile.getAbsolutePath();
+                        String DownloadFile = getFilePath(row);
+                        DataResponse res = null;
+                            if(DownloadFile.split("\\.").length<1){
+                                
+                                res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, pathHistory.peek());
+                                if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+                                      JOptionPane.showMessageDialog(parentFrame,"Tải thư mục xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
+                                }
+                            }else {
+                                
+                                res = socketManager.getInstance().downloadFile(DownloadFile, localPath, pathHistory.peek());
+                                if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+                                    JOptionPane.showMessageDialog(parentFrame,"Tải tệp xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
+                                }
+                            }
+                        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                            JOptionPane.showMessageDialog(parentFrame,"Tải xuống thất bại!", "Thông báo",INFORMATION_MESSAGE);
+                        }
+                    
+                    }
+                    
+                }catch (Exception e){
+                    System.out.println("ádasdasd");
+                }
             }
 
             @Override
@@ -971,6 +1001,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     if(flag==1){
                         JOptionPane.showMessageDialog(parentFrame, "Upload tệp thành công!", "Thông báo",INFORMATION_MESSAGE);
+                        getFileList();
                     }
                 }
             } catch (Exception e){
@@ -1007,6 +1038,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     if(flag==1){
                         JOptionPane.showMessageDialog(parentFrame, "Upload thư mục thành công!", "Thông báo",INFORMATION_MESSAGE);
+                        getFileList();
                     }
                 }
             } catch (Exception e){

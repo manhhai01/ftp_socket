@@ -20,11 +20,14 @@ import java.net.Socket;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import payloads.DataResponse;
 import payloads.UserData;
 import payloads.UserPermission;
 import java.util.List;
+import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
 import utils.CustomFileUtils;
 /**
@@ -201,6 +204,7 @@ public class socketManager {
         closeDataPort();
         return new DataResponse(commandReader.readLine());
     }
+    
     public DataResponse uploadDirectory(String path,File folder) throws Exception{
         DataResponse res = null;
         if(folder.isDirectory()){
@@ -225,6 +229,53 @@ public class socketManager {
         }
         return res;
     }
+    public DataResponse downloadFile(String filePath, String localPath,String currentDir) throws Exception{
+        String pathURLEncode = URLEncoder.encode(filePath, StandardCharsets.UTF_8);
+        String fileType =CustomFileUtils.determineType(filePath);
+        writeLineAndFlush("TYPE "+fileType, commandWriter);
+        commandReader.readLine();
+        openNewDataPort();
+        writeLineAndFlush("RETR "+pathURLEncode, commandWriter);
+        DataResponse res= new DataResponse(commandReader.readLine());
+        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+            return res;
+        Path currentPath = Paths.get(currentDir);
+        Path serverFilePath = Paths.get(filePath);
+        String relativePath = currentPath.relativize(serverFilePath).toString();
+        File file = new File(localPath+"/"+relativePath);
+        if(file.getParentFile() !=null && !file.getParentFile().exists())
+            file.getParentFile().mkdirs();
+        if(fileType.equals("A"))
+            FileUtils.writeStringToFile(file, dataReader.readLine(),StandardCharsets.UTF_8);
+        else 
+            FileUtils.writeByteArrayToFile(file,Base64.getDecoder().decode(dataReader.readLine()));
+        closeDataPort();
+        return new DataResponse(commandReader.readLine());
+    }
+    
+    
+    public DataResponse downloadFolder(String folderPath, String localPath,String currentDir) throws Exception{
+        String pathURLEncode = URLEncoder.encode(folderPath, StandardCharsets.UTF_8);
+        openNewDataPort();
+        writeLineAndFlush("RETR "+pathURLEncode, commandWriter);
+        DataResponse res= new DataResponse(commandReader.readLine());
+        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+            return res;
+        String data = dataReader.readLine();
+        closeDataPort();
+        commandReader.readLine();
+        System.out.println(data);
+        StringTokenizer tokenizer = new StringTokenizer(data,"\n");
+        while(tokenizer.hasMoreTokens()){
+            String filePath = tokenizer.nextToken();
+            res = downloadFile(filePath, localPath, currentDir);
+            System.out.println("downloading "+ filePath);
+            if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+                return res;
+        }
+        return res;
+    }
+    
     
 /*------------------------------------------------------------------------------------------*/     
     
