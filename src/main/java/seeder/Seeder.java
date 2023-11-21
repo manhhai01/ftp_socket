@@ -97,8 +97,8 @@ public class Seeder {
         file.mkdirs();
 
 //        createDir(AppConfig.SERVER_FTP_USERS_PATH, rootUser, null);
-        Directory userHomeDirectory = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser", user1, null);
-        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser", user1, null);
+        Directory sharedDir = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/abc", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/def", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser2", user2, null);
@@ -110,7 +110,7 @@ public class Seeder {
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedReadableFile.getId(), user2.getId()), NormalFilePermission.READABLE_PERMISSION, sharedReadableFile, user2));
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFullPermissionFile.getId(), user2.getId()), NormalFilePermission.FULL_PERMISSION, sharedFullPermissionFile, user2));
         
-        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, false, true, userHomeDirectory, user2));
+        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(sharedDir.getId(), user2.getId()), false, false, true, sharedDir, user2));
 
     }
 }
