@@ -8,6 +8,7 @@ import cipher.AESCipher;
 import cipher.Encrypt;
 import cipher.KeyAES;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import config.IPConfig;
 import java.awt.List;
 import java.io.BufferedReader;
@@ -23,6 +24,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.IOUtils;
 import payloads.DataResponse;
 import payloads.UserData;
+import payloads.UserPermission;
 import static thread.Client.executor;
 import thread.ReceiveMessage;
 import thread.SendMessage;
@@ -169,6 +171,17 @@ public class socketManager {
         writeLineAndFlush("RNTO "+pathURLEncode, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
+    public UserPermission getShareUserList(String path) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        openNewDataPort();
+        writeLineAndFlush("LSUR" + pathURLEncode,commandWriter);
+        commandReader.readLine();
+        String res = dataReader.readLine();
+        Gson gson = new Gson();
+        return gson.fromJson(res, UserPermission.class);
+        
+    }
+    
 /*------------------------------------------------------------------------------------------*/     
     
 /*---------------------------------EPSV command---------------------------------------------*/ 

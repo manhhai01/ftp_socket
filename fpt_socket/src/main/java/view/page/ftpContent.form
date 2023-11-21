@@ -209,7 +209,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Container class="javax.swing.JPanel" name="content5">
+                <Container class="javax.swing.JPanel" name="shareUserContent">
 
                   <Layout>
                     <DimensionLayout dim="0">

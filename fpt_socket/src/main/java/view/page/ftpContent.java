@@ -98,8 +98,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 if (table.isEditing()) {
                     table.getCellEditor().stopCellEditing();
                 }
-                String name = null;
-                getFilePath(name,row);
+                String name = getFilePath(row);
                 try{
                     DataResponse res = socketManager.getInstance().delete(name);
                     if(res.getStatus()== StatusCode.FILE_ACTION_OK){
@@ -116,7 +115,7 @@ public final class ftpContent extends javax.swing.JPanel {
             @Override
             public void onMove(int row) {
                 try {
-                    getFilePath(moveFileName, row);
+                    moveFileName=getFilePath(row);
                     if(socketManager.getInstance().checkPermissionForMoveCommand(moveFileName).getStatus()==StatusCode.FILE_ACTION_NOT_TAKEN){
                         moveFileName = null;
                         JOptionPane.showMessageDialog(parentFrame,"Bạn ko có quyền chỉnh sửa tệp này!", "Thông báo",WARNING_MESSAGE);
@@ -134,8 +133,8 @@ public final class ftpContent extends javax.swing.JPanel {
             @Override
             public void onShare(int row) {
                 try{
+                    shareFileName=getFilePath(row);
                     
-                    getFilePath(shareFileName,row);
                 }catch(Exception e){
                     
                 }
@@ -221,7 +220,7 @@ public final class ftpContent extends javax.swing.JPanel {
         renameConfirm2 = new view.custom.Button();
         roundPanel2 = new view.custom.RoundPanel();
         access5 = new javax.swing.JScrollPane();
-        content5 = new javax.swing.JPanel();
+        shareUserContent = new javax.swing.JPanel();
         renameConfirm3 = new view.custom.Button();
         roundPanel1 = new view.custom.RoundPanel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -327,18 +326,18 @@ public final class ftpContent extends javax.swing.JPanel {
 
         access5.setBackground(new java.awt.Color(255, 255, 255));
 
-        javax.swing.GroupLayout content5Layout = new javax.swing.GroupLayout(content5);
-        content5.setLayout(content5Layout);
-        content5Layout.setHorizontalGroup(
-            content5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout shareUserContentLayout = new javax.swing.GroupLayout(shareUserContent);
+        shareUserContent.setLayout(shareUserContentLayout);
+        shareUserContentLayout.setHorizontalGroup(
+            shareUserContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 451, Short.MAX_VALUE)
         );
-        content5Layout.setVerticalGroup(
-            content5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        shareUserContentLayout.setVerticalGroup(
+            shareUserContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 252, Short.MAX_VALUE)
         );
 
-        access5.setViewportView(content5);
+        access5.setViewportView(shareUserContent);
 
         javax.swing.GroupLayout roundPanel2Layout = new javax.swing.GroupLayout(roundPanel2);
         roundPanel2.setLayout(roundPanel2Layout);
@@ -966,11 +965,13 @@ public final class ftpContent extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(parentFrame, "Lỗi xảy ra khi tìm thư mục hiện thành", "Thông báo",WARNING_MESSAGE);
         return false;       
     }
-    public void getFilePath(String filepath,int row){
+    public String getFilePath(int row){
+        String filepath;
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         if(isRootShare())
             filepath = model.getValueAt(row,5).toString();
         else filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();
+        return filepath;
     }
     
     
@@ -1079,7 +1080,6 @@ public final class ftpContent extends javax.swing.JPanel {
     private JPopupMenu pasteOption;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane access5;
-    private javax.swing.JPanel content5;
     private view.custom.HighlightPanel highlightPanel1;
     private view.custom.HighlightPanel highlightPanel3;
     private view.custom.HighlightPanel highlightPanel5;
@@ -1096,13 +1096,11 @@ public final class ftpContent extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private view.custom.Button renameCancel;
     private view.custom.Button renameConfirm;
-    private view.custom.Button renameConfirm1;
     private view.custom.Button renameConfirm2;
     private view.custom.Button renameConfirm3;
     private view.custom.textField renameField;
@@ -1115,8 +1113,8 @@ public final class ftpContent extends javax.swing.JPanel {
     private view.custom.imageIcon searchBtn;
     private javax.swing.JTextField searchField;
     private javax.swing.JPanel sharePanel;
+    private javax.swing.JPanel shareUserContent;
     private javax.swing.JTable table;
-    private view.custom.textField textField1;
     private view.custom.textField textField2;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
