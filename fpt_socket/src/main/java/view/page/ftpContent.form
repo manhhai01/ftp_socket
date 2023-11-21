@@ -558,6 +558,9 @@
               <Dimension value="[171, 40]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="highlightPanel5MouseClicked"/>
+          </Events>
 
           <Layout>
             <DimensionLayout dim="0">

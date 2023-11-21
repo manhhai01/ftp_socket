@@ -538,6 +538,11 @@ public final class ftpContent extends javax.swing.JPanel {
         highlightPanel5.setColorClick(new java.awt.Color(153, 153, 153));
         highlightPanel5.setColorOver(new java.awt.Color(204, 204, 204));
         highlightPanel5.setPreferredSize(new java.awt.Dimension(171, 40));
+        highlightPanel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                highlightPanel5MouseClicked(evt);
+            }
+        });
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -905,7 +910,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 changePathTitle();
                 
             }else{
-                if(pathHistory.size()>=1){
+                if(pathHistory.size()>1){
                         pathHistory.pop();
                         newPath = pathHistory.peek();
                 }else if(this.CONTENT_TYPE.equals(MYSPACE_CONTENT))
@@ -971,7 +976,7 @@ public final class ftpContent extends javax.swing.JPanel {
             } catch (Exception e){
                 JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo",WARNING_MESSAGE);
             }
-        }
+        }else JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
     }//GEN-LAST:event_highlightPanel6MouseClicked
 
     private void renameConfirm2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm2ActionPerformed
@@ -981,6 +986,35 @@ public final class ftpContent extends javax.swing.JPanel {
     private void renameConfirm3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm3ActionPerformed
         shareForm.setVisible(false);
     }//GEN-LAST:event_renameConfirm3ActionPerformed
+
+    private void highlightPanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel5MouseClicked
+        if(!isRootShare()){
+            try{
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                fileChooser.setMultiSelectionEnabled(true);
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File[] files = fileChooser.getSelectedFiles();
+                    String path = pathHistory.peek();
+                    int flag = 1;
+                    for(File file : files){
+                        if(socketManager.getInstance().uploadDirectory(path, file).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                            flag=0;
+                            JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
+                            break;
+                        }   
+                    }
+                    if(flag==1){
+                        JOptionPane.showMessageDialog(parentFrame, "Upload thư mục thành công!", "Thông báo",INFORMATION_MESSAGE);
+                    }
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo",WARNING_MESSAGE);
+            }
+        }else JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
+    }//GEN-LAST:event_highlightPanel5MouseClicked
     public boolean isRootShare(){
         return pathHistory.size()<1 && CONTENT_TYPE.equals(SHARE_CONTENT);
     }

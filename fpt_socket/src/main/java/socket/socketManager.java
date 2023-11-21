@@ -204,7 +204,7 @@ public class socketManager {
     public DataResponse uploadDirectory(String path,File folder) throws Exception{
         DataResponse res = null;
         if(folder.isDirectory()){
-            if(createNewFolder(path+"/"+folder.getName()).getStatus() == StatusCode.DIRECTORY_CREATED){
+            if((res=createNewFolder(path+"/"+folder.getName())).getStatus() == StatusCode.DIRECTORY_CREATED){
                 File[] files = folder.listFiles();
                 if(files!=null){
                     for(File file : files){
