@@ -8,11 +8,10 @@ import cipher.AESCipher;
 import cipher.Encrypt;
 import cipher.KeyAES;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import config.IPConfig;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -20,16 +19,14 @@ import java.lang.reflect.Type;
 import java.net.Socket;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.apache.commons.io.IOUtils;
+import java.nio.file.Files;
+import java.util.Base64;
 import payloads.DataResponse;
 import payloads.UserData;
 import payloads.UserPermission;
-import static thread.Client.executor;
-import thread.ReceiveMessage;
-import thread.SendMessage;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import utils.CustomFileUtils;
 /**
  *
  * @author Son
@@ -185,6 +182,48 @@ public class socketManager {
         Type listType = new TypeToken<List<UserPermission>>() {}.getType();
         return gson.fromJson(res, listType);
  
+    }
+    public DataResponse uploadFile(String path,File file) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path+"/"+file.getName(), StandardCharsets.UTF_8);
+        System.out.println(path+"/"+file.getName());
+        String fileType = CustomFileUtils.determineType(file);
+        writeLineAndFlush("TYPE "+fileType, commandWriter);
+        commandReader.readLine();
+        openNewDataPort();
+        writeLineAndFlush("STOR "+pathURLEncode, commandWriter);
+        DataResponse res= new DataResponse(commandReader.readLine());
+        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+            return res;
+        if(fileType.equals("A")){
+            writeLineAndFlush(FileUtils.readFileToString(file,StandardCharsets.UTF_8), dataWriter);
+        }else
+            writeLineAndFlush(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)), dataWriter);
+        closeDataPort();
+        return new DataResponse(commandReader.readLine());
+    }
+    public DataResponse uploadDirectory(String path,File folder) throws Exception{
+        DataResponse res = null;
+        if(folder.isDirectory()){
+            if(createNewFolder(path+"/"+folder.getName()).getStatus() == StatusCode.DIRECTORY_CREATED){
+                File[] files = folder.listFiles();
+                if(files!=null){
+                    for(File file : files){
+                        if(file.isFile()){
+                            String filePath = path+"/"+folder.getName();
+                            res = uploadFile(filePath,file);
+                            if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+                                return res;
+                        }else if(file.isDirectory()){
+                            String newPath = path+"/"+folder.getName();
+                            uploadDirectory(newPath,file);
+                        }
+                    }
+                }else {
+                    return createNewFolder(path);
+                }
+            }
+        }
+        return res;
     }
     
 /*------------------------------------------------------------------------------------------*/     

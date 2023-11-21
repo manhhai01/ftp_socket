@@ -93,5 +93,12 @@
             <artifactId>json</artifactId>
             <version>20230618</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.27</version> <!-- Chọn phiên bản mới nhất -->
+        </dependency>
     </dependencies>
 </project>

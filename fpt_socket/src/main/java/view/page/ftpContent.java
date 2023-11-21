@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.time.Instant;
@@ -25,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -57,7 +59,6 @@ public final class ftpContent extends javax.swing.JPanel {
     private final String CONTENT_TYPE;
     private final String SHARE_CONTENT="share",MYSPACE_CONTENT="myWorkingSpace";
     private final String ROOT_DIRECTORY;
-    private String CURRENT_DIRECTORY;
     private String oldName,moveFileName,shareFileName;
 
     /**
@@ -907,7 +908,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 if(pathHistory.size()>=1){
                         pathHistory.pop();
                         newPath = pathHistory.peek();
-                }else if(!this.CONTENT_TYPE.equals(MYSPACE_CONTENT))
+                }else if(this.CONTENT_TYPE.equals(MYSPACE_CONTENT))
                     newPath = ROOT_DIRECTORY;
 
                 if(socketManager.getInstance().changeDirectory(newPath).getStatus() == StatusCode.FILE_ACTION_OK){
@@ -946,7 +947,31 @@ public final class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_searchFieldMouseClicked
 
     private void highlightPanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel6MouseClicked
-        System.out.println(pathHistory.peek());
+        if(!isRootShare()){
+            try{
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setMultiSelectionEnabled(true);
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File[] files = fileChooser.getSelectedFiles();
+                    String path = pathHistory.peek();
+                    int flag = 1;
+                    for(File file : files){
+                        if(socketManager.getInstance().uploadFile(path, file).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                            flag=0;
+                            JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
+                            break;
+                        }   
+                    }
+                    if(flag==1){
+                        JOptionPane.showMessageDialog(parentFrame, "Upload tệp thành công!", "Thông báo",INFORMATION_MESSAGE);
+                    }
+                }
+            } catch (Exception e){
+                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo",WARNING_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_highlightPanel6MouseClicked
 
     private void renameConfirm2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm2ActionPerformed
@@ -965,23 +990,7 @@ public final class ftpContent extends javax.swing.JPanel {
             title.setText("/");
         else title.setText(pathHistory.peek());
     }
-    public boolean getCurrentDir(){
-        DataResponse response;
-        try {
-            response = socketManager.getInstance().getCurrentWorkingDirectory();
-            if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){
-                String dir = response.getMessage().substring(0,response.getMessage().lastIndexOf("\""));       
-                CURRENT_DIRECTORY = dir.replace("\"", "");
-                title.setText(CURRENT_DIRECTORY);
-                return true;
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        JOptionPane.showMessageDialog(parentFrame, "Lỗi xảy ra khi tìm thư mục hiện thành", "Thông báo",WARNING_MESSAGE);
-        return false;       
-    }
+
     public String getFilePath(int row){
         String filepath;
         DefaultTableModel model = (DefaultTableModel) table.getModel();
