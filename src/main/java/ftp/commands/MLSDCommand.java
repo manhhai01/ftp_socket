@@ -4,12 +4,12 @@
  */
 package ftp.commands;
 
-import ftp.FilePermission;
 import bus.FileBus;
+import config.AppConfig;
+import dao.UserDao;
 import ftp.FtpFileUtils;
 import ftp.FtpServer;
 import ftp.FtpServerSession;
-import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,9 +18,43 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.User;
 
 // Testing
 public class MLSDCommand implements Command {
+
+    private final UserDao userDao = new UserDao();
+    private final FileBus fileBus = new FileBus();
+
+    public void anonymousExecute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
+        try {
+            Socket socket = session.getDataSocket().accept();
+            BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            User user = userDao.getUserByUserName(session.getUsername());
+
+            if (!user.isAnonymous()) {
+                session.getSessionSocketUtils().respondCommandSocket(
+                        StatusCode.CLOSING_DATA_CONNECTION,
+                        "Anonymous disabled.",
+                        commandSocketWriter
+                );
+            }
+
+            String fileData = fileBus.listAllAnonFilesInStringFormat(session.getWorkingDirAbsolutePath(), session.getUsername());
+            session.getSessionSocketUtils().writeLineAndFlush(fileData, dataSocketWriter);
+
+            socket.close();
+            session.getDataSocket().close();
+            session.getSessionSocketUtils().respondCommandSocket(
+                    StatusCode.CLOSING_DATA_CONNECTION,
+                    "Closing data connection.",
+                    commandSocketWriter
+            );
+        } catch (IOException ex) {
+            Logger.getLogger(MLSDCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
@@ -31,35 +65,26 @@ public class MLSDCommand implements Command {
                     "File status okay; about to open data connection.",
                     commandSocketWriter
             );
+            
+            FtpFileUtils ftpFileUtils = new FtpFileUtils();
+            String ftpPath =ftpFileUtils.convertPublicPathToFtpPath(session.getWorkingDirAbsolutePath(), "");
+
+            if (session.getWorkingDirAbsolutePath().startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
+                anonymousExecute(arguments, session, commandSocketWriter);
+                return;
+            }
+
             Socket socket = session.getDataSocket().accept();
-            System.out.println("Client connected to data socket: " + socket.getRemoteSocketAddress());
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             File file = new File(session.getWorkingDirAbsolutePath());
             MLSDFormatter formatter = new MLSDFormatter();
-            FtpFileUtils ftpFileUtils = new FtpFileUtils();
             String fileData = formatter.listFormat(
                     file,
                     new DefaultMLSDFilter(session.getUsername()),
-                    new DefaultFilePermissionGetter(session.getUsername())
+                    new DefaultFilePermissionGetter(session.getUsername()),
+                    false
             );
-            System.out.println("FileData: " + fileData);
-//                    dataSocketWriter.write("Type=cdir;Modify=19981107085215;Perm=el; tmp\n" +
-//"Type=cdir;Modify=19981107085215;Perm=el; /tmp\n" +
-//"Type=pdir;Modify=19990112030508;Perm=el; ..\n" +
-//"Type=file;Size=25730;Modify=19940728095854;Perm=; capmux.tar.z\n" +
-//"Type=file;Size=1830;Modify=19940916055648;Perm=r; hatch.c\n" +
-//"Type=file;Size=25624;Modify=19951003165342;Perm=r; MacIP-02.txt\n" +
-//"Type=file;Size=2154;Modify=19950501105033;Perm=r; uar.netbsd.patch\n" +
-//"Type=file;Size=54757;Modify=19951105101754;Perm=r; iptnnladev.1.0.sit.hqx\n" +
-//"Type=file;Size=226546;Modify=19970515023901;Perm=r; melbcs.tif\n" +
-//"Type=file;Size=12927;Modify=19961025135602;Perm=r; tardis.1.6.sit.hqx\n" +
-//"Type=file;Size=17867;Modify=19961025135602;Perm=r; timelord.1.4.sit.hqx\n" +
-//"Type=file;Size=224907;Modify=19980615100045;Perm=r; uar.1.2.3.sit.hqx\n" +
-//"Type=file;Size=1024990;Modify=19980130010322;Perm=r; cap60.pl198.tar.gz\n");
-session.getSessionSocketUtils().writeLineAndFlush(fileData, dataSocketWriter);
-//            dataSocketWriter.write(fileData);
-//            dataSocketWriter.flush();
-//            dataSocketWriter.close();
+            session.getSessionSocketUtils().writeLineAndFlush(fileData, dataSocketWriter);
             socket.close();
             session.getDataSocket().close();
 

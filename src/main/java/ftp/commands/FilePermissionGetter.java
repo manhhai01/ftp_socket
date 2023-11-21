@@ -11,7 +11,7 @@ import java.io.File;
  *
  * @author User
  */
-interface FilePermissionGetter {
+public interface FilePermissionGetter {
 
     public FilePermission getFilePermission(File file);
 }

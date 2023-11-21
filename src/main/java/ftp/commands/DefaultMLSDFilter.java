@@ -27,6 +27,7 @@ public class DefaultMLSDFilter implements FileFilter {
 
     @Override
     public boolean accept(File childFile) {
+        
         FilePermission filePermission = fileService.getFilePermission(
                 ftpFileUtils.convertJavaPathToFtpPath(childFile.getPath()),
                 username,

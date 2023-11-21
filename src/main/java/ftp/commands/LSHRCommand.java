@@ -7,7 +7,6 @@ package ftp.commands;
 import config.AppConfig;
 import dao.UserDao;
 import ftp.FtpServerSession;
-import ftp.SessionSocketUtils;
 import ftp.StatusCode;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.User;
 import payload.GetSharedFilesResultDto;
 
 /**
@@ -30,7 +30,7 @@ public class LSHRCommand implements Command {
         MLSDFormatter formatter = new MLSDFormatter();
         FilePermissionGetter filePermissionGetter = new DefaultFilePermissionGetter(username);
         // Remove new line
-        return formatter.formatSingleFile(file, filePermissionGetter.getFilePermission(file)).replace("\n", "")
+        return formatter.formatSingleFile(file, filePermissionGetter.getFilePermission(file), false).replace("\n", "")
                 // Add file path and remove ftp root path so string will be in the form "/path/to/file.txt"
                 // instead of "path/to-ftp-root/path/to/file.txt"
                 + " " + URLEncoder.encode(pathStartWithFtpRoot.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, ""), StandardCharsets.UTF_8)
@@ -52,7 +52,17 @@ public class LSHRCommand implements Command {
 
             UserDao userDao = new UserDao();
             GetSharedFilesResultDto sharedFiles = userDao.getSharedFiles(session.getUsername());
+            User user = userDao.getUserByUserName(session.getUsername());
             String result = "";
+
+            if (user.isAnonymous()) {
+                File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
+                result += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=el; anonymous %s",
+                        file.lastModified(),
+                        file.length(),
+                        AppConfig.SERVER_FTP_ANON_PATH.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")
+                );
+            }
 
             for (var dir : sharedFiles.directories) {
                 File file = new File(dir.getPath());

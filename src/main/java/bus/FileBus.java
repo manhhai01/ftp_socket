@@ -16,6 +16,8 @@ import ftp.FilePermissionWithUser;
 import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
 import ftp.commands.AnonymousDisabledException;
+import ftp.commands.FilePermissionGetter;
+import ftp.commands.MLSDFormatter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,11 +59,11 @@ public class FileBus {
             return directoryBus.removeDirectory(fromRootFilePath, username);
         }
 
-        if(!normalFileBus.removeNormalFile(fromRootFilePath, username)) {
+        if (!normalFileBus.removeNormalFile(fromRootFilePath, username)) {
             notRemovableFilePaths.add(fromRootFilePath);
             return notRemovableFilePaths;
         }
-        
+
         return notRemovableFilePaths;
     }
 
@@ -131,9 +133,9 @@ public class FileBus {
             Directory directory = directoryDao.getDirectoryByPath(oldFilePath);
             directory.setPath(newFilePath);
             directoryDao.update(directory);
-        }        
+        }
         file.renameTo(destination);
-        
+
         // Reparent current file/directory in db
         reparentFilePathInDb(file, parentPath, false);
         return true;
@@ -143,15 +145,58 @@ public class FileBus {
         return userDao.getSharedFiles(appliedUsername);
     }
 
-    private FilePermission getSingleFilePermission(String fromRootFilePath, String username, String fileType) {
+    private FilePermission getSingleFilePermission(String fromRootFilePath, String username, String fileType, boolean isAnonymous) {
         // FTP root case
         if (fromRootFilePath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
             return new DirectoryPermission(false, false, false, true);
         }
 
+        if (fromRootFilePath.equals(AppConfig.SERVER_FTP_ANON_PATH)) {
+            if (!isAnonymous) {
+                return new DirectoryPermission(false, false, false, true);
+            } else {
+                return new DirectoryPermission(false, true, true, true);
+            }
+        }
+
+        if (fromRootFilePath.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
+            if (!isAnonymous) {
+                if (fileType.equals(DIRECTORY_TYPE)) {
+                    return new DirectoryPermission(false, false, false, false);
+                } else {
+                    return new NormalFilePermission(NormalFilePermission.NULL_PERMISSION, false);
+                }
+            }
+
+            if (fileType.equals(DIRECTORY_TYPE)) {
+                Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootFilePath);
+                if (directoryFromDb == null) {
+                    return new DirectoryPermission(false, false, false, false);
+                }
+
+                // Return full permission if the user is directory's owner
+                if (directoryFromDb.getUser().getUsername().equals(username)) {
+                    return new DirectoryPermission(true, true, true, true);
+                }
+
+                return new DirectoryPermission(false, false, true, true);
+            } else {
+                model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
+                if (fileFromDb == null) {
+                    return new NormalFilePermission(NormalFilePermission.NULL_PERMISSION, false);
+                }
+
+                // Return full permission if the user is file's owner
+                if (fileFromDb.getUser().getUsername().equals(username)) {
+                    return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
+                }
+                return new NormalFilePermission(NormalFilePermission.READABLE_PERMISSION, true);
+            }
+
+        }
+
         // Directory case
         if (fileType.equals(DIRECTORY_TYPE)) {
-            System.out.println("Fetching directory: " + fromRootFilePath);
             Directory directoryFromDb = directoryDao.getDirectoryByPath(fromRootFilePath);
             if (directoryFromDb == null) {
                 return new DirectoryPermission(false, false, false, false);
@@ -221,7 +266,8 @@ public class FileBus {
 
     public FilePermission getFilePermission(String fromRootFilePath, String username, String fileType) {
         FilePermission filePermission;
-        filePermission = getSingleFilePermission(fromRootFilePath, username, fileType);
+        User user = userDao.getUserByUserName(username);
+        filePermission = getSingleFilePermission(fromRootFilePath, username, fileType, user.isAnonymous());
 
         if (!filePermission.isExist()) {
             return filePermission;
@@ -240,7 +286,7 @@ public class FileBus {
                 break;
             }
             parentPath = ftpFileUtils.getParentPath(parentPath);
-            parentDirPermission = (DirectoryPermission) getSingleFilePermission(parentPath, username, DIRECTORY_TYPE);
+            parentDirPermission = (DirectoryPermission) getSingleFilePermission(parentPath, username, DIRECTORY_TYPE, user.isAnonymous());
         }
 
         if (fileType.equals(DIRECTORY_TYPE)) {
@@ -352,6 +398,26 @@ public class FileBus {
         }
 
         return filePermissions;
+    }
+
+    public String listAllFilesInStringFormat(String path) {
+        MLSDFormatter formatter = new MLSDFormatter();
+        return formatter.listFormat(new File(path), (File file) -> {
+            if (file.isFile()) {
+                return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
+            } else {
+                return new DirectoryPermission(true, true, true, true);
+            }
+        }, false);
+    }
+
+    public String listAllAnonFilesInStringFormat(String path, String username) {
+        MLSDFormatter formatter = new MLSDFormatter();
+        return formatter.listFormat(new File(path), (file) -> {
+            return getFilePermission(path, username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE).isReadable();
+        }, (File file) -> {
+            return getFilePermission(path, username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE);
+        }, true);
     }
 
 }

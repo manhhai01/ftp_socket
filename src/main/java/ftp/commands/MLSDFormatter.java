@@ -52,13 +52,13 @@ public class MLSDFormatter {
         return perm;
     }
 
-    private String format(File file, FilePermission filePermission) {
+    private String format(File file, FilePermission filePermission, boolean isAnonymous) {
         String result;
         String filePath = ftpFileUtils.convertJavaPathToFtpPath(file.getPath());
         if (file.isDirectory()) {
             result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "dir",
-                    directoryDao.getDirectoryByPath(filePath).getUser().getFirstName(),
+                    isAnonymous ? " " : directoryDao.getDirectoryByPath(filePath).getUser().getFirstName(),
                     file.lastModified(),//
                     file.length(),
                     getDirPermissionString((DirectoryPermission) filePermission),
@@ -66,7 +66,7 @@ public class MLSDFormatter {
         } else {
             result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "file",
-                    fileDao.getFileByPath(filePath).getUser().getFirstName(),
+                    isAnonymous ? " " : fileDao.getFileByPath(filePath).getUser().getFirstName(),
                     file.lastModified(),//
                     file.length(),
                     getNormalFilePermissionString((NormalFilePermission) filePermission),
@@ -75,7 +75,7 @@ public class MLSDFormatter {
         return result;
     }
 
-    private String listFormatImplementation(File file, FileFilter fileFilter, FilePermissionGetter filePermissionGetter) {
+    private String listFormatImplementation(File file, FileFilter fileFilter, FilePermissionGetter filePermissionGetter, boolean isAnonymous) {
         String result = "";
         System.out.println(file.getName());
         File[] files = fileFilter == null ? file.listFiles() : file.listFiles(fileFilter);
@@ -83,21 +83,21 @@ public class MLSDFormatter {
             return "";
         }
         for (File f : files) {
-            result += format(f, filePermissionGetter.getFilePermission(f));
+            result += format(f, filePermissionGetter.getFilePermission(f), isAnonymous);
 
         }
         return result;
     }
 
-    public String listFormat(File file, FilePermissionGetter filePermissionGetter) {
-        return listFormatImplementation(file, null, filePermissionGetter);
+    public String listFormat(File file, FilePermissionGetter filePermissionGetter, boolean isAnonymous) {
+        return listFormatImplementation(file, null, filePermissionGetter, isAnonymous);
     }
 
-    public String listFormat(File file, FileFilter fileFilter, FilePermissionGetter filePermissionGetter) {
-        return listFormatImplementation(file, fileFilter, filePermissionGetter);
+    public String listFormat(File file, FileFilter fileFilter, FilePermissionGetter filePermissionGetter, boolean isAnonymous) {
+        return listFormatImplementation(file, fileFilter, filePermissionGetter, isAnonymous);
     }
 
-    public String formatSingleFile(File file, FilePermission filePermission) {
-        return format(file, filePermission);
+    public String formatSingleFile(File file, FilePermission filePermission, boolean isAnonymous) {
+        return format(file, filePermission, isAnonymous);
     }
 }

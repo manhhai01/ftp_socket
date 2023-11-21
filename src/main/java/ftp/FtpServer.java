@@ -21,7 +21,6 @@ import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
 import ftp.commands.GOTPCommand;
 import ftp.commands.KEYCommand;
-import ftp.commands.LSANCommand;
 import ftp.commands.LSHRCommand;
 import ftp.commands.LSURCommand;
 import ftp.commands.PROFCommand;
@@ -149,7 +148,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("SOTP", new SOTPCommand());
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
         ftpServerBuilder.addCommand("USHR", new USHRCommand());
-        ftpServerBuilder.addCommand("LSAN", new LSANCommand());
+//        ftpServerBuilder.addCommand("LSAN", new LSANCommand());
 //        ftpServerBuilder.addCommand("SSZE", new SSZECommand());
         ftpServerBuilder.addCommand("PROF", new PROFCommand());
         ftpServerBuilder.addCommand("LSUR", new LSURCommand());
