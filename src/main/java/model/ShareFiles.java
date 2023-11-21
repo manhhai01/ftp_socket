@@ -39,7 +39,7 @@ public class ShareFiles {
     @JoinColumn(name = "file_id", insertable = false, updatable = false)
     private File file;
     
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 }

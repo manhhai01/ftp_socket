@@ -16,6 +16,8 @@ import org.hibernate.query.Query;
  * @author lamanhhai
  */
 public class FileDao {
+    
+    private ShareFilesDao shareFilesDao = new ShareFilesDao();
 
     public File getFileById(int id) {
         Transaction transaction = null;

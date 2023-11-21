@@ -40,7 +40,7 @@ public class ShareDirectories {
     @Column(name = "download_permission")
     private boolean downloadPermission;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "directory_id", insertable = false, updatable = false)
     private Directory directory;
 

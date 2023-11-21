@@ -227,10 +227,17 @@ public class UserBus {
         user.setBlockUpload(userDetail.isBlockUpload());
         return userDao.update(user);
     }
+    
+    public boolean updatePasswordUser(String email, String password) {
+        User user = userDao.getUserByUserName(email);
+        MP5Utils mP5Utils = new MP5Utils();
+        String pwdHash = mP5Utils.getMD5Hash(password);
+        user.setPassword(pwdHash);
+        boolean isUpdate = userDao.update(user);
+        return isUpdate;
+    }
 
     public static void main(String[] args) {
-
-        UserBus userBus = new UserBus();
 //        String jsonUserRegister = "{\n"
 //                + "            \"username\": \"lequoctai201201@gmail.com\",\n"
 //                + "            \"password\": \"123\";\n"
@@ -260,15 +267,17 @@ public class UserBus {
 //          UserDetailResponse u = userBus.getUserByUsername("Lahai7744@gmail.com");
 //          System.out.println(u.toString());
         
-        UserDetailResponse detailResponse = new UserDetailResponse();
-        detailResponse.setFirstName("La");
-        detailResponse.setLastName("Mạnh Hải");
-        detailResponse.setGender("Nữ");
-        detailResponse.setUsername("testuser2");
-        boolean res = userBus.saveUserDetail(detailResponse);
+//        UserDetailResponse detailResponse = new UserDetailResponse();
+//        detailResponse.setFirstName("La");
+//        detailResponse.setLastName("Mạnh Hải");
+//        detailResponse.setGender("Nữ");
+//        detailResponse.setUsername("testuser2");
+//        boolean res = userBus.saveUserDetail(detailResponse);
+//        System.out.println("Kiem tra: " + res);
+        
+        UserBus userBus = new UserBus();
+        boolean res = userBus.updatePasswordUser("Lahai7744@gmail.com", "121212");
         System.out.println("Kiem tra: " + res);
-        
-        
     }
     
     
