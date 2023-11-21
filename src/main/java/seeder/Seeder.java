@@ -1,11 +1,13 @@
 package seeder;
 
+import bus.FileBus;
 import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
 import dao.ShareDirectoriesDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
+import ftp.NormalFilePermission;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import model.ShareDirectories;
 import model.ShareFiles;
 import model.User;
 import model.ids.ShareDirectoriesId;
+import model.ids.ShareFilesId;
 import utils.MP5Utils;
 
 /*
@@ -100,10 +103,14 @@ public class Seeder {
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/def", user1, null);
         createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser2", user2, null);
 
-        model.File sharedFile1 = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa/test.txt", "Hello", user1, null);
-        model.File sharedFile2 = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log-login-successfully.txt", "log 111", user1, null);
+        model.File sharedReadableFile = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa/test.txt", "Hello", user1, null);
+        model.File sharedFullPermissionFile = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log-login-successfully.txt", "log 111", user1, null);
         createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log2.txt", "log 112", user1, null);
 
+        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedReadableFile.getId(), user2.getId()), NormalFilePermission.READABLE_PERMISSION, sharedReadableFile, user2));
+        shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFullPermissionFile.getId(), user2.getId()), NormalFilePermission.FULL_PERMISSION, sharedFullPermissionFile, user2));
+        
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(userHomeDirectory.getId(), user2.getId()), false, false, true, userHomeDirectory, user2));
+
     }
 }
