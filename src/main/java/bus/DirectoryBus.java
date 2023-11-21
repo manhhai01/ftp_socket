@@ -167,6 +167,27 @@ public class DirectoryBus {
 
         return resUpdate && resSendEmail;
     }
+    
+    public boolean setDirectoryPermissionAdmin(String fromRootDirPath, String appliedUsername, boolean canModify, boolean uploadable, boolean downloadable) {
+        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
+        if (directoryInDb == null) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        boolean resUpdate = shareDirectoriesDao.update(
+                new ShareDirectories(
+                        new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()),
+                        canModify,
+                        uploadable,
+                        downloadable,
+                        directoryInDb,
+                        appliedUser)
+        );
+
+        return resUpdate;
+    }
 
     public boolean unshareDirectory(String fromRootDirPath, String ownerUsername, String appliedUsername) {
         Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
