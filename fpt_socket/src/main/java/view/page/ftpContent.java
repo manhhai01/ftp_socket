@@ -785,10 +785,10 @@ public final class ftpContent extends javax.swing.JPanel {
                 changePathTitle();
                 
             }else{
-                if(pathHistory.size()>1){
+                if(pathHistory.size()>=1){
                         pathHistory.pop();
                         newPath = pathHistory.peek();
-                }else if(!this.CONTENT_TYPE.equals(SHARE_CONTENT))
+                }else if(!this.CONTENT_TYPE.equals(MYSPACE_CONTENT))
                     newPath = ROOT_DIRECTORY;
 
                 if(socketManager.getInstance().changeDirectory(newPath).getStatus() == StatusCode.FILE_ACTION_OK){

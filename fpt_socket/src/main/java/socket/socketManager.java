@@ -55,7 +55,7 @@ public class socketManager {
             commandWriter.flush();
             commandReader.readLine();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
     public static socketManager getInstance() {
