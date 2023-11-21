@@ -6,7 +6,6 @@ package bus;
 
 import static bus.FileBus.DIRECTORY_TYPE;
 import static bus.FileBus.NORMAL_FILE_TYPE;
-import dao.DirectoryDao;
 import dao.FileDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
@@ -96,22 +95,9 @@ public class NormalFileBus {
         }
 
         boolean success = fileDao.save(new model.File(0, fromRootFilePath, user, null));
-        FtpFileUtils ftpFileUtils = new FtpFileUtils();
-        DirectoryDao directoryDao = new DirectoryDao();
-        DirectoryBus directoryBus = new DirectoryBus();
 
         if (success) {
             try {
-                String parentPath = ftpFileUtils.getParentPath(fromRootFilePath);
-                while (!parentPath.equals("/")) {
-                    if (directoryDao.getDirectoryByPath(parentPath) == null) {
-                        directoryBus.createDirectory(parentPath, username);
-                    } else {
-                        break;
-                    }
-                    parentPath = ftpFileUtils.getParentPath(parentPath);
-                }
-                FileUtils.createParentDirectories(file);
                 file.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
