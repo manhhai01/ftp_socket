@@ -992,9 +992,15 @@ public final class ftpContent extends javax.swing.JPanel {
                 String name = URLDecoder.decode(parts[5],"UTF-8").trim();
                 modify = convertTimestamp(modify);
                 ImageIcon img;
-                if(type.equals("dir"))
-                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
-                else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
+                try {
+                    if (type.equals("dir")) {
+                        img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
+                    } else {
+                        img = new ImageIcon(getClass().getResource("/view/img/fileIcon/" + name.split("\\.")[1] + ".png"));
+                    }
+                } catch (Exception ex) {
+                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/txt.png"));
+                }
                 Object[] row = new Object[]{img,name,owner.equals("null")?"Tôi":owner,modify,convertBytes(size)};
                 // chia đơn vị mb,kg,Gb ******
                 model.addRow(row);
@@ -1021,9 +1027,15 @@ public final class ftpContent extends javax.swing.JPanel {
                 String path = URLDecoder.decode(parts[1],"UTF-8").trim();
                 modify = convertTimestamp(modify);
                 ImageIcon img;
-                if(type.equals("dir"))
-                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
-                else img = new ImageIcon(getClass().getResource("/view/img/fileIcon/"+name.split("\\.")[1]+".png"));
+                try {
+                    if (type.equals("dir")) {
+                        img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
+                    } else {
+                        img = new ImageIcon(getClass().getResource("/view/img/fileIcon/" + name.split("\\.")[1] + ".png"));
+                    }
+                } catch (Exception ex) {
+                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/txt.png"));
+                }
                 Object[] row;
                 row=new Object[]{img,name,owner,modify,convertBytes(size),path};
                 model.addRow(row);
