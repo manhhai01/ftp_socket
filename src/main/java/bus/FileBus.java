@@ -271,7 +271,6 @@ public class FileBus {
 //        if (!filePermission.isExist()) {
 //            return filePermission;
 //        }
-
         if (filePermission.isShared()) {
             return filePermission;
         }
@@ -398,19 +397,20 @@ public class FileBus {
         return filePermissions;
     }
 
-    // Đang test
     public String listAllFilesInStringFormat(String path) {
         MLSDFormatter formatter = new MLSDFormatter();
         boolean isAnonymous = path.startsWith(AppConfig.SERVER_FTP_ANON_PATH);
-        return formatter.listFormat(
+        String formattedString = "";
+        if (path.equals(AppConfig.SERVER_FTP_ANON_PATH)) {
+            File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
+            formattedString += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=elrwdf; anonymous",
+                    file.lastModified(),
+                    file.length()
+            );
+        }
+        formattedString += formatter.listFormat(
                 new File(path),
                 (File file) -> {
-                    String filePath = ftpFileUtils.convertJavaPathToFtpPath(file.getPath());
-                    if (filePath.equals(AppConfig.SERVER_FTP_ANON_PATH)) {
-                        return false;
-                    }
-                    return true;
-                }, (File file) -> {
                     if (file.isFile()) {
                         return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
                     } else {
@@ -418,6 +418,7 @@ public class FileBus {
                     }
                 },
                 isAnonymous);
+        return formattedString;
     }
 
     public String listAllAnonFilesInStringFormat(String path, String username) {
@@ -428,9 +429,9 @@ public class FileBus {
             return getFilePermission(path, username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE);
         }, true);
     }
-    
+
     public static void main(String[] args) {
-        String str = new FileBus().listAllFilesInStringFormat(AppConfig.SERVER_FTP_USERS_PATH + "/testuser");
+        String str = new FileBus().listAllFilesInStringFormat(AppConfig.SERVER_FTP_FILE_PATH);
         System.out.println(str);
     }
 

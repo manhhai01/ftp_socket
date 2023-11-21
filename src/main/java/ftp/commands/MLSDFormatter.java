@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import model.Directory;
 
 /**
  *
@@ -56,17 +57,25 @@ public class MLSDFormatter {
         String result;
         String filePath = ftpFileUtils.convertJavaPathToFtpPath(file.getPath());
         if (file.isDirectory()) {
+            Directory directory = directoryDao.getDirectoryByPath(filePath);
             result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "dir",
-                    isAnonymous ? " " : directoryDao.getDirectoryByPath(filePath).getUser().getFirstName(),
+                    isAnonymous ? " "
+                            : directory != null
+                                    ? directory.getUser().getFirstName()
+                                    : " ",
                     file.lastModified(),
                     file.length(),
                     getDirPermissionString((DirectoryPermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
         } else {
+            model.File fileInDb = fileDao.getFileByPath(filePath);
             result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "file",
-                    isAnonymous ? " " : fileDao.getFileByPath(filePath).getUser().getFirstName(),
+                    isAnonymous ? " "
+                            : fileInDb != null
+                                    ? fileInDb.getUser().getFirstName()
+                                    : " ",
                     file.lastModified(),
                     file.length(),
                     getNormalFilePermissionString((NormalFilePermission) filePermission),
