@@ -6,30 +6,31 @@ package view.custom;
 
 import java.util.HashMap;
 import payloads.UserPermission;
-import view.*;
 
 /**
  *
  * @author Son
  */
-public class userPermissionPanel extends javax.swing.JPanel {
-    private UserPermission userPermission;
+public class filePermission extends javax.swing.JPanel {
+        private String filename,username;
+    private String readable,writable;
     /**
      * Creates new form NewJPanel
      */
-    public userPermissionPanel(UserPermission userPermission) {
-        this.userPermission = userPermission;
+    public filePermission(UserPermission userPermission,String filename) {
         initComponents();
-        String username = userPermission.getUserData().getUsername();
+        this.filename = filename;
+        username = userPermission.getUserData().getUsername();
         String fullname = userPermission.getUserData().getLastName() + userPermission.getUserData().getFirstName();
-        HashMap<String,Boolean> permission = userPermission.getPermission();
-        String fileType = userPermission.getFileType();
-        if(fileType.equals("directory")){
-            Boolean uploadable = permission.get("uploadable");
-            Boolean downloadable = permission.get("downloadable");
-            Boolean canModify = permission.get("canModify");
-        }
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chỉ xem", "Chỉnh sửa" }));
+        HashMap<String,Object> permission = userPermission.getProcessedPermission();
+        String permissionString =(String) permission.get("permission");
+        if(permissionString.equals("r"))
+            permissionOption.setSelectedIndex(0);
+        else
+            permissionOption.setSelectedIndex(1);
+        fullnameLbl.setText(fullname);
+        usernameLbl.setText(username);
+
     }
 
     /**
@@ -43,8 +44,8 @@ public class userPermissionPanel extends javax.swing.JPanel {
 
         fullnameLbl = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        checkBox1 = new view.custom.checkBox();
+        usernameLbl = new javax.swing.JLabel();
+        permissionOption = new javax.swing.JComboBox<>();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -67,9 +68,14 @@ public class userPermissionPanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel3.setText("<username>");
+        usernameLbl.setText("<username>");
 
-        checkBox1.setText("checkBox1");
+        permissionOption.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chỉ xem", "Chỉnh sửa" }));
+        permissionOption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                permissionOptionActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -79,10 +85,10 @@ public class userPermissionPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
-                .addComponent(checkBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(usernameLbl))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+                .addComponent(permissionOption, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(43, 43, 43)
                 .addComponent(jLabel2)
                 .addGap(19, 19, 19))
         );
@@ -91,13 +97,13 @@ public class userPermissionPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addComponent(usernameLbl)
                 .addContainerGap(12, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(checkBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(permissionOption, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -114,11 +120,20 @@ public class userPermissionPanel extends javax.swing.JPanel {
         jLabel2.setForeground(new java.awt.Color(255,51,51));
     }//GEN-LAST:event_jLabel2MouseClicked
 
+    private void permissionOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_permissionOptionActionPerformed
+        changePermission();
+    }//GEN-LAST:event_permissionOptionActionPerformed
+    public void changePermission() {
+        String sql=filename+" "+username+
+                " "+(permissionOption.getSelectedIndex()==0?"r":"w")
+                ;
+        System.out.println(sql);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private view.custom.checkBox checkBox1;
     private javax.swing.JLabel fullnameLbl;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JComboBox<String> permissionOption;
+    private javax.swing.JLabel usernameLbl;
     // End of variables declaration//GEN-END:variables
 }

@@ -6,6 +6,7 @@ package view.page;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,10 +18,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -34,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import payloads.DataResponse;
+import payloads.UserPermission;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.IconRenderer;
@@ -41,6 +45,7 @@ import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
 import view.custom.TableActionEvent;
 import view.custom.customDialog;
+import view.custom.folderPermission;
 
 /**
  *
@@ -134,9 +139,21 @@ public final class ftpContent extends javax.swing.JPanel {
             public void onShare(int row) {
                 try{
                     shareFileName=getFilePath(row);
-                    
+                    String type = shareFileName.split("\\.").length<1?"dir":"file";
+                    List<UserPermission> userList = socketManager.getInstance().getShareUserList(shareFileName);
+                    shareUserContent.removeAll();
+                    shareUserContent.revalidate();
+                    shareUserContent.repaint();
+                    shareUserContent.setLayout(new BoxLayout(shareUserContent,BoxLayout.Y_AXIS));
+                    if(type.equals("dir"))
+                        for(UserPermission user : userList){
+                            folderPermission panel = new folderPermission(user,shareFileName);
+                            panel.setPreferredSize(new Dimension(500,100));
+                            shareUserContent.add(panel);
+                        }
+                    shareForm.setVisible(true);
                 }catch(Exception e){
-                    
+                    e.printStackTrace();
                 }
             }
         };
@@ -310,6 +327,7 @@ public final class ftpContent extends javax.swing.JPanel {
         );
 
         sharePanel.setBackground(new java.awt.Color(255, 255, 255));
+        sharePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
         textField2.setLabelText("Nhập tên user");
 
@@ -330,11 +348,11 @@ public final class ftpContent extends javax.swing.JPanel {
         shareUserContent.setLayout(shareUserContentLayout);
         shareUserContentLayout.setHorizontalGroup(
             shareUserContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 451, Short.MAX_VALUE)
+            .addGap(0, 531, Short.MAX_VALUE)
         );
         shareUserContentLayout.setVerticalGroup(
             shareUserContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 252, Short.MAX_VALUE)
+            .addGap(0, 262, Short.MAX_VALUE)
         );
 
         access5.setViewportView(shareUserContent);
@@ -345,8 +363,7 @@ public final class ftpContent extends javax.swing.JPanel {
             roundPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(access5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(access5, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE))
         );
         roundPanel2Layout.setVerticalGroup(
             roundPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -373,18 +390,18 @@ public final class ftpContent extends javax.swing.JPanel {
         sharePanelLayout.setHorizontalGroup(
             sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sharePanelLayout.createSequentialGroup()
-                .addContainerGap(44, Short.MAX_VALUE)
+                .addContainerGap(48, Short.MAX_VALUE)
                 .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sharePanelLayout.createSequentialGroup()
                         .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(roundPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(roundPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(sharePanelLayout.createSequentialGroup()
-                                .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addComponent(textField2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(42, 42, 42))
+                        .addGap(50, 50, 50))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sharePanelLayout.createSequentialGroup()
-                        .addComponent(renameConfirm3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(renameConfirm3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
         sharePanelLayout.setVerticalGroup(
@@ -398,7 +415,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(roundPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(97, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         setPreferredSize(new java.awt.Dimension(1066, 666));
@@ -937,7 +954,7 @@ public final class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_renameConfirm2ActionPerformed
 
     private void renameConfirm3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm3ActionPerformed
-        // TODO add your handling code here:
+        shareForm.setVisible(false);
     }//GEN-LAST:event_renameConfirm3ActionPerformed
     public boolean isRootShare(){
         return pathHistory.size()<1 && CONTENT_TYPE.equals(SHARE_CONTENT);

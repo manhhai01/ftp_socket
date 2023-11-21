@@ -9,13 +9,14 @@ import cipher.Encrypt;
 import cipher.KeyAES;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import config.IPConfig;
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,7 @@ import payloads.UserPermission;
 import static thread.Client.executor;
 import thread.ReceiveMessage;
 import thread.SendMessage;
-
+import java.util.List;
 /**
  *
  * @author Son
@@ -171,15 +172,19 @@ public class socketManager {
         writeLineAndFlush("RNTO "+pathURLEncode, commandWriter);
         return new DataResponse(commandReader.readLine());
     }
-    public UserPermission getShareUserList(String path) throws Exception{
+    public List<UserPermission> getShareUserList(String path) throws Exception{
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
         openNewDataPort();
-        writeLineAndFlush("LSUR" + pathURLEncode,commandWriter);
+        writeLineAndFlush("LSUR " + pathURLEncode,commandWriter);
         commandReader.readLine();
         String res = dataReader.readLine();
+        closeDataPort();
+        commandReader.readLine();
+        System.out.println(res);
         Gson gson = new Gson();
-        return gson.fromJson(res, UserPermission.class);
-        
+        Type listType = new TypeToken<List<UserPermission>>() {}.getType();
+        return gson.fromJson(res, listType);
+ 
     }
     
 /*------------------------------------------------------------------------------------------*/     

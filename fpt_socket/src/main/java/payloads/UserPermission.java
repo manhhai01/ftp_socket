@@ -4,6 +4,9 @@
  */
 package payloads;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +22,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserPermission {
+    @SerializedName("fileType")
     private String fileType;
+    
+    @SerializedName("userInfo")
     private UserData userData;
-    private HashMap<String,Boolean> permission;
+    
+    @SerializedName("permission")
+    private JsonElement permission;
+    
+    
+        public HashMap<String, Object> getProcessedPermission() {
+        // Xử lý và trả về giá trị permission dưới dạng HashMap
+        if (permission.isJsonObject()) {
+            return new Gson().fromJson(permission.getAsJsonObject(), HashMap.class);
+        } else if (permission.isJsonPrimitive()) {
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("permission", permission.getAsString());
+            return result;
+        } else {
+            return new HashMap<>();
+        }
+    }
 }
