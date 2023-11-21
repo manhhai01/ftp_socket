@@ -4,6 +4,7 @@
  */
 package model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -44,6 +45,6 @@ public class Directory {
     @JoinColumn(name = "owner_id")
     private User user;
     
-    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "directory")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER ,mappedBy = "directory")
     private List<ShareDirectories> shareDirectories;
 }
