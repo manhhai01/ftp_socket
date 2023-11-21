@@ -64,7 +64,7 @@ public class TestSTOR {
         commandReader.readLine();
 
         // STOR
-        commandWriter.write(AESCipher.encrypt(AESKey.getBytes(), "STOR /users/testuser/1234.txt"));
+        commandWriter.write(AESCipher.encrypt(AESKey.getBytes(), "STOR /users/testuser/some/directory/with/name/1234.txt"));
         commandWriter.newLine();
         commandWriter.flush();
         dataWriter.append(AESCipher.encrypt(AESKey.getBytes(), fileContent));

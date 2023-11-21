@@ -268,9 +268,9 @@ public class FileBus {
         User user = userDao.getUserByUserName(username);
         filePermission = getSingleFilePermission(fromRootFilePath, username, fileType, user.isAnonymous());
 
-        if (!filePermission.isExist()) {
-            return filePermission;
-        }
+//        if (!filePermission.isExist()) {
+//            return filePermission;
+//        }
 
         if (filePermission.isShared()) {
             return filePermission;
@@ -333,7 +333,6 @@ public class FileBus {
 //
 //        return result;
 //    }
-
     public String checkFileSize(String fromRootFilePath, int uploadBytes, String username) {
         File file = new File(fromRootFilePath);
         User user = userDao.getUserByUserName(username);
@@ -399,15 +398,26 @@ public class FileBus {
         return filePermissions;
     }
 
+    // Đang test
     public String listAllFilesInStringFormat(String path) {
         MLSDFormatter formatter = new MLSDFormatter();
-        return formatter.listFormat(new File(path), (File file) -> {
-            if (file.isFile()) {
-                return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
-            } else {
-                return new DirectoryPermission(true, true, true, true);
-            }
-        }, false);
+        boolean isAnonymous = path.startsWith(AppConfig.SERVER_FTP_ANON_PATH);
+        return formatter.listFormat(
+                new File(path),
+                (File file) -> {
+                    String filePath = ftpFileUtils.convertJavaPathToFtpPath(file.getPath());
+                    if (filePath.equals(AppConfig.SERVER_FTP_ANON_PATH)) {
+                        return false;
+                    }
+                    return true;
+                }, (File file) -> {
+                    if (file.isFile()) {
+                        return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
+                    } else {
+                        return new DirectoryPermission(true, true, true, true);
+                    }
+                },
+                isAnonymous);
     }
 
     public String listAllAnonFilesInStringFormat(String path, String username) {
@@ -417,6 +427,11 @@ public class FileBus {
         }, (File file) -> {
             return getFilePermission(path, username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE);
         }, true);
+    }
+    
+    public static void main(String[] args) {
+        String str = new FileBus().listAllFilesInStringFormat(AppConfig.SERVER_FTP_USERS_PATH + "/testuser");
+        System.out.println(str);
     }
 
 }

@@ -59,7 +59,7 @@ public class MLSDFormatter {
             result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "dir",
                     isAnonymous ? " " : directoryDao.getDirectoryByPath(filePath).getUser().getFirstName(),
-                    file.lastModified(),//
+                    file.lastModified(),
                     file.length(),
                     getDirPermissionString((DirectoryPermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
@@ -67,7 +67,7 @@ public class MLSDFormatter {
             result = String.format("Type=%s;Owner=%s;Modify=%s;Size=%s;Perm=%s; %s\n",
                     "file",
                     isAnonymous ? " " : fileDao.getFileByPath(filePath).getUser().getFirstName(),
-                    file.lastModified(),//
+                    file.lastModified(),
                     file.length(),
                     getNormalFilePermissionString((NormalFilePermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
