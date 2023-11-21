@@ -72,9 +72,9 @@ public class Seeder {
         user1.setLastName("Tran Van");
         user1.setGender("Nam");
         user1.setIsActive(1);
-        user1.setMaxDownloadFileSizeBytes(300000000); // 300 MB
-        user1.setMaxUploadFileSizeBytes(300000000); // 300 MB
-        user1.setQuotaInBytes(1000000000); // 1 GB
+        user1.setMaxDownloadFileSizeBytes(314572800); // 300 MB
+        user1.setMaxUploadFileSizeBytes(314572800); // 300 MB
+        user1.setQuotaInBytes(1073741824); // 1 GB
         userDao.save(user1);
 
         User user2 = new User();
@@ -85,9 +85,9 @@ public class Seeder {
         user2.setLastName("Le Thi");
         user2.setGender("Nữ");
         user2.setIsActive(1);
-        user2.setMaxDownloadFileSizeBytes(300000000); // 300 MB
-        user2.setMaxUploadFileSizeBytes(300000000); // 300 MB
-        user2.setQuotaInBytes(1000000000); // 1 GB
+        user2.setMaxDownloadFileSizeBytes(314572800); // 300 MB
+        user2.setMaxUploadFileSizeBytes(314572800); // 300 MB
+        user2.setQuotaInBytes(1073741824); // 1 GB
         userDao.save(user2);
 
         File file = new File(AppConfig.SERVER_FTP_ANON_PATH);

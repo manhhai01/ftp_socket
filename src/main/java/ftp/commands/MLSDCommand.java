@@ -20,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.User;
 
-// Testing
+
 public class MLSDCommand implements Command {
 
     private final UserDao userDao = new UserDao();

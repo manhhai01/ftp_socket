@@ -18,7 +18,7 @@ public class FEATCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
             String response = StatusCode.SYSTEM_HELP_REPLY + "-Extensions supported\n"
-                    + " MLST Type;Size;Perm\n"
+                    + " MLST Type;Size;Perm;\n"
                     + "211 End";
             session.getSessionSocketUtils().writeLineAndFlush(response, commandSocketWriter);
         } catch (IOException ex) {

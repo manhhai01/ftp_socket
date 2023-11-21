@@ -29,7 +29,6 @@ public class PASSCommand implements Command {
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         String password = arguments[0];
         String username = session.getUsername();
-        System.out.println("Username: " + username);
         UserBus userBus = new UserBus();
         String message = userBus.checkLogin(username, password);
         if (message.equals(UserBus.LOGIN_SUCCESS_MSG)) {

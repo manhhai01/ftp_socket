@@ -37,7 +37,7 @@ public class LSURCommand implements Command {
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
         try {
-            String fileName = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);;
+            String fileName = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                     session.getWorkingDirAbsolutePath(),
                     fileName
@@ -50,6 +50,7 @@ public class LSURCommand implements Command {
                         "File does not exist",
                         commandSocketWriter
                 );
+                return;
             }
 
             session.getSessionSocketUtils().respondCommandSocket(

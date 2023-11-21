@@ -19,6 +19,7 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,19 +58,13 @@ public class RETRCommand implements Command {
         if (filePermission.isReadable()) {
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             if (session.getType().equals("A")) {
-//                FileReader fileReader = new FileReader(file);
-//                fileReader.transferTo(dataSocketWriter);
-//                dataSocketWriter.flush();
-//                fileReader.close();
                 String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                 session.getSessionSocketUtils().writeLineAndFlush(content, dataSocketWriter);
 
             }
             if (session.getType().equals("I")) {
-//                byte[] data = FileUtils.readFileToByteArray(file);
-//                IOUtils.write(data, socket.getOutputStream());
                 byte[] data = FileUtils.readFileToByteArray(file);
-                session.getSessionSocketUtils().writeLineAndFlush(new String(data), dataSocketWriter);
+                session.getSessionSocketUtils().writeLineAndFlush(Base64.getEncoder().encodeToString(data), dataSocketWriter);
             }
             dataSocketWriter.close();
             session.getSessionSocketUtils().respondCommandSocket(
@@ -173,8 +168,8 @@ public class RETRCommand implements Command {
                     "Requested file action okay, completed.",
                     commandSocketWriter
             );
-            String inputFilePath = arguments[0];
 
+            String inputFilePath = URLDecoder.decode(arguments[0], StandardCharsets.UTF_8);
             String filePath = ftpFileUtils.convertPublicPathToFtpPath(
                     session.getWorkingDirAbsolutePath(),
                     inputFilePath

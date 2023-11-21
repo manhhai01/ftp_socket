@@ -15,7 +15,6 @@ import ftp.FilePermission;
 import ftp.FilePermissionWithUser;
 import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
-import ftp.commands.AnonymousDisabledException;
 import ftp.commands.FilePermissionGetter;
 import ftp.commands.MLSDFormatter;
 import java.io.File;
@@ -85,7 +84,7 @@ public class FileBus {
             if (recursive) {
                 File[] childFiles = file.listFiles();
 
-                if (childFiles.length == 0) {
+                if (childFiles == null) {
                     return;
                 }
 
@@ -305,35 +304,35 @@ public class FileBus {
 
     }
 
-    public GetAnonymousFilesResult getAnonymousFiles(String username) throws AnonymousDisabledException {
-        GetAnonymousFilesResult result = new GetAnonymousFilesResult();
-        result.files = new ArrayList<>();
-        result.directories = new ArrayList<>();
-
-        User user = userDao.getUserByUserName(username);
-        if (!user.isAnonymous()) {
-            throw new AnonymousDisabledException();
-        }
-        File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-
-        File[] files = file.listFiles();
-        for (File f : files) {
-            String filePath = ftpFileUtils.convertJavaPathToFtpPath(f.getPath());
-            if (f.isDirectory()) {
-                Directory dir = directoryDao.getDirectoryByPath(filePath);
-                result.directories.add(dir);
-            }
-            if (f.isFile()) {
-                model.File fileFromDb = fileDao.getFileByPath(filePath);
-                result.files.add(fileFromDb);
-            }
-        }
-
-        return result;
-    }
+//    public GetAnonymousFilesResult getAnonymousFiles(String username) throws AnonymousDisabledException {
+//        GetAnonymousFilesResult result = new GetAnonymousFilesResult();
+//        result.files = new ArrayList<>();
+//        result.directories = new ArrayList<>();
+//
+//        User user = userDao.getUserByUserName(username);
+//        if (!user.isAnonymous()) {
+//            throw new AnonymousDisabledException();
+//        }
+//        File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
+//        if (!file.exists()) {
+//            file.mkdir();
+//        }
+//
+//        File[] files = file.listFiles();
+//        for (File f : files) {
+//            String filePath = ftpFileUtils.convertJavaPathToFtpPath(f.getPath());
+//            if (f.isDirectory()) {
+//                Directory dir = directoryDao.getDirectoryByPath(filePath);
+//                result.directories.add(dir);
+//            }
+//            if (f.isFile()) {
+//                model.File fileFromDb = fileDao.getFileByPath(filePath);
+//                result.files.add(fileFromDb);
+//            }
+//        }
+//
+//        return result;
+//    }
 
     public String checkFileSize(String fromRootFilePath, int uploadBytes, String username) {
         File file = new File(fromRootFilePath);
