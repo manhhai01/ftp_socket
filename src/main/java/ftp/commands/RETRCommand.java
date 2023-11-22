@@ -129,6 +129,9 @@ public class RETRCommand implements Command {
         if (filePermission.isReadable()) {
             BufferedWriter dataSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             List<String> readableNormalFilePaths = listAllReadableNormalFilePaths(file, session.getUsername());
+            // Convert to public path
+            readableNormalFilePaths = readableNormalFilePaths.stream().map((ftpPath) -> ftpPath.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")).toList();
+            
             String result = String.join("\n", readableNormalFilePaths);
             session.getSessionSocketUtils().writeLineAndFlush(result, dataSocketWriter);
             dataSocketWriter.close();
