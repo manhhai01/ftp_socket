@@ -133,7 +133,7 @@ public class NormalFileBus {
         model.File fileFromDb = fileDao.getFileByPath(fromRootFilePath);
         boolean success = fileDao.remove(fileFromDb.getId());
         if (success) {
-            long fileSize = file.length();
+            long fileSize = FileUtils.sizeOf(file);
             file.delete();
 
             User owner = fileFromDb.getUser();
@@ -205,8 +205,8 @@ public class NormalFileBus {
         }
 
         // Check max upload size
-        long oldFileSize = file.length();
-        long newFileSize = tempFile.length();
+        long oldFileSize = FileUtils.sizeOf(file);
+        long newFileSize = FileUtils.sizeOf(tempFile);
         if (newFileSize > user.getMaxUploadFileSizeBytes()) {
             tempFile.delete();
             return false;

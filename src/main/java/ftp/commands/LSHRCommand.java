@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.User;
+import org.apache.commons.io.FileUtils;
 import payload.GetSharedFilesResultDto;
 
 /**
@@ -59,7 +60,7 @@ public class LSHRCommand implements Command {
                 File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
                 result += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=el; anonymous %s",
                         file.lastModified(),
-                        file.length(),
+                        FileUtils.sizeOf(file),
                         AppConfig.SERVER_FTP_ANON_PATH.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")
                 );
             }

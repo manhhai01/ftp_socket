@@ -25,6 +25,7 @@ import model.Directory;
 import model.ShareDirectories;
 import model.ShareFiles;
 import model.User;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -335,7 +336,7 @@ public class FileBus {
     public String checkFileSize(String fromRootFilePath, int uploadBytes, String username) {
         File file = new File(fromRootFilePath);
         User user = userDao.getUserByUserName(username);
-        long oldFileSize = file.length();
+        long oldFileSize = FileUtils.sizeOf(file);
         if (uploadBytes > user.getMaxUploadFileSizeBytes()) {
             return CHECK_FILE_SIZE_EXCEED_UPLOAD_SIZE;
         }
@@ -405,7 +406,7 @@ public class FileBus {
             File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
             formattedString += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=elrwdf; anonymous",
                     file.lastModified(),
-                    file.length()
+                    FileUtils.sizeOf(file)
             );
         }
         formattedString += formatter.listFormat(

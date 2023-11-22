@@ -15,6 +15,7 @@ import java.io.FileFilter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import model.Directory;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -65,7 +66,7 @@ public class MLSDFormatter {
                                     ? directory.getUser().getFirstName()
                                     : " ",
                     file.lastModified(),
-                    file.length(),
+                    FileUtils.sizeOf(file),
                     getDirPermissionString((DirectoryPermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
         } else {
@@ -77,7 +78,7 @@ public class MLSDFormatter {
                                     ? fileInDb.getUser().getFirstName()
                                     : " ",
                     file.lastModified(),
-                    file.length(),
+                    FileUtils.sizeOf(file),
                     getNormalFilePermissionString((NormalFilePermission) filePermission),
                     URLEncoder.encode(file.getName(), StandardCharsets.UTF_8));
         }

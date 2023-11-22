@@ -41,7 +41,7 @@ public class RETRCommand implements Command {
         );
         File file = new File(filePath);
         User user = userDao.getUserByUserName(session.getUsername());
-        if (file.length() > user.getMaxDownloadFileSizeBytes()) {
+        if (FileUtils.sizeOf(file) > user.getMaxDownloadFileSizeBytes()) {
             session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.FILE_ACTION_NOT_TAKEN,
                     "Forbidden.", commandSocketWriter);
