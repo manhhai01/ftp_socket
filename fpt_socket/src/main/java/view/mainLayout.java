@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import payloads.DataResponse;
+import payloads.StringResponse;
 import payloads.UserData;
 import socket.StatusCode;
 import socket.socketManager;
@@ -473,7 +473,7 @@ public class mainLayout extends javax.swing.JFrame {
     
     
     public boolean getRootDir(){
-        DataResponse response;
+        StringResponse response;
         try {
             response = socketManager.getInstance().getCurrentWorkingDirectory();
             if(response.getStatus() == StatusCode.CURRENT_WORKING_DIRECTORY){

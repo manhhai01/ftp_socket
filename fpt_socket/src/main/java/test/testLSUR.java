@@ -6,6 +6,7 @@ package test;
 
 import java.util.List;
 import payloads.UserPermission;
+import payloads.UserPermissionResponse;
 import socket.socketManager;
 
 /**
@@ -15,7 +16,8 @@ import socket.socketManager;
 public class testLSUR {
     public static void main(String[] args) throws Exception {
         socketManager.getInstance().login("testuser","test");
-        List<UserPermission> userPermission = socketManager.getInstance().getShareUserList("/users/testuser");
+        UserPermissionResponse res = socketManager.getInstance().getShareUserList("/users/testuser/aaaa");
+        List<UserPermission> userPermission =  res.getList();
         System.out.println(userPermission.get(0).getProcessedPermission().get("downloadable"));
     }
 }

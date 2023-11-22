@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
-import payloads.DataResponse;
+import payloads.StringResponse;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.customDialog;
@@ -181,7 +181,7 @@ public class login extends javax.swing.JPanel {
         password = passwordField.getText();
         if(!username.isEmpty() && !password.isEmpty()){
             try {
-                DataResponse dataResponse = socketManager.getInstance().login(username, password);                
+                StringResponse dataResponse = socketManager.getInstance().login(username, password);                
                 if(dataResponse.getStatus() == StatusCode.LOGGED_IN){
                     loginSuccess();
                 }
@@ -211,7 +211,7 @@ public class login extends javax.swing.JPanel {
         String otp = verifyField.getText();
         if(!otp.isEmpty()){
             try {
-                DataResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
+                StringResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
                 if(response.getStatus() == StatusCode.COMMAND_OK){
                     JOptionPane.showMessageDialog(parentFrame, "Xác thực thành công!!","Success",INFORMATION_MESSAGE);
                     customDialog.setVisible(false);
@@ -227,7 +227,7 @@ public class login extends javax.swing.JPanel {
 
     private void regenerateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regenerateBtnActionPerformed
         try {
-            DataResponse res = socketManager.getInstance().regenerateOTP(username, password);
+            StringResponse res = socketManager.getInstance().regenerateOTP(username, password);
             if(res.getStatus()==StatusCode.COMMAND_OK){
                 JOptionPane.showMessageDialog(parentFrame, "Đã gửi lại mã OTP, vui lòng check mail","Success",INFORMATION_MESSAGE);
             }

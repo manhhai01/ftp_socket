@@ -4,8 +4,18 @@
  */
 package view.custom;
 
+import java.awt.Frame;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import javax.swing.SwingUtilities;
 import payloads.UserPermission;
+import socket.StatusCode;
+import socket.socketManager;
+import view.page.ShareOptionPane;
 
 /**
  *
@@ -13,7 +23,7 @@ import payloads.UserPermission;
  */
 public class folderPermission extends javax.swing.JPanel{
     private String filename,username;
-    private boolean uploadable,downloadable,canModify;
+
     /**
      * Creates new form NewJPanel
      * @param userPermission
@@ -23,11 +33,11 @@ public class folderPermission extends javax.swing.JPanel{
         initComponents();
         this.filename= filename;
         username = userPermission.getUserData().getUsername();
-        String fullname = userPermission.getUserData().getLastName() + userPermission.getUserData().getFirstName();
+        String fullname = userPermission.getUserData().getLastName() + " "+userPermission.getUserData().getFirstName();
         HashMap<String,Object> permission = userPermission.getProcessedPermission();
-        uploadable =(boolean) permission.get("uploadable");
-        downloadable = (boolean)permission.get("downloadable");
-        canModify = (boolean)permission.get("canModify");
+        boolean uploadable =(boolean) permission.get("uploadable");
+        boolean downloadable = (boolean)permission.get("downloadable");
+        boolean canModify = (boolean)permission.get("canModify");
         fullnameLbl.setText(fullname);
         usernameLbl.setText(username);
         downCb.setSelected(downloadable);
@@ -107,31 +117,31 @@ public class folderPermission extends javax.swing.JPanel{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(usernameLbl))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
-                .addGap(19, 19, 19))
+                .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(27, 27, 27))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usernameLbl)
-                .addContainerGap(12, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(16, 16, 16))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -145,18 +155,41 @@ public class folderPermission extends javax.swing.JPanel{
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         jLabel2.setForeground(new java.awt.Color(255,51,51));
+        try {
+            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+            if(socketManager.getInstance().deletePermission("directory", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
+            }
+            parentFrame.refreshContent();
+        } catch (Exception ex) {
+            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void downCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downCbActionPerformed
-        changePermission();
+        try {
+            changePermission();
+        } catch (Exception ex) {
+            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_downCbActionPerformed
 
     private void upCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upCbActionPerformed
-        changePermission();
+        try {
+            changePermission();
+        } catch (Exception ex) {
+            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_upCbActionPerformed
 
     private void modifyCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyCbActionPerformed
-        changePermission();
+        try {
+            changePermission();
+        } catch (Exception ex) {
+            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_modifyCbActionPerformed
 
 
@@ -170,12 +203,13 @@ public class folderPermission extends javax.swing.JPanel{
     // End of variables declaration//GEN-END:variables
 
 
-    public void changePermission() {
-        String sql=filename+" "+username+
+    public void changePermission() throws Exception {
+        String sql="directory "+filename+" "+username+
                 " "+(modifyCb.isSelected()?"true":"false")+
                 " "+(upCb.isSelected()?"true":"false")+
                 " "+(downCb.isSelected()?"true":"false")
                 ;
         System.out.println(sql);
+        socket.socketManager.getInstance().grantFolderPermission(filename, username, modifyCb.isSelected(),upCb.isSelected(), downCb.isSelected() );
     }
 }

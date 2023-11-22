@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -38,7 +39,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import payloads.DataResponse;
+import payloads.StringResponse;
 import payloads.UserPermission;
 import socket.StatusCode;
 import socket.socketManager;
@@ -47,6 +48,7 @@ import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
 import view.custom.TableActionEvent;
 import view.custom.customDialog;
+import view.custom.filePermission;
 import view.custom.folderPermission;
 import view.mainLayout;
 
@@ -106,7 +108,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 }
                 String name = getFilePath(row);
                 try{
-                    DataResponse res = socketManager.getInstance().delete(name);
+                    StringResponse res = socketManager.getInstance().delete(name);
                     if(res.getStatus()== StatusCode.FILE_ACTION_OK){
                         JOptionPane.showMessageDialog(parentFrame, "đã xóa!", "Success", INFORMATION_MESSAGE);
                         getFileList();
@@ -141,7 +143,7 @@ public final class ftpContent extends javax.swing.JPanel {
                         File selectedFile = fileChooser.getSelectedFile();
                         String localPath = selectedFile.getAbsolutePath();
                         String DownloadFile = getFilePath(row);
-                        DataResponse res = null;
+                        StringResponse res = null;
                             if(DownloadFile.split("\\.").length == 1){
                                 
                                 res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, pathHistory.peek());
@@ -170,19 +172,9 @@ public final class ftpContent extends javax.swing.JPanel {
             public void onShare(int row) {
                 try{
                     shareFileName=getFilePath(row);
-                    String type = shareFileName.split("\\.").length<1?"dir":"file";
-                    List<UserPermission> userList = socketManager.getInstance().getShareUserList(shareFileName);
-                    shareUserContent.removeAll();
-                    shareUserContent.revalidate();
-                    shareUserContent.repaint();
-                    shareUserContent.setLayout(new BoxLayout(shareUserContent,BoxLayout.Y_AXIS));
-                    if(type.equals("dir"))
-                        for(UserPermission user : userList){
-                            folderPermission panel = new folderPermission(user,shareFileName);
-                            panel.setPreferredSize(new Dimension(500,100));
-                            shareUserContent.add(panel);
-                        }
-                    shareForm.setVisible(true);
+                    String type = shareFileName.split("\\.").length==1?"dir":"file";
+                    ShareOptionPane shareOptionPane = new ShareOptionPane(parentFrame,type,shareFileName);
+                    shareOptionPane.setVisible(true);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -206,12 +198,10 @@ public final class ftpContent extends javax.swing.JPanel {
         model.addRow(row);
     }
     public void createCustomdialog(){
-        parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+        parentFrame = (mainLayout) SwingUtilities.getWindowAncestor(this);
         panel = this;
         renameForm = new customDialog(parentFrame);
         renameForm.setDialogContent(renamePanel);
-        shareForm = new customDialog(parentFrame);
-        shareForm.setDialogContent(sharePanel);
     }
     public void closeDialog(){
         renameForm.setVisible(false);
@@ -238,7 +228,7 @@ public final class ftpContent extends javax.swing.JPanel {
             try {
                 System.out.println("From: "+moveFileName);
                 System.out.println("To: "+pathTo);
-                DataResponse res = socketManager.getInstance().move(pathTo);
+                StringResponse res = socketManager.getInstance().move(pathTo);
                 if(res.getStatus() == StatusCode.FILE_ACTION_OK){
                     JOptionPane.showMessageDialog(parentFrame,"Di chuyển thành công!", "Thông báo",INFORMATION_MESSAGE);
                     getFileList();
@@ -263,13 +253,6 @@ public final class ftpContent extends javax.swing.JPanel {
         renameCancel = new view.custom.Button();
         renameTitle = new javax.swing.JLabel();
         renameField = new view.custom.textField();
-        sharePanel = new javax.swing.JPanel();
-        textField2 = new view.custom.textField();
-        renameConfirm2 = new view.custom.Button();
-        roundPanel2 = new view.custom.RoundPanel();
-        access5 = new javax.swing.JScrollPane();
-        shareUserContent = new javax.swing.JPanel();
-        renameConfirm3 = new view.custom.Button();
         roundPanel1 = new view.custom.RoundPanel();
         jSeparator1 = new javax.swing.JSeparator();
         title = new javax.swing.JLabel();
@@ -355,98 +338,6 @@ public final class ftpContent extends javax.swing.JPanel {
                     .addComponent(renameCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(renameConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(49, Short.MAX_VALUE))
-        );
-
-        sharePanel.setBackground(new java.awt.Color(255, 255, 255));
-        sharePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-
-        textField2.setLabelText("Nhập tên user");
-
-        renameConfirm2.setText("Thêm");
-        renameConfirm2.setColor(new java.awt.Color(204, 204, 255));
-        renameConfirm2.setColorClick(new java.awt.Color(153, 153, 153));
-        renameConfirm2.setColorOver(new java.awt.Color(102, 102, 102));
-        renameConfirm2.setRadius(10);
-        renameConfirm2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renameConfirm2ActionPerformed(evt);
-            }
-        });
-
-        access5.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout shareUserContentLayout = new javax.swing.GroupLayout(shareUserContent);
-        shareUserContent.setLayout(shareUserContentLayout);
-        shareUserContentLayout.setHorizontalGroup(
-            shareUserContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 531, Short.MAX_VALUE)
-        );
-        shareUserContentLayout.setVerticalGroup(
-            shareUserContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 262, Short.MAX_VALUE)
-        );
-
-        access5.setViewportView(shareUserContent);
-
-        javax.swing.GroupLayout roundPanel2Layout = new javax.swing.GroupLayout(roundPanel2);
-        roundPanel2.setLayout(roundPanel2Layout);
-        roundPanel2Layout.setHorizontalGroup(
-            roundPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(roundPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(access5, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE))
-        );
-        roundPanel2Layout.setVerticalGroup(
-            roundPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(roundPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(access5, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        renameConfirm3.setBackground(new java.awt.Color(255, 255, 255));
-        renameConfirm3.setText("X");
-        renameConfirm3.setColor(new java.awt.Color(255, 255, 255));
-        renameConfirm3.setColorClick(new java.awt.Color(153, 153, 153));
-        renameConfirm3.setColorOver(new java.awt.Color(102, 102, 102));
-        renameConfirm3.setRadius(10);
-        renameConfirm3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renameConfirm3ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout sharePanelLayout = new javax.swing.GroupLayout(sharePanel);
-        sharePanel.setLayout(sharePanelLayout);
-        sharePanelLayout.setHorizontalGroup(
-            sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sharePanelLayout.createSequentialGroup()
-                .addContainerGap(48, Short.MAX_VALUE)
-                .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sharePanelLayout.createSequentialGroup()
-                        .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(roundPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(sharePanelLayout.createSequentialGroup()
-                                .addComponent(textField2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(50, 50, 50))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sharePanelLayout.createSequentialGroup()
-                        .addComponent(renameConfirm3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
-        );
-        sharePanelLayout.setVerticalGroup(
-            sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sharePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(renameConfirm3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(roundPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         setPreferredSize(new java.awt.Dimension(1066, 666));
@@ -901,7 +792,7 @@ public final class ftpContent extends javax.swing.JPanel {
             //Tạo thư mục
             if(!renameField.getText().isEmpty()){
             String name = renameField.getText();
-                DataResponse response;
+                StringResponse response;
                 try {
                     response = socketManager.getInstance().createNewFolder(name);
                     if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
@@ -918,7 +809,7 @@ public final class ftpContent extends javax.swing.JPanel {
             if(!renameField.getText().isEmpty()){
                 try {
                     String newName = renameField.getText();
-                    DataResponse res = socketManager.getInstance().rename(oldName, newName);
+                    StringResponse res = socketManager.getInstance().rename(oldName, newName);
                     if(res.getStatus()==StatusCode.FILE_ACTION_OK){
                         getFileList();
                     }else {
@@ -1016,14 +907,6 @@ public final class ftpContent extends javax.swing.JPanel {
         }else JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
     }//GEN-LAST:event_highlightPanel6MouseClicked
 
-    private void renameConfirm2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm2ActionPerformed
-
-    }//GEN-LAST:event_renameConfirm2ActionPerformed
-
-    private void renameConfirm3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm3ActionPerformed
-        shareForm.setVisible(false);
-    }//GEN-LAST:event_renameConfirm3ActionPerformed
-
     private void highlightPanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel5MouseClicked
         if(!isRootShare()){
             try{
@@ -1078,7 +961,7 @@ public final class ftpContent extends javax.swing.JPanel {
     
     
     public void getFileList() throws Exception{
-        String fileList = socketManager.getInstance().getFileList(pathHistory.peek());
+        String fileList = socketManager.getInstance().getFileList();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         if(!fileList.isBlank()){
@@ -1174,13 +1057,12 @@ public final class ftpContent extends javax.swing.JPanel {
     
     
     
-    private Frame parentFrame;
+    private mainLayout parentFrame;
     private JPanel panel;
     private JMenuItem menuItem;
-    private customDialog renameForm,shareForm;
+    private customDialog renameForm;
     private JPopupMenu pasteOption;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane access5;
     private view.custom.HighlightPanel highlightPanel1;
     private view.custom.HighlightPanel highlightPanel3;
     private view.custom.HighlightPanel highlightPanel5;
@@ -1202,21 +1084,15 @@ public final class ftpContent extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator2;
     private view.custom.Button renameCancel;
     private view.custom.Button renameConfirm;
-    private view.custom.Button renameConfirm2;
-    private view.custom.Button renameConfirm3;
     private view.custom.textField renameField;
     private javax.swing.JPanel renamePanel;
     private javax.swing.JLabel renameTitle;
     private view.custom.RoundPanel roundPanel1;
-    private view.custom.RoundPanel roundPanel2;
     private view.custom.RoundPanel roundPanel3;
     private view.custom.RoundPanel roundPanel4;
     private view.custom.imageIcon searchBtn;
     private javax.swing.JTextField searchField;
-    private javax.swing.JPanel sharePanel;
-    private javax.swing.JPanel shareUserContent;
     private javax.swing.JTable table;
-    private view.custom.textField textField2;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,7 +5,15 @@
 package view.custom;
 
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import javax.swing.SwingUtilities;
 import payloads.UserPermission;
+import socket.StatusCode;
+import socket.socketManager;
+import view.page.ShareOptionPane;
 
 /**
  *
@@ -98,13 +106,13 @@ public class filePermission extends javax.swing.JPanel {
                 .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usernameLbl)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addGap(12, 12, 12))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(permissionOption, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(25, 25, 25))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -118,13 +126,22 @@ public class filePermission extends javax.swing.JPanel {
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         jLabel2.setForeground(new java.awt.Color(255,51,51));
+        try {
+            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+            if(socketManager.getInstance().deletePermission("file", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
+            }
+            parentFrame.refreshContent();
+        } catch (Exception ex) {
+            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void permissionOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_permissionOptionActionPerformed
         changePermission();
     }//GEN-LAST:event_permissionOptionActionPerformed
     public void changePermission() {
-        String sql=filename+" "+username+
+        String sql="file "+filename+" "+username+
                 " "+(permissionOption.getSelectedIndex()==0?"r":"w")
                 ;
         System.out.println(sql);

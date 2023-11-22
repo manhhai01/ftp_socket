@@ -16,7 +16,7 @@ import javax.swing.JFrame;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
-import payloads.DataResponse;
+import payloads.StringResponse;
 import socket.socketManager;
 import view.custom.customDialog;
 import socket.StatusCode;
@@ -275,7 +275,7 @@ public final class register extends javax.swing.JPanel {
                 + "            \"birthday\": \"%s\"\n"
                 + "        }",username,password,firstname,lastname,gender,birthday);
             try {
-                DataResponse response =socketManager.getInstance().register(data);
+                StringResponse response =socketManager.getInstance().register(data);
                 if(response.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
                     JOptionPane.showMessageDialog(parentFrame, "Đăng ký thành công, hãy kiểm tra email để xác thực otp", "Success!!", INFORMATION_MESSAGE);
                     customDialog.setVisible(true);
@@ -292,7 +292,7 @@ public final class register extends javax.swing.JPanel {
         String otp = verifyField.getText();
         if(!otp.isEmpty()){
             try {
-                DataResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
+                StringResponse response = socketManager.getInstance().verifyOTP(username, password, otp);
                 if(response.getStatus() == StatusCode.COMMAND_OK){
                     JOptionPane.showMessageDialog(parentFrame, "Xác thực thành công!! Vui lòng đăng nhập lại","Success",INFORMATION_MESSAGE);
                     customDialog.setVisible(false);
@@ -315,7 +315,7 @@ public final class register extends javax.swing.JPanel {
 
     private void regenerateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regenerateBtnActionPerformed
         try {
-            DataResponse res = socketManager.getInstance().regenerateOTP(username, password);
+            StringResponse res = socketManager.getInstance().regenerateOTP(username, password);
             if(res.getStatus()==StatusCode.COMMAND_OK){
                 JOptionPane.showMessageDialog(parentFrame, "Đã gửi lại mã OTP, vui lòng check mail","Success",INFORMATION_MESSAGE);
             }
