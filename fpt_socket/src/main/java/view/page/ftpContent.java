@@ -142,7 +142,7 @@ public final class ftpContent extends javax.swing.JPanel {
                         String localPath = selectedFile.getAbsolutePath();
                         String DownloadFile = getFilePath(row);
                         DataResponse res = null;
-                            if(DownloadFile.split("\\.").length<1){
+                            if(DownloadFile.split("\\.").length == 1){
                                 
                                 res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, pathHistory.peek());
                                 if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
@@ -162,7 +162,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     
                 }catch (Exception e){
-                    System.out.println("ádasdasd");
+                    e.printStackTrace();
                 }
             }
 
