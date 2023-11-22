@@ -16,12 +16,9 @@ public class Test {
     public static void main(String[] args) throws InterruptedException {
         WebDriver driver = new FirefoxDriver();
         driver.get("https:www.gmail.com");
-        Thread.sleep(2000);
         driver.findElement(By.id("identifierId")).sendKeys("ftp.project.demo@gmail.com");
-        Thread.sleep(2000);
         driver.findElement(By.xpath("//span[@jsname='V67aGc' and text()='Tiếp theo']")).click();
-        Thread.sleep(2000);
-        driver.quit();
+        driver.quit();     
     }
 }
 
