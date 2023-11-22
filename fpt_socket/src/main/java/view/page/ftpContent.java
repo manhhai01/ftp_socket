@@ -865,7 +865,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     if(socketManager.getInstance().changeDirectory(name).getStatus() == StatusCode.FILE_ACTION_OK); 
                     {
                         String newPath=null;
-                        if(pathHistory.size() <= 1 && this.CONTENT_TYPE.equals(SHARE_CONTENT))
+                        if(pathHistory.size() < 1 && this.CONTENT_TYPE.equals(SHARE_CONTENT))
                             newPath= name;
                         else newPath=pathHistory.isEmpty() ? ROOT_DIRECTORY : pathHistory.peek() + "/" + name;
                         pathHistory.push(newPath);
@@ -935,11 +935,13 @@ public final class ftpContent extends javax.swing.JPanel {
     private void highlightPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel3MouseClicked
         try {
             String newPath = null;
-            if(isRootShare()){
+            if(pathHistory.size()<=1 && CONTENT_TYPE.equals(SHARE_CONTENT)){
+                if(pathHistory.size()==1)
+                    pathHistory.pop();
                 getSharedFileList();
                 changePathTitle();
-                
-            }else{
+
+            }else {
                 if(pathHistory.size()>1){
                         pathHistory.pop();
                         newPath = pathHistory.peek();
@@ -1055,7 +1057,7 @@ public final class ftpContent extends javax.swing.JPanel {
         }else JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
     }//GEN-LAST:event_highlightPanel5MouseClicked
     public boolean isRootShare(){
-        return pathHistory.size()<1 && CONTENT_TYPE.equals(SHARE_CONTENT);
+        return pathHistory.size()==0 && CONTENT_TYPE.equals(SHARE_CONTENT);
     }
     
     public void changePathTitle(){
