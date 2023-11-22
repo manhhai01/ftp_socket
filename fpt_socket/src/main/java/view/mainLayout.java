@@ -44,7 +44,7 @@ public class mainLayout extends javax.swing.JFrame {
         initComponents();
         centerLocation();
         getRootDir();
-        getUserInfo();
+        updateMemory();
         active(page1);
         getContent(new ftpContent(MYSPACE_CONTENT,rootDir));
     }
@@ -489,7 +489,7 @@ public class mainLayout extends javax.swing.JFrame {
         return false;       
     }
     
-    public void getUserInfo() throws Exception{
+    public void updateMemory() throws Exception{
         UserData data = socketManager.getInstance().getUserInfo();
         double quotaInBytes=data.getQuotaInBytes();
         double usedBytes=data.getUsedBytes();

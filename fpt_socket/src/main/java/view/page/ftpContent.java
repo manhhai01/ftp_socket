@@ -48,6 +48,7 @@ import view.custom.TableActionCellRender;
 import view.custom.TableActionEvent;
 import view.custom.customDialog;
 import view.custom.folderPermission;
+import view.mainLayout;
 
 /**
  *
@@ -71,7 +72,6 @@ public final class ftpContent extends javax.swing.JPanel {
         this.CONTENT_TYPE = type;
         setTable();
         ROOT_DIRECTORY = rootDir;
-        
         createCustomdialog();
         createPasteOption();
         if(CONTENT_TYPE.equals(MYSPACE_CONTENT)){
@@ -1001,10 +1001,14 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     if(flag==1){
                         JOptionPane.showMessageDialog(parentFrame, "Upload tệp thành công!", "Thông báo",INFORMATION_MESSAGE);
+                        if(getParent() instanceof mainLayout layout){
+                            layout.updateMemory();
+                        }
                         getFileList();
                     }
                 }
             } catch (Exception e){
+                e.printStackTrace();
                 JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo",WARNING_MESSAGE);
             }
         }else JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
@@ -1038,6 +1042,9 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     if(flag==1){
                         JOptionPane.showMessageDialog(parentFrame, "Upload thư mục thành công!", "Thông báo",INFORMATION_MESSAGE);
+                        if(getParent() instanceof mainLayout layout){
+                            layout.updateMemory();
+                        }
                         getFileList();
                     }
                 }
