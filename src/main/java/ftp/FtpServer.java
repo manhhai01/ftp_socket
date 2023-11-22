@@ -23,6 +23,7 @@ import ftp.commands.GOTPCommand;
 import ftp.commands.KEYCommand;
 import ftp.commands.LSHRCommand;
 import ftp.commands.LSURCommand;
+import ftp.commands.PCHGCommand;
 import ftp.commands.PROFCommand;
 import ftp.commands.REGCommand;
 import ftp.commands.RMDCommand;
@@ -153,6 +154,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("PROF", new PROFCommand());
         ftpServerBuilder.addCommand("LSUR", new LSURCommand());
         ftpServerBuilder.addCommand("KEY", new KEYCommand());
+        ftpServerBuilder.addCommand("PCHG", new PCHGCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
