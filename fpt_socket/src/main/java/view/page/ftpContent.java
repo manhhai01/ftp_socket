@@ -68,6 +68,9 @@ public final class ftpContent extends javax.swing.JPanel {
      */
     public ftpContent(String type, String rootDir) throws Exception {
         initComponents();
+        SwingUtilities.invokeLater(() -> {
+            parentFrame = (mainLayout) SwingUtilities.getWindowAncestor(this);
+        });
         this.CONTENT_TYPE = type;
         setTable();
         ROOT_DIRECTORY = rootDir;
@@ -109,6 +112,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     if(res.getStatus()== StatusCode.FILE_ACTION_OK){
                         JOptionPane.showMessageDialog(parentFrame, "đã xóa!", "Success", INFORMATION_MESSAGE);
                         getFileList();
+                        parentFrame.updateMemory();
                     }
                 }catch (Exception e){
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, e);
@@ -196,7 +200,7 @@ public final class ftpContent extends javax.swing.JPanel {
         model.addRow(row);
     }
     public void createCustomdialog(){
-        parentFrame = (mainLayout) SwingUtilities.getWindowAncestor(this);
+        
         panel = this;
         renameForm = new customDialog(parentFrame);
         renameForm.setDialogContent(renamePanel);
@@ -892,9 +896,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     if(flag==1){
                         JOptionPane.showMessageDialog(parentFrame, "Upload tệp thành công!", "Thông báo",INFORMATION_MESSAGE);
-                        if(getParent() instanceof mainLayout layout){
-                            layout.updateMemory();
-                        }
+                        parentFrame.updateMemory();                      
                         getFileList();
                     }
                 }
@@ -925,9 +927,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     }
                     if(flag==1){
                         JOptionPane.showMessageDialog(parentFrame, "Upload thư mục thành công!", "Thông báo",INFORMATION_MESSAGE);
-                        if(getParent() instanceof mainLayout layout){
-                            layout.updateMemory();
-                        }
+                        parentFrame.updateMemory();
                         getFileList();
                     }
                 }
