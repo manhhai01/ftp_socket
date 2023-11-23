@@ -30,7 +30,7 @@ public class CustomBufferedReader extends BufferedReader{
         try {
             message = AESCipher.decrypt(keyAES, messageAES);
         } catch (Exception ex) {
-            Logger.getLogger(CustomBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CustomBufferedReader.class.getName()).log(Level.SEVERE, null, ex);
         }   
         return message;
     } 

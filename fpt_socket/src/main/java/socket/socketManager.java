@@ -23,23 +23,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
-import payloads.DataResponse;
+import payloads.StringResponse;
 import payloads.UserData;
 import payloads.UserPermission;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
+import payloads.UserPermissionResponse;
 import utils.CustomFileUtils;
+
 /**
  *
  * @author Son
  */
 public class socketManager {
+
     private static socketManager instance = null;
-    private Socket commandSocket,dataSocket;
-    private BufferedWriter commandWriter,dataWriter;
-    private BufferedReader commandReader,dataReader;
-    
+    private Socket commandSocket, dataSocket;
+    private BufferedWriter commandWriter, dataWriter;
+    private BufferedReader commandReader, dataReader;
+
     private socketManager() {
         try {
 //            IPConfig ipConfig = new IPConfig();
@@ -48,7 +51,7 @@ public class socketManager {
             commandSocket = new Socket("localhost", 21);
             // Khởi tạo BufferedReader và BufferedWriter để gửi và nhận dữ liệu
             commandReader = new CustomBufferedReader(new InputStreamReader(commandSocket.getInputStream()));
-            commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));    
+            commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
             commandReader.readLine();
 
             // send key aes to server
@@ -61,226 +64,280 @@ public class socketManager {
 //            e.printStackTrace();
         }
     }
+
     public static socketManager getInstance() {
         if (instance == null) {
             instance = new socketManager();
         }
         return instance;
     }
-/*--------------------------------Account command-----------------------------------------*/    
-    public DataResponse login(String user,String password) throws Exception{
-        writeLineAndFlush("USER "+user, commandWriter);
+
+    /*--------------------------------Account command-----------------------------------------*/
+    public StringResponse login(String user, String password) throws Exception {
+        writeLineAndFlush("USER " + user, commandWriter);
         commandReader.readLine();
-        writeLineAndFlush("PASS "+password, commandWriter);
+        writeLineAndFlush("PASS " + password, commandWriter);
         String message = commandReader.readLine();
-        
-        return new DataResponse(message);
+
+        return new StringResponse(message);
     }
-    
-    public DataResponse register(String data) throws Exception{
+
+    public StringResponse register(String data) throws Exception {
         openNewDataPort();
         writeLineAndFlush("REG", commandWriter);
         commandReader.readLine();
         writeLineAndFlush(data, dataWriter);
         closeDataPort();
-        return new DataResponse(commandReader.readLine());
+        return new StringResponse(commandReader.readLine());
     }
-    
-    public DataResponse verifyOTP(String username,String password, String otp) throws Exception{
-        writeLineAndFlush("SOTP "+username +" "+password+ " "+otp, commandWriter);
-        return new DataResponse(commandReader.readLine());
+
+    public StringResponse verifyOTP(String username, String password, String otp) throws Exception {
+        writeLineAndFlush("SOTP " + username + " " + password + " " + otp, commandWriter);
+        return new StringResponse(commandReader.readLine());
     }
-    public DataResponse regenerateOTP(String username,String password) throws Exception{
-        writeLineAndFlush("GOTP "+username +" "+password+ " ", commandWriter);
-        return new DataResponse(commandReader.readLine());
+
+    public StringResponse regenerateOTP(String username, String password) throws Exception {
+        writeLineAndFlush("GOTP " + username + " " + password + " ", commandWriter);
+        return new StringResponse(commandReader.readLine());
     }
-    
-    public UserData getUserInfo() throws Exception{
+
+    public UserData getUserInfo() throws Exception {
         openNewDataPort();
         writeLineAndFlush("PROF", commandWriter);
         commandReader.readLine();
-        String response=dataReader.readLine();
+        String response = dataReader.readLine();
         closeDataPort();
         commandReader.readLine();// read close connection message
         Gson gson = new Gson();
         return gson.fromJson(response, UserData.class);
     }
-/*------------------------------------------------------------------------------------------*/  
-    
-    
-/*--------------------------------file manager command--------------------------------------*/         
-    public String getSharedFiles() throws Exception{
+
+    /*------------------------------------------------------------------------------------------*/
+
+ /*--------------------------------file manager command--------------------------------------*/
+    public String getSharedFiles() throws Exception {
         openNewDataPort();
         writeLineAndFlush("LSHR", commandWriter);
         commandReader.readLine();
-        String response=dataReader.readLine();
+        String response = dataReader.readLine();
         closeDataPort();
         commandReader.readLine();// read close connection message
         return response;
     }
-    public DataResponse getCurrentWorkingDirectory() throws Exception{
+
+    public StringResponse getCurrentWorkingDirectory() throws Exception {
         writeLineAndFlush("PWD", commandWriter);
-        return new DataResponse(commandReader.readLine());
+        return new StringResponse(commandReader.readLine());
     }
-    public String getFileList(String path) throws Exception{
-        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+
+    public String getFileList() throws Exception {
         openNewDataPort();
-        writeLineAndFlush("MLSD "+pathURLEncode, commandWriter);
+        writeLineAndFlush("MLSD", commandWriter);
         commandReader.readLine();
-        String response=dataReader.readLine();
+        String response = dataReader.readLine();
         closeDataPort();
         commandReader.readLine();// read close connection message
         return response;
     }
-    public DataResponse changeDirectory(String path) throws Exception{
+
+    public StringResponse changeDirectory(String path) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        writeLineAndFlush("CWD "+pathURLEncode, commandWriter);
-        String response=commandReader.readLine();
-        return new DataResponse(response);
+        writeLineAndFlush("CWD " + pathURLEncode, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
     }
-    public DataResponse createNewFolder(String path) throws Exception{
+
+    public StringResponse createNewFolder(String path) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        writeLineAndFlush("MKD "+pathURLEncode, commandWriter);
-        String response=commandReader.readLine();
-        return new DataResponse(response);
+        writeLineAndFlush("MKD " + pathURLEncode, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
     }
-    public DataResponse rename(String oldName,String newName) throws Exception{
+
+    public StringResponse rename(String oldName, String newName) throws Exception {
         String oldNameURLEncode = URLEncoder.encode(oldName, StandardCharsets.UTF_8);
         String newNameURLEncode = URLEncoder.encode(newName, StandardCharsets.UTF_8);
-        writeLineAndFlush("RNFR "+oldNameURLEncode, commandWriter);
-        DataResponse res = new DataResponse(commandReader.readLine());
-        if(res.getStatus()==StatusCode.FILE_ACTION_REQUIRES_INFO){
-            writeLineAndFlush("RNTO "+newNameURLEncode, commandWriter);
-            res = new DataResponse(commandReader.readLine());
+        writeLineAndFlush("RNFR " + oldNameURLEncode, commandWriter);
+        StringResponse res = new StringResponse(commandReader.readLine());
+        if (res.getStatus() == StatusCode.FILE_ACTION_REQUIRES_INFO) {
+            writeLineAndFlush("RNTO " + newNameURLEncode, commandWriter);
+            res = new StringResponse(commandReader.readLine());
         }
         return res;
     }
-    public DataResponse delete(String path) throws Exception{
+
+    public StringResponse delete(String path) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        writeLineAndFlush("DELE "+pathURLEncode, commandWriter);
-        String response=commandReader.readLine();
-        return new DataResponse(response);
-        
+        writeLineAndFlush("DELE " + pathURLEncode, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
+
     }
-    public DataResponse checkPermissionForMoveCommand(String path) throws Exception{
+
+    public StringResponse checkPermissionForMoveCommand(String path) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        writeLineAndFlush("RNFR "+pathURLEncode, commandWriter);
-        return new DataResponse(commandReader.readLine());
+        writeLineAndFlush("RNFR " + pathURLEncode, commandWriter);
+        return new StringResponse(commandReader.readLine());
     }
-    public DataResponse move(String path) throws Exception{
+
+    public StringResponse move(String path) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        writeLineAndFlush("RNTO "+pathURLEncode, commandWriter);
-        return new DataResponse(commandReader.readLine());
+        writeLineAndFlush("RNTO " + pathURLEncode, commandWriter);
+        return new StringResponse(commandReader.readLine());
     }
-    public List<UserPermission> getShareUserList(String path) throws Exception{
+
+    public UserPermissionResponse getShareUserList(String path) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
         openNewDataPort();
-        writeLineAndFlush("LSUR " + pathURLEncode,commandWriter);
-        commandReader.readLine();
-        String res = dataReader.readLine();
-        closeDataPort();
-        commandReader.readLine();
-        System.out.println(res);
-        Gson gson = new Gson();
-        Type listType = new TypeToken<List<UserPermission>>() {}.getType();
-        return gson.fromJson(res, listType);
- 
-    }
-    public DataResponse uploadFile(String path,File file) throws Exception{
-        String pathURLEncode = URLEncoder.encode(path+"/"+file.getName(), StandardCharsets.UTF_8);
-        System.out.println(path+"/"+file.getName());
-        String fileType = CustomFileUtils.determineType(file);
-        writeLineAndFlush("TYPE "+fileType, commandWriter);
-        commandReader.readLine();
-        openNewDataPort();
-        writeLineAndFlush("STOR "+pathURLEncode, commandWriter);
-        DataResponse res= new DataResponse(commandReader.readLine());
-        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+        writeLineAndFlush("LSUR " + pathURLEncode, commandWriter);
+        UserPermissionResponse res = new UserPermissionResponse(commandReader.readLine());
+        if(res.getStatus() == StatusCode.ACTION_FAILED)
             return res;
-        if(fileType.equals("A")){
-            writeLineAndFlush(FileUtils.readFileToString(file,StandardCharsets.UTF_8), dataWriter);
-        }else
-            writeLineAndFlush(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)), dataWriter);
+        String data = dataReader.readLine();
         closeDataPort();
-        return new DataResponse(commandReader.readLine());
+        commandReader.readLine();
+        System.out.println(data);
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<UserPermission>>() {
+        }.getType();
+        res.setList(gson.fromJson(data, listType));
+        return res;
+    }
+    /**
+    * Cấp quyền cho một user đối với dạng tệp 
+     * @param permission chỉ được xem 'r',được chỉnh sửa 's'.
+    */
+    public StringResponse grantFilePermission(String path,String username,String permission) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        String content =pathURLEncode+ " "+ username+ " "+permission;
+        writeLineAndFlush("SHRE file " + content, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
+    }
+    public StringResponse grantFolderPermission(String path,String username,boolean canModify,boolean uploadable,boolean downloadable) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        String content =pathURLEncode+ " "+ username
+                + " "+(canModify?"true":"false")                
+                + " "+(uploadable?"true":"false")
+                + " "+(downloadable?"true":"false");
+        System.out.println(content);
+        writeLineAndFlush("SHRE directory " + content, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
     }
     
-    public DataResponse uploadDirectory(String path,File folder) throws Exception{
-        DataResponse res = null;
-        if(folder.isDirectory()){
-            if((res=createNewFolder(path+"/"+folder.getName())).getStatus() == StatusCode.DIRECTORY_CREATED){
+    /**
+    * Xóa quyền truy cập của user
+     * @param type dạng tệp 'file' dạng folder 'directory'.
+    */
+    public StringResponse deletePermission(String type,String path,String username) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        String content =type+" "+pathURLEncode+ " "+ username;
+        writeLineAndFlush("USHR " + content, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
+    }
+    public StringResponse uploadFile(String path, File file) throws Exception {
+        String pathURLEncode = URLEncoder.encode(path + "/" + file.getName(), StandardCharsets.UTF_8);
+        System.out.println(path + "/" + file.getName());
+        String fileType = CustomFileUtils.determineType(file);
+        writeLineAndFlush("TYPE " + fileType, commandWriter);
+        commandReader.readLine();
+        openNewDataPort();
+        writeLineAndFlush("STOR " + pathURLEncode, commandWriter);
+        StringResponse res = new StringResponse(commandReader.readLine());
+        if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN) {
+            return res;
+        }
+        if (fileType.equals("A")) {
+            writeLineAndFlush(FileUtils.readFileToString(file, StandardCharsets.UTF_8), dataWriter);
+        } else {
+            writeLineAndFlush(Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file)), dataWriter);
+        }
+        closeDataPort();
+        return new StringResponse(commandReader.readLine());
+    }
+
+    public StringResponse uploadDirectory(String path, File folder) throws Exception {
+        StringResponse res = null;
+        if (folder.isDirectory()) {
+            if ((res = createNewFolder(path + "/" + folder.getName())).getStatus() == StatusCode.DIRECTORY_CREATED) {
                 File[] files = folder.listFiles();
-                if(files!=null){
-                    for(File file : files){
-                        if(file.isFile()){
-                            String filePath = path+"/"+folder.getName();
-                            res = uploadFile(filePath,file);
-                            if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            String filePath = path + "/" + folder.getName();
+                            res = uploadFile(filePath, file);
+                            if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN) {
                                 return res;
-                        }else if(file.isDirectory()){
-                            String newPath = path+"/"+folder.getName();
-                            uploadDirectory(newPath,file);
+                            }
+                        } else if (file.isDirectory()) {
+                            String newPath = path + "/" + folder.getName();
+                            uploadDirectory(newPath, file);
                         }
                     }
-                }else {
+                } else {
                     return createNewFolder(path);
                 }
             }
         }
         return res;
     }
-    public DataResponse downloadFile(String filePath, String localPath,String currentDir) throws Exception{
+
+    public StringResponse downloadFile(String filePath, String localPath, String currentDir) throws Exception {
         String pathURLEncode = URLEncoder.encode(filePath, StandardCharsets.UTF_8);
-        String fileType =CustomFileUtils.determineType(filePath);
-        writeLineAndFlush("TYPE "+fileType, commandWriter);
+        String fileType = CustomFileUtils.determineType(filePath);
+        writeLineAndFlush("TYPE " + fileType, commandWriter);
         commandReader.readLine();
         openNewDataPort();
-        writeLineAndFlush("RETR "+pathURLEncode, commandWriter);
-        DataResponse res= new DataResponse(commandReader.readLine());
-        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+        writeLineAndFlush("RETR " + pathURLEncode, commandWriter);
+        StringResponse res = new StringResponse(commandReader.readLine());
+        if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN) {
             return res;
+        }
         Path currentPath = Paths.get(currentDir);
         Path serverFilePath = Paths.get(filePath);
         String relativePath = currentPath.relativize(serverFilePath).toString();
-        File file = new File(localPath+"/"+relativePath);
-        if(file.getParentFile() !=null && !file.getParentFile().exists())
+        File file = new File(localPath + "/" + relativePath);
+        if (file.getParentFile() != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
-        if(fileType.equals("A"))
-            FileUtils.writeStringToFile(file, dataReader.readLine(),StandardCharsets.UTF_8);
-        else 
-            FileUtils.writeByteArrayToFile(file,Base64.getDecoder().decode(dataReader.readLine()));
+        }
+        if (fileType.equals("A")) {
+            FileUtils.writeStringToFile(file, dataReader.readLine(), StandardCharsets.UTF_8);
+        } else {
+            FileUtils.writeByteArrayToFile(file, Base64.getDecoder().decode(dataReader.readLine()));
+        }
         closeDataPort();
-        return new DataResponse(commandReader.readLine());
+        return new StringResponse(commandReader.readLine());
     }
-    
-    
-    public DataResponse downloadFolder(String folderPath, String localPath,String currentDir) throws Exception{
+
+    public StringResponse downloadFolder(String folderPath, String localPath, String currentDir) throws Exception {
         String pathURLEncode = URLEncoder.encode(folderPath, StandardCharsets.UTF_8);
         openNewDataPort();
-        writeLineAndFlush("RETR "+pathURLEncode, commandWriter);
-        DataResponse res= new DataResponse(commandReader.readLine());
-        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+        writeLineAndFlush("RETR " + pathURLEncode, commandWriter);
+        StringResponse res = new StringResponse(commandReader.readLine());
+        if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN) {
             return res;
+        }
         String data = dataReader.readLine();
         closeDataPort();
         commandReader.readLine();
         System.out.println(data);
-        StringTokenizer tokenizer = new StringTokenizer(data,"\n");
-        while(tokenizer.hasMoreTokens()){
+        StringTokenizer tokenizer = new StringTokenizer(data, "\n");
+        while (tokenizer.hasMoreTokens()) {
             String filePath = tokenizer.nextToken();
             res = downloadFile(filePath, localPath, currentDir);
-            System.out.println("downloading "+ filePath);
-            if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN)
+            System.out.println("downloading " + filePath);
+            if (res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN) {
                 return res;
+            }
         }
         return res;
     }
-    
-    
-/*------------------------------------------------------------------------------------------*/     
-    
-/*---------------------------------EPSV command---------------------------------------------*/ 
-    public void openNewDataPort() throws Exception{
+
+    /*------------------------------------------------------------------------------------------*/
+ /*---------------------------------EPSV command---------------------------------------------*/
+    public void openNewDataPort() throws Exception {
         writeLineAndFlush("EPSV", commandWriter);
         String epsvResponse = commandReader.readLine();
         int dataPort = Integer.parseInt(epsvResponse
@@ -289,31 +346,30 @@ public class socketManager {
         dataSocket = new Socket("localhost", dataPort);
         dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
         dataReader = new CustomBufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-    }    
-    
-    public void closeDataPort() throws IOException{
+    }
+
+    public void closeDataPort() throws IOException {
         dataWriter.close();
         dataReader.close();
         dataSocket.close();
     }
-/*------------------------------------------------------------------------------------------*/     
-    public void disconnect() throws IOException{
+
+    /*------------------------------------------------------------------------------------------*/
+    public void disconnect() throws IOException {
         commandReader.close();
         commandWriter.close();
         commandSocket.close();
-        instance=null;
+        instance = null;
     }
+
     public void writeLineAndFlush(String content, BufferedWriter writer) throws Exception {
-        
+
         byte[] ketAES = KeyAES.getInstance().getKey();
         String contextAES = AESCipher.encrypt(ketAES, content);
-        
+
         writer.append(contextAES);
         writer.newLine();
         writer.flush();
     }
-    
-    
 
-    
 }

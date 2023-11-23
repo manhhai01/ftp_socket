@@ -15,10 +15,10 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataResponse {
+public class StringResponse {
     private int status;
     private String message;
-    public DataResponse(String response){
+    public StringResponse(String response){
         status = Integer.parseInt(response.substring(0, 3));
         message = response.substring(3).trim();
     }
