@@ -27,6 +27,7 @@ public class information extends javax.swing.JPanel {
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(passChangePanel);
         getUserInfo();
+        editableInfo(false);
     }
 
     /**
@@ -40,6 +41,7 @@ public class information extends javax.swing.JPanel {
 
         genderRb = new javax.swing.ButtonGroup();
         passChangePanel = new javax.swing.JPanel();
+        oldPass = new view.custom.passwordField();
         newPass = new view.custom.passwordField();
         passConfirm = new view.custom.Button();
         passCancel = new view.custom.Button();
@@ -75,9 +77,14 @@ public class information extends javax.swing.JPanel {
         quotaField = new view.custom.textField();
         usedField = new view.custom.textField();
         jLabel20 = new javax.swing.JLabel();
+        confirmBtn = new view.custom.Button();
+        cancelBtn = new view.custom.Button();
+        changeBtn = new view.custom.Button();
 
         passChangePanel.setBackground(new java.awt.Color(255, 255, 255));
         passChangePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(216, 216, 216)));
+
+        oldPass.setLabelText("Mật khẩu cũ");
 
         newPass.setLabelText("Mật khẩu mới");
 
@@ -86,11 +93,6 @@ public class information extends javax.swing.JPanel {
         passConfirm.setColorClick(new java.awt.Color(153, 153, 153));
         passConfirm.setColorOver(new java.awt.Color(102, 102, 102));
         passConfirm.setRadius(10);
-        passConfirm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passConfirmActionPerformed(evt);
-            }
-        });
 
         passCancel.setText("Hủy");
         passCancel.setColor(new java.awt.Color(204, 204, 255));
@@ -119,7 +121,8 @@ public class information extends javax.swing.JPanel {
                         .addComponent(passConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(passCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(newPass, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(newPass, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(oldPass, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(119, Short.MAX_VALUE))
         );
         passChangePanelLayout.setVerticalGroup(
@@ -127,9 +130,11 @@ public class information extends javax.swing.JPanel {
             .addGroup(passChangePanelLayout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(jLabel17)
-                .addGap(48, 48, 48)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(oldPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(newPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
                 .addGroup(passChangePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(passConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(passCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -278,6 +283,39 @@ public class information extends javax.swing.JPanel {
         jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel20.setText("Bộ nhớ sử dụng:");
 
+        confirmBtn.setText("Xác nhận");
+        confirmBtn.setColor(new java.awt.Color(204, 204, 255));
+        confirmBtn.setColorClick(new java.awt.Color(153, 153, 153));
+        confirmBtn.setColorOver(new java.awt.Color(102, 102, 102));
+        confirmBtn.setRadius(10);
+        confirmBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmBtnActionPerformed(evt);
+            }
+        });
+
+        cancelBtn.setText("Hủy");
+        cancelBtn.setColor(new java.awt.Color(204, 204, 255));
+        cancelBtn.setColorClick(new java.awt.Color(153, 153, 153));
+        cancelBtn.setColorOver(new java.awt.Color(102, 102, 102));
+        cancelBtn.setRadius(10);
+        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtnActionPerformed(evt);
+            }
+        });
+
+        changeBtn.setText("Chỉnh sửa");
+        changeBtn.setColor(new java.awt.Color(204, 204, 255));
+        changeBtn.setColorClick(new java.awt.Color(153, 153, 153));
+        changeBtn.setColorOver(new java.awt.Color(102, 102, 102));
+        changeBtn.setRadius(10);
+        changeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout roundPanel7Layout = new javax.swing.GroupLayout(roundPanel7);
         roundPanel7.setLayout(roundPanel7Layout);
         roundPanel7Layout.setHorizontalGroup(
@@ -343,27 +381,38 @@ public class information extends javax.swing.JPanel {
                         .addGap(16, 16, 16))))
             .addGroup(roundPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jSeparator8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 1035, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(roundPanel7Layout.createSequentialGroup()
-                            .addGap(14, 14, 14)
-                            .addComponent(jLabel15))
-                        .addGroup(roundPanel7Layout.createSequentialGroup()
-                            .addGap(53, 53, 53)
-                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(passChangeBtn)))
+                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundPanel7Layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jLabel18)
-                        .addGap(28, 28, 28)
-                        .addComponent(downloadRb)
-                        .addGap(18, 18, 18)
-                        .addComponent(uploadRb)
-                        .addGap(18, 18, 18)
-                        .addComponent(anonymousRb)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jSeparator8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 1035, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(roundPanel7Layout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addComponent(jLabel18)
+                                .addGap(28, 28, 28)
+                                .addComponent(downloadRb)
+                                .addGap(18, 18, 18)
+                                .addComponent(uploadRb)
+                                .addGap(18, 18, 18)
+                                .addComponent(anonymousRb)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel7Layout.createSequentialGroup()
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(roundPanel7Layout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(jLabel15)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(roundPanel7Layout.createSequentialGroup()
+                                .addGap(53, 53, 53)
+                                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(passChangeBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)))
+                        .addComponent(changeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37))))
         );
         roundPanel7Layout.setVerticalGroup(
             roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -417,15 +466,24 @@ public class information extends javax.swing.JPanel {
                     .addComponent(downloadRb)
                     .addComponent(uploadRb)
                     .addComponent(anonymousRb))
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(passChangeBtn))
-                .addGap(415, 415, 415))
+                .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(roundPanel7Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20, 20, 20)
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(passChangeBtn))
+                        .addContainerGap(56, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel7Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(roundPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(changeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(60, 60, 60))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -436,9 +494,7 @@ public class information extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(roundPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(roundPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -468,15 +524,23 @@ public class information extends javax.swing.JPanel {
         customDialog.setVisible(true);
     }//GEN-LAST:event_passChangeBtnActionPerformed
 
-    private void passConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passConfirmActionPerformed
-        
-    }//GEN-LAST:event_passConfirmActionPerformed
+    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
+       
+    }//GEN-LAST:event_confirmBtnActionPerformed
+
+    private void changeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeBtnActionPerformed
+        editableInfo(true);
+    }//GEN-LAST:event_changeBtnActionPerformed
+
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        editableInfo(false);
+    }//GEN-LAST:event_cancelBtnActionPerformed
     public void getUserInfo() throws Exception{
         clearField();
         UserData data = socketManager.getInstance().getUserInfo();
         long quotaInBytes=data.getQuotaInBytes();
         long usedBytes=data.getUsedBytes();
-        String email = data.getUsername()+"@gmail.com";
+        String email = data.getUsername();
         String firstname = data.getFirstName();
         String lastname = data.getLastName();
         String gender = data.getGender();
@@ -502,7 +566,19 @@ public class information extends javax.swing.JPanel {
         usedField.setText(convertBytes(usedBytes));
         quotaField.setText(convertBytes(quotaInBytes));
     }
-    
+    public void editableInfo(boolean option){
+        confirmBtn.setVisible(option);
+        cancelBtn.setVisible(option);
+        changeBtn.setVisible(!option);
+        this.revalidate();
+        this.repaint();
+        lastnameField.setFocusable(option);
+        firstnameField.setFocusable(option);
+        birthdateField.setEnabled(option);
+        male.setEnabled(option);
+        female.setEnabled(option);
+        emailField.setFocusable(option);
+    }
     public void clearField(){
         emailField.setText("");
         firstnameField.setText("");
@@ -538,6 +614,9 @@ public class information extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton anonymousRb;
     private de.wannawork.jcalendar.JCalendarComboBox birthdateField;
+    private view.custom.Button cancelBtn;
+    private view.custom.Button changeBtn;
+    private view.custom.Button confirmBtn;
     private javax.swing.JRadioButton downloadRb;
     private view.custom.textField emailField;
     private javax.swing.JRadioButton female;
@@ -565,6 +644,7 @@ public class information extends javax.swing.JPanel {
     private view.custom.textField maxdownloadField;
     private view.custom.textField maxuploadField;
     private view.custom.passwordField newPass;
+    private view.custom.passwordField oldPass;
     private view.custom.Button passCancel;
     private javax.swing.JButton passChangeBtn;
     private javax.swing.JPanel passChangePanel;

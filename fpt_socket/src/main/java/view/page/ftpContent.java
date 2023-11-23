@@ -747,21 +747,13 @@ public final class ftpContent extends javax.swing.JPanel {
         if (evt.getClickCount() == 2) {
             JTable target = (JTable) evt.getSource();
             int row = target.getSelectedRow();
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-            String name;
-            if(isRootShare())
-                name= model.getValueAt(row,5).toString();
-            else name= model.getValueAt(row,1).toString();
+            String name = getFilePath(row);
             if(name.split("\\.").length==1){
                 // nếu row được chọn là thư mục
                 try {
                     if(socketManager.getInstance().changeDirectory(name).getStatus() == StatusCode.FILE_ACTION_OK); 
-                    {
-                        String newPath=null;
-                        if(pathHistory.size() < 1 && this.CONTENT_TYPE.equals(SHARE_CONTENT))
-                            newPath= name;
-                        else newPath=pathHistory.isEmpty() ? ROOT_DIRECTORY : pathHistory.peek() + "/" + name;
-                        pathHistory.push(newPath);
+                    {                       
+                        pathHistory.push(name);
                         changePathTitle();
                         getFileList();
                     }
@@ -835,12 +827,9 @@ public final class ftpContent extends javax.swing.JPanel {
                 changePathTitle();
 
             }else {
-                if(pathHistory.size()>1){
-                        pathHistory.pop();
-                        newPath = pathHistory.peek();
-                }else if(this.CONTENT_TYPE.equals(MYSPACE_CONTENT))
-                    newPath = ROOT_DIRECTORY;
-
+                if(pathHistory.size()>1)
+                    pathHistory.pop();
+                newPath = pathHistory.peek();
                 if(socketManager.getInstance().changeDirectory(newPath).getStatus() == StatusCode.FILE_ACTION_OK){
                     changePathTitle();
                     getFileList();                
