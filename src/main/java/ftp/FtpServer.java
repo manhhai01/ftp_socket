@@ -1,7 +1,5 @@
 package ftp;
 
-import cipher.Config;
-import cipher.RSACipher;
 import config.IPConfig;
 import ftp.commands.TYPECommand;
 import ftp.commands.USERCommand;
@@ -19,6 +17,7 @@ import ftp.commands.Command;
 import ftp.commands.DELECommand;
 import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
+import ftp.commands.CHDTCommand;
 import ftp.commands.GOTPCommand;
 import ftp.commands.KEYCommand;
 import ftp.commands.LSHRCommand;
@@ -155,6 +154,7 @@ public class FtpServer {
         ftpServerBuilder.addCommand("LSUR", new LSURCommand());
         ftpServerBuilder.addCommand("KEY", new KEYCommand());
         ftpServerBuilder.addCommand("PCHG", new PCHGCommand());
+        ftpServerBuilder.addCommand("CHDT", new CHDTCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
