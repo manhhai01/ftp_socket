@@ -45,6 +45,6 @@ public class File {
     @JoinColumn(name = "owner_id")
     private User user;
     
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "file")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "file")
     private List<ShareFiles> shareFiles;
 }

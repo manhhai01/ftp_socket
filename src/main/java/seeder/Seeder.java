@@ -1,6 +1,5 @@
 package seeder;
 
-import bus.FileBus;
 import config.AppConfig;
 import dao.DirectoryDao;
 import dao.FileDao;
@@ -13,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import model.Directory;
 import model.ShareDirectories;
@@ -68,7 +66,7 @@ public class Seeder {
 //        rootUser.setIsActive(1);
 //        userDao.save(rootUser);
         User user1 = new User();
-        user1.setUsername("testuser");
+        user1.setUsername("vanan@gmail.com");
         user1.setPassword(md5Utils.getMD5Hash("test"));
         user1.setBirthdate(dateFormat.parse("31/6/1998"));
         user1.setFirstName("An");
@@ -81,7 +79,7 @@ public class Seeder {
         userDao.save(user1);
 
         User user2 = new User();
-        user2.setUsername("testuser2");
+        user2.setUsername("tuyetle@gmail.com");
         user2.setPassword(md5Utils.getMD5Hash("test2"));
         user2.setBirthdate(dateFormat.parse("22/11/1996"));
         user2.setFirstName("Tuyet");
@@ -97,20 +95,18 @@ public class Seeder {
         file.mkdirs();
 
 //        createDir(AppConfig.SERVER_FTP_USERS_PATH, rootUser, null);
-        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser", user1, null);
-        Directory sharedDir = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa", user1, null);
-        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/abc", user1, null);
-        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/def", user1, null);
-        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/testuser2", user2, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com", user1, null);
+        Directory sharedDir = createDir(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com/english", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com/images", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com/documents", user1, null);
+        createDir(AppConfig.SERVER_FTP_USERS_PATH + "/tuyetle@gmail.com", user2, null);
 
-        model.File sharedReadableFile = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/aaaa/test.txt", "Hello", user1, null);
-        model.File sharedFullPermissionFile = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log-login-successfully.txt", "log 111", user1, null);
-        createFile(AppConfig.SERVER_FTP_USERS_PATH + "/testuser/log2.txt", "log 112", user1, null);
+        model.File sharedReadableFile = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com/english/readable-share-file.txt", "Readable", user1, null);
+        model.File sharedFullPermissionFile = createFile(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com/full-permission-share-file.txt", "Full permission", user1, null);
 
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedReadableFile.getId(), user2.getId()), NormalFilePermission.READABLE_PERMISSION, sharedReadableFile, user2));
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFullPermissionFile.getId(), user2.getId()), NormalFilePermission.FULL_PERMISSION, sharedFullPermissionFile, user2));
         
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(sharedDir.getId(), user2.getId()), false, false, true, sharedDir, user2));
-
     }
 }

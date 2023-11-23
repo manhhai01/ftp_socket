@@ -45,6 +45,6 @@ public class Directory {
     @JoinColumn(name = "owner_id")
     private User user;
     
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER ,mappedBy = "directory")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER ,mappedBy = "directory")
     private List<ShareDirectories> shareDirectories;
 }

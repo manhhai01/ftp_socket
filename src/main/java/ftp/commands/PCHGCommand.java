@@ -22,9 +22,16 @@ public class PCHGCommand implements Command {
 
     @Override
     public void execute(String[] arguments, FtpServerSession session, BufferedWriter commandSocketWriter) {
-        String newPassword = arguments[0];
-        boolean success = userBus.updatePasswordUser(session.getUsername(), newPassword);
+        String oldPassword = arguments[0];
+        String newPassword = arguments[1];
+        boolean oldPasswordMatch = userBus.checkLogin(session.getUsername(), oldPassword).equals(UserBus.LOGIN_SUCCESS_MSG);
         try {
+            if (!oldPasswordMatch) {
+                session.getSessionSocketUtils().respondCommandSocket(StatusCode.ACTION_FAILED, "Password cũ không chính xác.", commandSocketWriter);
+                return;
+            }
+
+            boolean success = userBus.updatePasswordUser(session.getUsername(), newPassword);
             if (success) {
                 session.getSessionSocketUtils().respondCommandSocket(StatusCode.COMMAND_OK, "Password changed.", commandSocketWriter);
 
