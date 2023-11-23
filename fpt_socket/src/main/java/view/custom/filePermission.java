@@ -138,15 +138,23 @@ public class filePermission extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void permissionOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_permissionOptionActionPerformed
-        changePermission();
+            try {
+                changePermission();
+            } catch (Exception ex) {
+                Logger.getLogger(filePermission.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }//GEN-LAST:event_permissionOptionActionPerformed
-    public void changePermission() {
+    public void changePermission() throws Exception {
         String sql="file "+filename+" "+username+
                 " "+(permissionOption.getSelectedIndex()==0?"r":"w")
                 ;
         System.out.println(sql);
+        String permission = permissionOption.getSelectedIndex()==0?"r":"w";
+        if(socketManager.getInstance().grantFilePermission(filename, username,permission).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+            JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo", WARNING_MESSAGE);
+        }
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fullnameLbl;
     private javax.swing.JLabel jLabel2;
