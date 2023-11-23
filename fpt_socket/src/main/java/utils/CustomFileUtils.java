@@ -7,6 +7,7 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.tika.detect.DefaultDetector;
@@ -28,7 +29,8 @@ public class CustomFileUtils {
         };
     }
     public static String determineType(String filePath){
-        String filetype= filePath.split("\\.")[1];
+        String fileName = Paths.get(filePath).getFileName().toString();
+        String filetype= fileName.split("\\.")[1];
         return switch (filetype) {
             case "jpg", "png" -> "I";
             case "txt", "doc" -> "A";

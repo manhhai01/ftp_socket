@@ -9,12 +9,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,7 +32,6 @@ import static javax.swing.JOptionPane.*;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -142,19 +139,20 @@ public final class ftpContent extends javax.swing.JPanel {
                         String localPath = selectedFile.getAbsolutePath();
                         String DownloadFile = getFilePath(row);
                         DataResponse res = null;
-                            if(DownloadFile.split("\\.").length == 1){
-                                
-                                res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, pathHistory.peek());
-                                if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
-                                      JOptionPane.showMessageDialog(parentFrame,"Tải thư mục xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
-                                }
-                            }else {
-                                
-                                res = socketManager.getInstance().downloadFile(DownloadFile, localPath, pathHistory.peek());
-                                if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
-                                    JOptionPane.showMessageDialog(parentFrame,"Tải tệp xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
-                                }
+                        String fileName = Paths.get(DownloadFile).getFileName().toString();
+                        if(fileName.split("\\.").length == 1){
+
+                            res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, pathHistory.peek());
+                            if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+                                  JOptionPane.showMessageDialog(parentFrame,"Tải thư mục xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
                             }
+                        }else {
+
+                            res = socketManager.getInstance().downloadFile(DownloadFile, localPath, pathHistory.peek());
+                            if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+                                JOptionPane.showMessageDialog(parentFrame,"Tải tệp xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
+                            }
+                        }
                         if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
                             JOptionPane.showMessageDialog(parentFrame,"Tải xuống thất bại!", "Thông báo",INFORMATION_MESSAGE);
                         }
