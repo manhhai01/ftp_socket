@@ -4,13 +4,21 @@
  */
 package view;
 
+import bus.FileBus;
+import config.AppConfig;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import utils.FormatUtils;
 import view.custom.IconRenderer;
 import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
@@ -21,13 +29,17 @@ import view.custom.TableActionEvent;
  * @author Son
  */
 public class Folder extends javax.swing.JPanel {
-
+    private FileBus fileBus;
+    private Stack<String> pathHistory = new Stack<>();
     /**
      * Creates new form folder
      */
-    public Folder() {
+    public Folder() throws Exception {
         initComponents();
         setTable();
+        fileBus=  new FileBus();
+        pathHistory.push(AppConfig.SERVER_FTP_FILE_PATH);
+        getAllFile();
     }
     public void setTable(){
         table.setTableHeader(null);               
@@ -56,6 +68,44 @@ public class Folder extends javax.swing.JPanel {
         Object[] row = new Object[]{new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png")),"Row 2","","",""};
         model.addRow(row);
     }
+    
+    public void getAllFile() throws Exception{
+        pathTitle.setText(pathHistory.peek());
+        String fileList = fileBus.listAllFilesInStringFormat(pathHistory.peek());
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        if(!fileList.isBlank()){
+            String[] lines = fileList.split("\n");
+            for(String line : lines){
+                if(!line.isBlank()){
+                String[] parts = line.split(";");
+                String type = parts[0].split("=")[1].trim();
+                String owner =parts[1].split("=")[1].trim();
+                String modify=parts[2].split("=")[1].trim();
+                String size = parts[3].split("=")[1].trim();
+                String perm = parts[4].split("=")[1].trim();
+                String name = URLDecoder.decode(parts[5],"UTF-8").trim();
+                modify = FormatUtils.convertTimestamp(modify);
+                ImageIcon img;
+                try {
+                    if (type.equals("dir")) {
+                        img = new ImageIcon(getClass().getResource("/view/img/fileIcon/folder.png"));
+                    } else {
+                        img = new ImageIcon(getClass().getResource("/view/img/fileIcon/" + name.split("\\.")[1] + ".png"));
+                    }
+                } catch (Exception ex) {
+                    img = new ImageIcon(getClass().getResource("/view/img/fileIcon/txt.png"));
+                }
+                Object[] row = new Object[]{img,name,owner.equals("null")?"Tôi":owner,modify,FormatUtils.convertBytes(size)};
+                // chia đơn vị mb,kg,Gb ******
+                model.addRow(row);
+                }
+            }
+        }
+    }   
+    
+    
+  
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -102,7 +152,7 @@ public class Folder extends javax.swing.JPanel {
         highlightPanel5 = new view.custom.HighlightPanel();
         jLabel34 = new javax.swing.JLabel();
         highlightPanel6 = new view.custom.HighlightPanel();
-        jLabel32 = new javax.swing.JLabel();
+        pathTitle = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
 
@@ -337,9 +387,10 @@ public class Folder extends javax.swing.JPanel {
                         .addComponent(male)
                         .addComponent(female)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(renamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -434,9 +485,9 @@ public class Folder extends javax.swing.JPanel {
             }
         });
 
-        jLabel32.setFont(new java.awt.Font("Constantia", 1, 18)); // NOI18N
-        jLabel32.setText("/users");
-        jLabel32.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        pathTitle.setFont(new java.awt.Font("Constantia", 1, 18)); // NOI18N
+        pathTitle.setText("/users");
+        pathTitle.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout highlightPanel6Layout = new javax.swing.GroupLayout(highlightPanel6);
         highlightPanel6.setLayout(highlightPanel6Layout);
@@ -444,14 +495,14 @@ public class Folder extends javax.swing.JPanel {
             highlightPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(highlightPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 723, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addComponent(pathTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         highlightPanel6Layout.setVerticalGroup(
             highlightPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(highlightPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel32, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addComponent(pathTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -476,8 +527,8 @@ public class Folder extends javax.swing.JPanel {
                 .addGap(25, 25, 25)
                 .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 753, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(highlightPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 1040, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -578,7 +629,13 @@ public class Folder extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void highlightPanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel5MouseClicked
-        // TODO add your handling code here:
+        try {
+            if(pathHistory.size()>1)
+                pathHistory.pop();
+            getAllFile();
+        } catch (Exception ex) {
+            Logger.getLogger(Folder.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_highlightPanel5MouseClicked
 
     private void jPanel8jPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel8jPanel1MousePressed
@@ -586,7 +643,23 @@ public class Folder extends javax.swing.JPanel {
     }//GEN-LAST:event_jPanel8jPanel1MousePressed
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
-        // TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            JTable target = (JTable) evt.getSource();
+            int row = target.getSelectedRow();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            String filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();;
+            if(filepath.split("\\.").length==1){
+                try {
+                    // nếu row được chọn là thư mục
+                    pathHistory.push(filepath);
+                    getAllFile();
+                } catch (Exception ex) {
+                    Logger.getLogger(Folder.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }else{
+                // nếu row được chọn là file
+            }
+        }
     }//GEN-LAST:event_tableMouseClicked
 
     private void tableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMousePressed
@@ -635,22 +708,8 @@ public class Folder extends javax.swing.JPanel {
     private view.custom.HighlightPanel highlightPanel5;
     private view.custom.HighlightPanel highlightPanel6;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -658,35 +717,19 @@ public class Folder extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
-    private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JRadioButton male;
     private view.custom.textField maxdownloadField;
     private view.custom.textField maxuploadField;
+    private javax.swing.JLabel pathTitle;
     private view.custom.textField quotaField;
     private view.custom.Button renameCancel;
     private view.custom.Button renameConfirm;

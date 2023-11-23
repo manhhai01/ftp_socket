@@ -11,6 +11,8 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 /**
@@ -22,10 +24,12 @@ public class MainLayout extends javax.swing.JFrame {
     /**
      * Creates new form NewJFrame
      */
-    public MainLayout() {
+    public MainLayout() throws Exception {
         initComponents();
         setTheme();
         centerLocation();
+        active(page1);
+        getContent(new Folder());
     }
 
     /**
@@ -286,8 +290,12 @@ public class MainLayout extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void highlightPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel1MouseClicked
-        active(page1);
-        getContent(new Folder());
+        try {
+            active(page1);
+            getContent(new Folder());
+        } catch (Exception ex) {
+            Logger.getLogger(MainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_highlightPanel1MouseClicked
 
     private void highlightPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel2MouseClicked
@@ -372,7 +380,11 @@ public class MainLayout extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainLayout().setVisible(true);
+                try {
+                    new MainLayout().setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(MainLayout.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
