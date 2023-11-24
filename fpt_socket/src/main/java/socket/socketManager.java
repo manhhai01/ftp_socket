@@ -9,6 +9,7 @@ import cipher.Encrypt;
 import cipher.KeyAES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import config.IPConfig;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,13 +43,15 @@ public class socketManager {
     private Socket commandSocket, dataSocket;
     private BufferedWriter commandWriter, dataWriter;
     private BufferedReader commandReader, dataReader;
+    private String ipServer = "";
 
     private socketManager() {
         try {
-//            IPConfig ipConfig = new IPConfig();
-//            String ipServer = ipConfig.getIPServer();
+            IPConfig ipConfig = new IPConfig();
+            ipServer = ipConfig.getIPServer();
+//            ipServer = "localhost";
             // Khởi tạo kết nối TCP socket
-            commandSocket = new Socket("localhost", 21);
+            commandSocket = new Socket(ipServer, 21);
             // Khởi tạo BufferedReader và BufferedWriter để gửi và nhận dữ liệu
             commandReader = new CustomBufferedReader(new InputStreamReader(commandSocket.getInputStream()));
             commandWriter = new BufferedWriter(new OutputStreamWriter(commandSocket.getOutputStream()));
@@ -111,11 +114,12 @@ public class socketManager {
         Gson gson = new Gson();
         return gson.fromJson(response, UserData.class);
     }
-    
-    public StringResponse changePassword(String newPass) throws Exception{
+
+    public StringResponse changePassword(String newPass) throws Exception {
         writeLineAndFlush("PCHG " + newPass, commandWriter);
         return new StringResponse(commandReader.readLine());
     }
+
     /*------------------------------------------------------------------------------------------*/
 
  /*--------------------------------file manager command--------------------------------------*/
@@ -195,8 +199,9 @@ public class socketManager {
         openNewDataPort();
         writeLineAndFlush("LSUR " + pathURLEncode, commandWriter);
         UserPermissionResponse res = new UserPermissionResponse(commandReader.readLine());
-        if(res.getStatus() == StatusCode.ACTION_FAILED)
+        if (res.getStatus() == StatusCode.ACTION_FAILED) {
             return res;
+        }
         String data = dataReader.readLine();
         closeDataPort();
         commandReader.readLine();
@@ -207,40 +212,45 @@ public class socketManager {
         res.setList(gson.fromJson(data, listType));
         return res;
     }
+
     /**
-    * Cấp quyền cho một user đối với dạng tệp 
+     * Cấp quyền cho một user đối với dạng tệp
+     *
      * @param permission chỉ được xem 'r',được chỉnh sửa 's'.
-    */
-    public StringResponse grantFilePermission(String path,String username,String permission) throws Exception{
+     */
+    public StringResponse grantFilePermission(String path, String username, String permission) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        String content =pathURLEncode+ " "+ username+ " "+permission;
+        String content = pathURLEncode + " " + username + " " + permission;
         writeLineAndFlush("SHRE file " + content, commandWriter);
         String response = commandReader.readLine();
         return new StringResponse(response);
     }
-    public StringResponse grantFolderPermission(String path,String username,boolean canModify,boolean uploadable,boolean downloadable) throws Exception{
+
+    public StringResponse grantFolderPermission(String path, String username, boolean canModify, boolean uploadable, boolean downloadable) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        String content =pathURLEncode+ " "+ username
-                + " "+(canModify?"true":"false")                
-                + " "+(uploadable?"true":"false")
-                + " "+(downloadable?"true":"false");
+        String content = pathURLEncode + " " + username
+                + " " + (canModify ? "true" : "false")
+                + " " + (uploadable ? "true" : "false")
+                + " " + (downloadable ? "true" : "false");
         System.out.println(content);
         writeLineAndFlush("SHRE directory " + content, commandWriter);
         String response = commandReader.readLine();
         return new StringResponse(response);
     }
-    
+
     /**
-    * Xóa quyền truy cập của user
+     * Xóa quyền truy cập của user
+     *
      * @param type dạng tệp 'file' dạng folder 'directory'.
-    */
-    public StringResponse deletePermission(String type,String path,String username) throws Exception{
+     */
+    public StringResponse deletePermission(String type, String path, String username) throws Exception {
         String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        String content =type+" "+pathURLEncode+ " "+ username;
+        String content = type + " " + pathURLEncode + " " + username;
         writeLineAndFlush("USHR " + content, commandWriter);
         String response = commandReader.readLine();
         return new StringResponse(response);
     }
+
     public StringResponse uploadFile(String path, File file) throws Exception {
         String pathURLEncode = URLEncoder.encode(path + "/" + file.getName(), StandardCharsets.UTF_8);
         System.out.println(path + "/" + file.getName());
@@ -347,7 +357,7 @@ public class socketManager {
         int dataPort = Integer.parseInt(epsvResponse
                 .replace("229 Entering Extended Passive Mode (|||", "")
                 .replace("|)", ""));
-        dataSocket = new Socket("localhost", dataPort);
+        dataSocket = new Socket(ipServer, dataPort);
         dataWriter = new BufferedWriter(new OutputStreamWriter(dataSocket.getOutputStream()));
         dataReader = new CustomBufferedReader(new InputStreamReader(dataSocket.getInputStream()));
     }
