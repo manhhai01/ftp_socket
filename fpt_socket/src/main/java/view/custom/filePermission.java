@@ -29,7 +29,7 @@ public class filePermission extends javax.swing.JPanel {
         initComponents();
         this.filename = filename;
         username = userPermission.getUserData().getUsername();
-        String fullname = userPermission.getUserData().getLastName() + userPermission.getUserData().getFirstName();
+        String fullname = userPermission.getUserData().getLastName() + " " + userPermission.getUserData().getFirstName();
         HashMap<String,Object> permission = userPermission.getProcessedPermission();
         String permissionString =(String) permission.get("permission");
         if(permissionString.equals("r"))
