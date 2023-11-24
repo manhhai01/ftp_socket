@@ -18,11 +18,14 @@ public class testFolderGrantPer extends javax.swing.JFrame {
      */
     public testFolderGrantPer() {
         initComponents();
+        content5.removeAll();
+        content5.revalidate();
+        content5.repaint();
         content5.setLayout(new BoxLayout(content5,BoxLayout.Y_AXIS));
         for(int i = 0; i<2;i++){
             NewJPanel panel = new NewJPanel();
 //            panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
-            panel.setPreferredSize(new Dimension(300,100));
+            panel.setPreferredSize(new Dimension(500,100));
             content5.add(panel);
         }
     }
