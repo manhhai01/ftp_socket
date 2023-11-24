@@ -6,8 +6,6 @@ package view.page;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URLDecoder;
@@ -17,14 +15,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -37,7 +32,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import payloads.StringResponse;
-import payloads.UserPermission;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.IconRenderer;
@@ -45,8 +39,6 @@ import view.custom.TableActionCellEditor;
 import view.custom.TableActionCellRender;
 import view.custom.TableActionEvent;
 import view.custom.customDialog;
-import view.custom.filePermission;
-import view.custom.folderPermission;
 import view.mainLayout;
 
 /**
@@ -114,6 +106,8 @@ public final class ftpContent extends javax.swing.JPanel {
                         getFileList();
                         parentFrame.updateMemory();
                     }
+                    else
+                        JOptionPane.showMessageDialog(parentFrame,"Bạn không có quyền truy cập chức năng này", "Thông báo", WARNING_MESSAGE);
                 }catch (Exception e){
                     Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, e);
      
@@ -174,7 +168,8 @@ public final class ftpContent extends javax.swing.JPanel {
             public void onShare(int row) {
                 try{
                     shareFileName=getFilePath(row);
-                    String type = shareFileName.split("\\.").length==1?"dir":"file";
+                    String name = Paths.get(shareFileName).getFileName().toString();
+                    String type = name.split("\\.").length==1?"dir":"file";
                     ShareOptionPane shareOptionPane = new ShareOptionPane(parentFrame,type,shareFileName);
                     shareOptionPane.setVisible(true);
                 }catch(Exception e){
@@ -747,13 +742,16 @@ public final class ftpContent extends javax.swing.JPanel {
         if (evt.getClickCount() == 2) {
             JTable target = (JTable) evt.getSource();
             int row = target.getSelectedRow();
-            String name = getFilePath(row);
+            String path = getFilePath(row);
+            String name = Paths.get(path).getFileName().toString();
+                                    
+
             if(name.split("\\.").length==1){
                 // nếu row được chọn là thư mục
                 try {
-                    if(socketManager.getInstance().changeDirectory(name).getStatus() == StatusCode.FILE_ACTION_OK); 
+                    if(socketManager.getInstance().changeDirectory(path).getStatus() == StatusCode.FILE_ACTION_OK); 
                     {                       
-                        pathHistory.push(name);
+                        pathHistory.push(path);
                         changePathTitle();
                         getFileList();
                     }
@@ -875,6 +873,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File[] files = fileChooser.getSelectedFiles();
                     String path = pathHistory.peek();
+                    System.out.println(files[0].getPath());
                     int flag = 1;
                     for(File file : files){
                         if(socketManager.getInstance().uploadFile(path, file).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
