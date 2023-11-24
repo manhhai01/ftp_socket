@@ -622,13 +622,16 @@ public class User extends javax.swing.JPanel {
         double bytes = Double.parseDouble(bytesString);
         switch(unit){
             case "KB" -> {
-                return (long) bytes*1024;
+                bytes*=1024;
+                return (long) bytes;
             }
             case "MB" -> {
-                return (long) bytes*1024*1024;
+                bytes*=1024*1024;
+                return (long) bytes;
             }
             case "GB" -> {
-                return (long) bytes*1024*1024*1024;
+                bytes*=1024*1024*1024;
+                return (long) bytes;
             }
             default -> {
                 return (long) bytes;

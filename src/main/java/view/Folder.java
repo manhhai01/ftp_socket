@@ -8,8 +8,10 @@ import bus.FileBus;
 import config.AppConfig;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,7 +105,15 @@ public class Folder extends javax.swing.JPanel {
             }
         }
     }   
-    
+    public void enterFolder(String filepath){
+        try {
+                    // nếu row được chọn là thư mục
+                    pathHistory.push(filepath);
+                    getAllFile();
+                } catch (Exception ex) {
+                    Logger.getLogger(Folder.class.getName()).log(Level.SEVERE, null, ex);
+                }
+    }
     
   
     /**
@@ -647,17 +657,12 @@ public class Folder extends javax.swing.JPanel {
             JTable target = (JTable) evt.getSource();
             int row = target.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
-            String filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();;
-            if(filepath.split("\\.").length==1){
-                try {
-                    // nếu row được chọn là thư mục
-                    pathHistory.push(filepath);
-                    getAllFile();
-                } catch (Exception ex) {
-                    Logger.getLogger(Folder.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            String filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();
+            File file = new File(filepath);
+            if(file.isDirectory()) {
+                enterFolder(filepath);
             }else{
-                // nếu row được chọn là file
+                
             }
         }
     }//GEN-LAST:event_tableMouseClicked
