@@ -334,7 +334,8 @@ public final class register extends javax.swing.JPanel {
     
     public boolean checkInputField(){
         String checkPassword = passwordField.getText();
-        if(usernameField.getText().isEmpty()||checkPassword.isEmpty()||firstnameField.getText().isEmpty()||lastnameField.getText().isEmpty()){
+        
+        if(usernameField.getText().isEmpty()||checkPassword.isEmpty()||firstnameField.getText().isEmpty()||lastnameField.getText().isEmpty()||genderSelection.getSelection()==null){
             JOptionPane.showMessageDialog(this,"Vui lòng không để trống thông tin","Thông báo",WARNING_MESSAGE);
             return false;
         }

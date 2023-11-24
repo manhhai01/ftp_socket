@@ -111,7 +111,11 @@ public class socketManager {
         Gson gson = new Gson();
         return gson.fromJson(response, UserData.class);
     }
-
+    
+    public StringResponse changePassword(String newPass) throws Exception{
+        writeLineAndFlush("PCHG " + newPass, commandWriter);
+        return new StringResponse(commandReader.readLine());
+    }
     /*------------------------------------------------------------------------------------------*/
 
  /*--------------------------------file manager command--------------------------------------*/
