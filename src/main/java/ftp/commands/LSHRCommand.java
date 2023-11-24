@@ -58,7 +58,7 @@ public class LSHRCommand implements Command {
 
             if (user.isAnonymous()) {
                 File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
-                result += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=el; anonymous %s",
+                result += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=el; anonymous %s\n",
                         file.lastModified(),
                         FileUtils.sizeOf(file),
                         AppConfig.SERVER_FTP_ANON_PATH.replaceFirst(AppConfig.SERVER_FTP_FILE_PATH, "")

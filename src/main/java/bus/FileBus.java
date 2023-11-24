@@ -425,9 +425,9 @@ public class FileBus {
     public String listAllAnonFilesInStringFormat(String path, String username) {
         MLSDFormatter formatter = new MLSDFormatter();
         return formatter.listFormat(new File(path), (file) -> {
-            return getFilePermission(path, username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE).isReadable();
+            return getFilePermission(ftpFileUtils.convertJavaPathToFtpPath(file.getPath()), username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE).isReadable();
         }, (File file) -> {
-            return getFilePermission(path, username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE);
+            return getFilePermission(ftpFileUtils.convertJavaPathToFtpPath(file.getPath()), username, file.isDirectory() ? FileBus.DIRECTORY_TYPE : FileBus.NORMAL_FILE_TYPE);
         }, true);
     }
 
