@@ -27,7 +27,8 @@ public class KeyAES {
         }
         return instance;
     }
-    
+    //ceaser subttition ceaser
+    //RSA
     public void clearKey() {
         key = null;
     }

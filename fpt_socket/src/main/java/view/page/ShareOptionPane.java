@@ -15,8 +15,6 @@ import payloads.UserPermission;
 import payloads.UserPermissionResponse;
 import socket.StatusCode;
 import socket.socketManager;
-import view.custom.filePermission;
-import view.custom.folderPermission;
 
 /**
  *

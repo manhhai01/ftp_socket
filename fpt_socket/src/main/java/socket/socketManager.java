@@ -115,11 +115,18 @@ public class socketManager {
         return gson.fromJson(response, UserData.class);
     }
 
-    public StringResponse changePassword(String newPass) throws Exception {
-        writeLineAndFlush("PCHG " + newPass, commandWriter);
+    public StringResponse changePassword(String oldPass,String newPass) throws Exception {
+        writeLineAndFlush("PCHG "+ oldPass+" " + newPass, commandWriter);
         return new StringResponse(commandReader.readLine());
     }
-
+    public StringResponse changeInformation(String data) throws Exception{
+        openNewDataPort();
+        writeLineAndFlush("CHDT", commandWriter);
+        commandReader.readLine();
+        writeLineAndFlush(data, dataWriter);
+        closeDataPort();
+        return new StringResponse(commandReader.readLine());
+    }
     /*------------------------------------------------------------------------------------------*/
 
  /*--------------------------------file manager command--------------------------------------*/

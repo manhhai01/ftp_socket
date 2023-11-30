@@ -5,10 +5,16 @@
 package view.page;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
+import payloads.StringResponse;
 import payloads.UserData;
+import socket.StatusCode;
 import socket.socketManager;
 import view.custom.customDialog;
 
@@ -18,6 +24,8 @@ import view.custom.customDialog;
  */
 public class information extends javax.swing.JPanel {
     private customDialog customDialog;
+    private long quotaInBytes,usedBytes,maxUploadSizeBytes,maxDownloadSizeBytes;
+    private boolean anonymous,isBlockDownload,isBlockUpload;
     /**
      * Creates new form information
      */
@@ -93,6 +101,11 @@ public class information extends javax.swing.JPanel {
         passConfirm.setColorClick(new java.awt.Color(153, 153, 153));
         passConfirm.setColorOver(new java.awt.Color(102, 102, 102));
         passConfirm.setRadius(10);
+        passConfirm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passConfirmActionPerformed(evt);
+            }
+        });
 
         passCancel.setText("Hủy");
         passCancel.setColor(new java.awt.Color(204, 204, 255));
@@ -519,13 +532,51 @@ public class information extends javax.swing.JPanel {
     }//GEN-LAST:event_maxuploadFieldActionPerformed
 
     private void passChangeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passChangeBtnActionPerformed
-
+        oldPass.setText("");
         newPass.setText("");
         customDialog.setVisible(true);
     }//GEN-LAST:event_passChangeBtnActionPerformed
 
     private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
-       
+        try{
+        if(!checkInputField()){
+            return;
+        }
+        String username = emailField.getText();
+        String firstname = firstnameField.getText();
+        String lastname = lastnameField.getText();
+        String gender = male.isSelected()? "Nam":"Nữ";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String birthday = dateFormat.format(birthdateField.getDate());
+        String data=String.format("{\n"
+                + "            \"firstName\": \"%s\",\n"
+                + "            \"lastName\": \"%s\",\n"
+                + "            \"birthdate\": \"%s\"\n"
+                + "            \"gender\": \"%s\",\n"
+                + "            \"username\": \"%s\",\n"
+                + "            \"quotaInBytes\": \"%s\"\n"
+                + "            \"usedInBytes\": \"%s\"\n"
+                + "            \"maxDownloadFileSizeBytes\": \"%s\"\n"
+                + "            \"maxUploadFileSizeBytes\": \"%s\"\n"
+                + "            \"anonymous\": \"%s\"\n"
+                + "            \"isBlockUpload\": \"%s\"\n"
+                + "            \"isBlockDownload\": \"%s\"\n"
+                + "        }",firstname,lastname,birthday,gender,username,
+                String.valueOf(quotaInBytes),String.valueOf(usedBytes),String.valueOf(maxDownloadSizeBytes),
+                String.valueOf(maxUploadSizeBytes),String.valueOf(anonymous),String.valueOf(isBlockUpload),
+                String.valueOf(isBlockDownload));
+        StringResponse res = socketManager.getInstance().changeInformation(data);
+        if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+            JOptionPane.showMessageDialog(this, "Thay đổi thành công!!");
+            getUserInfo();
+            editableInfo(false);
+        }else {
+            JOptionPane.showMessageDialog(this, "Thay đổi thất bại!!");
+        }
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(this, "có lỗi xảy ra");
+        }
     }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void changeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeBtnActionPerformed
@@ -535,21 +586,46 @@ public class information extends javax.swing.JPanel {
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         editableInfo(false);
     }//GEN-LAST:event_cancelBtnActionPerformed
+
+    private void passConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passConfirmActionPerformed
+        try{
+            String oldPass = this.oldPass.getText();
+            String newPass = this.newPass.getText();
+            if(oldPass.isBlank()|| newPass.isBlank()){
+                JOptionPane.showMessageDialog(this,"Vui lòng không để trống thông tin");
+                return;
+            }if(!oldPass.contains(" ") || !newPass.contains(" ")){
+                JOptionPane.showMessageDialog(this,"Mật khẩu không được chứa khoảng trắng");
+                return;
+            }
+            StringResponse res = socketManager.getInstance().changePassword(oldPass, newPass);
+            if(res.getStatus() == StatusCode.ACTION_FAILED){
+                JOptionPane.showMessageDialog(this,"Mật khẩu cũ không chính xác !!");
+                return;
+            }
+            JOptionPane.showMessageDialog(this,"Mật khẩu thay đổi thành công");
+            customDialog.setVisible(false);
+            
+        } catch(Exception e){
+                JOptionPane.showMessageDialog(this,"Có lỗi xảy ra");
+            
+        }
+    }//GEN-LAST:event_passConfirmActionPerformed
     public void getUserInfo() throws Exception{
         clearField();
         UserData data = socketManager.getInstance().getUserInfo();
-        long quotaInBytes=data.getQuotaInBytes();
-        long usedBytes=data.getUsedBytes();
+        quotaInBytes=data.getQuotaInBytes();
+        usedBytes=data.getUsedBytes();
         String email = data.getUsername();
         String firstname = data.getFirstName();
         String lastname = data.getLastName();
         String gender = data.getGender();
         Date birthdate = data.getBirthdate();
-        boolean anonymous = data.isAnonymous();
-        boolean isBlockDownload = data.isBlockDownload();
-        boolean isBlockUpload = data.isBlockUpload();
-        long maxUploadSizeBytes= data.getMaxUploadSizeBytes();
-        long maxDownloadSizeBytes = data.getMaxDownloadSizeBytes();
+        anonymous = data.isAnonymous();
+        isBlockDownload = data.isBlockDownload();
+        isBlockUpload = data.isBlockUpload();
+        maxUploadSizeBytes= data.getMaxUploadSizeBytes();
+        maxDownloadSizeBytes = data.getMaxDownloadSizeBytes();
         firstnameField.setText(firstname!=null?firstname:"");
         lastnameField.setText(lastname!=null?lastname:"");
         birthdateField.setDate(birthdate!=null?birthdate:new Date());
@@ -594,6 +670,25 @@ public class information extends javax.swing.JPanel {
         usedField.setText("");
         quotaField.setText("");
         
+    }
+    public boolean checkInputField(){
+        
+        if(emailField.getText().isEmpty()||firstnameField.getText().isEmpty()||lastnameField.getText().isEmpty()||genderRb.getSelection()==null){
+            JOptionPane.showMessageDialog(this,"Vui lòng không để trống thông tin","Thông báo",WARNING_MESSAGE);
+            return false;
+        }
+        Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+        if(!EMAIL_PATTERN.matcher(emailField.getText()).matches()){
+            JOptionPane.showMessageDialog(this,"Vui lòng nhập đúng định dạng email!!","Thông báo",WARNING_MESSAGE);
+            return false;
+        }
+        Date date = birthdateField.getDate();
+        if(date.after(new Date())){
+            JOptionPane.showMessageDialog(this,"Vui lòng nhập ngày tháng năm sinh chính xác!!","Thông báo",WARNING_MESSAGE);
+            return false;
+        }   
+        
+        return true;
     }
     
     public String changeToGigaByte(double bytes){
