@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import utils.FormatUtils;
@@ -33,6 +34,7 @@ import view.custom.TableActionEvent;
 public class Folder extends javax.swing.JPanel {
     private FileBus fileBus;
     private Stack<String> pathHistory = new Stack<>();
+    private String shareFileName;
     /**
      * Creates new form folder
      */
@@ -42,13 +44,25 @@ public class Folder extends javax.swing.JPanel {
         fileBus=  new FileBus();
         pathHistory.push(AppConfig.SERVER_FTP_FILE_PATH);
         getAllFile();
+        SwingUtilities.invokeLater(() -> {
+            parentFrame = (MainLayout) SwingUtilities.getWindowAncestor(this);
+        });
     }
     public void setTable(){
         table.setTableHeader(null);               
         TableActionEvent event = new TableActionEvent() {
             @Override
             public void grantPermission(int row) {
-                System.out.println(row);
+                try{
+                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    String filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();
+                    File file = new File(filepath);
+                    String type = file.isDirectory()?"dir":"file";
+                    ShareOptionPane shareOptionPane = new ShareOptionPane(parentFrame,type,filepath);
+                    shareOptionPane.setVisible(true);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             }
             
 
@@ -703,7 +717,7 @@ public class Folder extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_highlightPanel6MouseClicked
 
-
+    private MainLayout parentFrame;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton anonymousRb;
     private de.wannawork.jcalendar.JCalendarComboBox birthdateField;
