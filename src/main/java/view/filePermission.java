@@ -121,36 +121,36 @@ public class filePermission extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel2MouseExited
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        jLabel2.setForeground(new java.awt.Color(255,51,51));
-        try {
-            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
-            if(socketManager.getInstance().deletePermission("file", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
-                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
-            }
-            parentFrame.refreshContent();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        jLabel2.setForeground(new java.awt.Color(255,51,51));
+//        try {
+//            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+//            if(socketManager.getInstance().deletePermission("file", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+//                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
+//            }
+//            parentFrame.refreshContent();
+//        } catch (Exception ex) {
+//            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void permissionOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_permissionOptionActionPerformed
-            try {
-                changePermission();
-            } catch (Exception ex) {
-                Logger.getLogger(filePermission.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//                changePermission();
+//            } catch (Exception ex) {
+//                Logger.getLogger(filePermission.class.getName()).log(Level.SEVERE, null, ex);
+//            }
     }//GEN-LAST:event_permissionOptionActionPerformed
-    public void changePermission() throws Exception {
-        String sql="file "+filename+" "+username+
-                " "+(permissionOption.getSelectedIndex()==0?"r":"w")
-                ;
-        System.out.println(sql);
-        String permission = permissionOption.getSelectedIndex()==0?"r":"w";
-        if(socketManager.getInstance().grantFilePermission(filename, username,permission).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
-            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
-            JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo", WARNING_MESSAGE);
-        }
-    }
+//    public void changePermission() throws Exception {
+//        String sql="file "+filename+" "+username+
+//                " "+(permissionOption.getSelectedIndex()==0?"r":"w")
+//                ;
+//        System.out.println(sql);
+//        String permission = permissionOption.getSelectedIndex()==0?"r":"w";
+//        if(socketManager.getInstance().grantFilePermission(filename, username,permission).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+//            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+//            JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo", WARNING_MESSAGE);
+//        }
+//    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fullnameLbl;
     private javax.swing.JLabel jLabel2;

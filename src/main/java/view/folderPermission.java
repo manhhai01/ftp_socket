@@ -12,10 +12,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
-import payloads.UserPermission;
-import socket.StatusCode;
-import socket.socketManager;
-import view.page.ShareOptionPane;
+import payload.UserPermission;
+
 
 /**
  *
@@ -154,42 +152,42 @@ public class folderPermission extends javax.swing.JPanel{
     }//GEN-LAST:event_jLabel2MouseExited
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        jLabel2.setForeground(new java.awt.Color(255,51,51));
-        try {
-            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
-            if(socketManager.getInstance().deletePermission("directory", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
-                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
-            }
-            parentFrame.refreshContent();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+//        jLabel2.setForeground(new java.awt.Color(255,51,51));
+//        try {
+//            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+//            if(socketManager.getInstance().deletePermission("directory", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+//                JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
+//            }
+//            parentFrame.refreshContent();
+//        } catch (Exception ex) {
+//            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
         
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void downCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downCbActionPerformed
-        try {
-            changePermission();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            changePermission();
+//        } catch (Exception ex) {
+//            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }//GEN-LAST:event_downCbActionPerformed
 
     private void upCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upCbActionPerformed
-        try {
-            changePermission();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            changePermission();
+//        } catch (Exception ex) {
+//            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }//GEN-LAST:event_upCbActionPerformed
 
     private void modifyCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyCbActionPerformed
-        try {
-            changePermission();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            changePermission();
+//        } catch (Exception ex) {
+//            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }//GEN-LAST:event_modifyCbActionPerformed
 
 
@@ -203,13 +201,13 @@ public class folderPermission extends javax.swing.JPanel{
     // End of variables declaration//GEN-END:variables
 
 
-    public void changePermission() throws Exception {
-        String sql="directory "+filename+" "+username+
-                " "+(modifyCb.isSelected()?"true":"false")+
-                " "+(upCb.isSelected()?"true":"false")+
-                " "+(downCb.isSelected()?"true":"false")
-                ;
-        System.out.println(sql);
-        socket.socketManager.getInstance().grantFolderPermission(filename, username, modifyCb.isSelected(),upCb.isSelected(), downCb.isSelected() );
-    }
+//    public void changePermission() throws Exception {
+//        String sql="directory "+filename+" "+username+
+//                " "+(modifyCb.isSelected()?"true":"false")+
+//                " "+(upCb.isSelected()?"true":"false")+
+//                " "+(downCb.isSelected()?"true":"false")
+//                ;
+//        System.out.println(sql);
+//        socket.socketManager.getInstance().grantFolderPermission(filename, username, modifyCb.isSelected(),upCb.isSelected(), downCb.isSelected() );
+//    }
 }
