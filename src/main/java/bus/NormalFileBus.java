@@ -94,7 +94,10 @@ public class NormalFileBus {
             return false;
         }
 
-        boolean success = fileDao.save(new model.File(0, fromRootFilePath, user, null));
+        model.File fileDb = new model.File(0, fromRootFilePath, user, null);
+
+        boolean success = fileDao.save(fileDb);
+        shareFilesDao.save(new ShareFiles(new ShareFilesId(fileDb.getId(), user.getId()), username, fileDb, user));
 
         if (success) {
             try {
@@ -256,7 +259,6 @@ public class NormalFileBus {
                         appliedUser)
         );
 
-        // Todo: Send mail
         EmailUtils emailUtils = new EmailUtils();
         boolean resSendEmail = emailUtils.sendSharingFileNotification(ownerUsername, appliedUsername, permission);
 
@@ -271,6 +273,43 @@ public class NormalFileBus {
         }
 
         if (!ownerUsername.equals(fileInDb.getUser().getUsername())) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        ShareFiles shareFile = new ShareFiles();
+        shareFile.setIds(new ShareFilesId(fileInDb.getId(), appliedUser.getId()));
+
+        boolean success = shareFilesDao.remove(shareFile);
+        return success;
+    }
+
+    public synchronized boolean setShareNormalFilePermissionAdmin(String fromRootFilePath, String appliedUsername, String permission) {
+        model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
+        if (fileInDb == null) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        boolean resUpdate = shareFilesDao.update(
+                new ShareFiles(
+                        new ShareFilesId(fileInDb.getId(), appliedUser.getId()),
+                        permission,
+                        fileInDb,
+                        appliedUser)
+        );
+
+        EmailUtils emailUtils = new EmailUtils();
+        boolean resSendEmail = emailUtils.sendSharingFileNotification("Hệ thống", appliedUsername, permission);
+
+        return resUpdate && resSendEmail;
+    }
+    
+    public synchronized boolean unshareNormalFileAdmin(String fromRootFilePath, String appliedUsername) {
+        model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
+        if (fileInDb == null) {
             return false;
         }
 

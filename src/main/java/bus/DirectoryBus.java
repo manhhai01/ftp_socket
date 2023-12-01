@@ -43,7 +43,9 @@ public class DirectoryBus {
             return true;
         }
 
-        boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
+        Directory directory = new Directory(0, fromRootPath, user, null);
+        boolean success = directoryDao.save(directory);
+        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(directory.getId(), user.getId()), true, true, true, directory, user));
         File file = new File(fromRootPath);
         if (success) {
             file.mkdir();
@@ -78,7 +80,9 @@ public class DirectoryBus {
             return false;
         }
 
-        boolean success = directoryDao.save(new Directory(0, fromRootPath, user, null));
+        Directory directory = new Directory(0, fromRootPath, user, null);
+        boolean success = directoryDao.save(directory);
+        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(directory.getId(), user.getId()), true, true, true, directory, user));
         if (success) {
             file.mkdir();
         }
@@ -187,6 +191,21 @@ public class DirectoryBus {
         );
 
         return resUpdate;
+    }
+    
+    public boolean unshareDirectoryAdmin(String fromRootDirPath, String appliedUsername) {
+        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
+        if (directoryInDb == null) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        ShareDirectories shareDirectory = new ShareDirectories();
+        shareDirectory.setIds(new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()));
+
+        boolean success = shareDirectoriesDao.remove(shareDirectory);
+        return success;
     }
 
     public boolean unshareDirectory(String fromRootDirPath, String ownerUsername, String appliedUsername) {
