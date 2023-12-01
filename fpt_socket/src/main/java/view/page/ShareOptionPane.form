@@ -63,7 +63,7 @@
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="1" attributes="0">
                                       <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="textField2" alignment="1" min="-2" pref="400" max="-2" attributes="0"/>
+                                      <Component id="nameField" alignment="1" min="-2" pref="400" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="renameConfirm2" min="-2" pref="94" max="-2" attributes="0"/>
@@ -89,7 +89,7 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="textField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="nameField" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="renameConfirm2" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -100,7 +100,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="view.custom.textField" name="textField2">
+        <Component class="view.custom.textField" name="nameField">
           <Properties>
             <Property name="labelText" type="java.lang.String" value="Nh&#x1ead;p t&#xea;n user"/>
           </Properties>

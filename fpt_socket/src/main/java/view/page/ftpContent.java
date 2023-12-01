@@ -232,6 +232,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 if(res.getStatus() == StatusCode.FILE_ACTION_OK){
                     JOptionPane.showMessageDialog(parentFrame,"Di chuyển thành công!", "Thông báo",INFORMATION_MESSAGE);
                     getFileList();
+                    moveFileName=null;
                 }else JOptionPane.showMessageDialog(parentFrame,"bạn không đủ quyền hạn để di chuyển tệp đến thư mục này!", "Thông báo",WARNING_MESSAGE);
             } catch (Exception ex) {
                 Logger.getLogger(ftpContent.class.getName()).log(Level.SEVERE, null, ex);

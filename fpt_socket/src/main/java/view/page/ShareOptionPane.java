@@ -77,7 +77,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
     private void initComponents() {
 
         sharePanel = new javax.swing.JPanel();
-        textField2 = new view.custom.textField();
+        nameField = new view.custom.textField();
         renameConfirm2 = new view.custom.Button();
         renameConfirm3 = new view.custom.Button();
         roundPanel2 = new view.custom.RoundPanel();
@@ -91,7 +91,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
         sharePanel.setBackground(new java.awt.Color(255, 255, 255));
         sharePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
-        textField2.setLabelText("Nhập tên user");
+        nameField.setLabelText("Nhập tên user");
 
         renameConfirm2.setText("Thêm");
         renameConfirm2.setColor(new java.awt.Color(204, 204, 255));
@@ -164,7 +164,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
                             .addGroup(sharePanelLayout.createSequentialGroup()
                                 .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel1)
-                                    .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(50, 50, 50))
@@ -181,7 +181,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(roundPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -205,7 +205,23 @@ public class ShareOptionPane extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void renameConfirm2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm2ActionPerformed
-
+        String name = nameField.getText();
+        if(name.isBlank())
+            return;
+        try{
+        if(type.equals("dir")){
+            if(socketManager.getInstance().grantFolderPermission(filename, name, false, false, false).getStatus()==StatusCode.FILE_ACTION_NOT_TAKEN){
+                JOptionPane.showMessageDialog(parent, "Có vấn đề xảy ra, tiến hành tải lại dữ liệu");
+            } else JOptionPane.showMessageDialog(parent, "Thành công");
+        }
+        else {
+            if(socketManager.getInstance().grantFilePermission(filename, name, "r").getStatus()==StatusCode.FILE_ACTION_NOT_TAKEN){
+                JOptionPane.showMessageDialog(parent, "có lỗi xảy ra, tiến hành tải lại dữ liệu");
+            }else JOptionPane.showMessageDialog(parent, "Thành công");
+        }
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(parent, "Có lỗi xảy ra");
+        }
     }//GEN-LAST:event_renameConfirm2ActionPerformed
 
     private void renameConfirm3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm3ActionPerformed
@@ -260,11 +276,11 @@ public class ShareOptionPane extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane access5;
     private javax.swing.JLabel jLabel1;
+    private view.custom.textField nameField;
     private view.custom.Button renameConfirm2;
     private view.custom.Button renameConfirm3;
     private view.custom.RoundPanel roundPanel2;
     private javax.swing.JPanel sharePanel;
     private javax.swing.JPanel shareUserContent;
-    private view.custom.textField textField2;
     // End of variables declaration//GEN-END:variables
 }

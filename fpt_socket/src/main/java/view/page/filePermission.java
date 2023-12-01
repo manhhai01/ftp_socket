@@ -38,6 +38,7 @@ public class filePermission extends javax.swing.JPanel {
             permissionOption.setSelectedIndex(1);
         fullnameLbl.setText(fullname);
         usernameLbl.setText(username);
+        permissionOption.setEnabled(true);
 
     }
 
@@ -137,7 +138,8 @@ public class filePermission extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void permissionOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_permissionOptionActionPerformed
-            try {
+        if(permissionOption.isEnabled())    
+        try {
                 changePermission();
             } catch (Exception ex) {
                 Logger.getLogger(filePermission.class.getName()).log(Level.SEVERE, null, ex);
