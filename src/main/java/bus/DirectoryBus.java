@@ -193,7 +193,7 @@ public class DirectoryBus {
         return resUpdate;
     }
     
-    public boolean unshareDirectory(String fromRootDirPath, String appliedUsername) {
+    public boolean unshareDirectoryAdmin(String fromRootDirPath, String appliedUsername) {
         Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
         if (directoryInDb == null) {
             return false;
