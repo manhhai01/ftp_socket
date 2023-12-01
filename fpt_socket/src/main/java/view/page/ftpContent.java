@@ -91,6 +91,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 oldName = model.getValueAt(row,1 ).toString();
                 renameField.setText(oldName);
                 renameForm.setVisible(true);
+                table.clearSelection();
             }
 
             @Override
@@ -158,6 +159,7 @@ public final class ftpContent extends javax.swing.JPanel {
                         }
                     
                     }
+                    table.clearSelection();
                     
                 }catch (Exception e){
                     e.printStackTrace();
@@ -172,6 +174,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     String type = name.split("\\.").length==1?"dir":"file";
                     ShareOptionPane shareOptionPane = new ShareOptionPane(parentFrame,type,shareFileName);
                     shareOptionPane.setVisible(true);
+                    table.clearSelection();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -788,6 +791,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 try {
                     response = socketManager.getInstance().createNewFolder(name);
                     if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
+                        table.clearSelection();
                         getFileList();
                     }else JOptionPane.showMessageDialog(parentFrame, response.getMessage());
                 } catch (Exception ex) {
@@ -803,6 +807,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     String newName = renameField.getText();
                     StringResponse res = socketManager.getInstance().rename(oldName, newName);
                     if(res.getStatus()==StatusCode.FILE_ACTION_OK){
+                        table.clearSelection();
                         getFileList();
                     }else {
                         JOptionPane.showMessageDialog(parentFrame, res.getMessage(), "Thông báo",WARNING_MESSAGE);
@@ -983,6 +988,8 @@ public final class ftpContent extends javax.swing.JPanel {
         String fileList = socketManager.getInstance().getSharedFiles();
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
+        table.revalidate();
+        table.repaint();
         if(!fileList.isBlank()){
             String[] lines = fileList.split("\n");
             for(String line : lines){
@@ -1040,6 +1047,7 @@ public final class ftpContent extends javax.swing.JPanel {
             return String.format("%.2f GB", (double) bytes / (1024 * 1024 * 1024));
         }
     }
+
     
     
     
