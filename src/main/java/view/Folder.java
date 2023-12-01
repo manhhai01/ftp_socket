@@ -54,6 +54,8 @@ public class Folder extends javax.swing.JPanel {
             @Override
             public void grantPermission(int row) {
                 try{
+                    if(pathHistory.size()==1)
+                        return;
                     DefaultTableModel model = (DefaultTableModel) table.getModel();
                     String filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();
                     File file = new File(filepath);

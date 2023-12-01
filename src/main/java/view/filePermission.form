@@ -98,6 +98,7 @@
             <StringItem index="1" value="Ch&#x1ec9;nh s&#x1eed;a"/>
           </StringArray>
         </Property>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="permissionOptionActionPerformed"/>

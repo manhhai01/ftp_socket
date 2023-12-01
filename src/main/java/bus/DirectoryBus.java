@@ -189,8 +189,10 @@ public class DirectoryBus {
                         directoryInDb,
                         appliedUser)
         );
+        EmailUtils emailUtils = new EmailUtils();
+        boolean resSendEmail = emailUtils.sendSharingDirectoryNotification("Hệ thống", appliedUsername, canModify, uploadable, downloadable);
 
-        return resUpdate;
+        return resUpdate  && resSendEmail;
     }
     
     public boolean unshareDirectoryAdmin(String fromRootDirPath, String appliedUsername) {
