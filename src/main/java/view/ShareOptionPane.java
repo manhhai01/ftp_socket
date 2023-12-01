@@ -4,7 +4,9 @@
  */
 package view;
 
+import bus.DirectoryBus;
 import bus.FileBus;
+import bus.NormalFileBus;
 import ftp.FilePermissionWithUser;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -26,9 +28,7 @@ import view.folderPermission;
  */
 public class ShareOptionPane extends javax.swing.JDialog {
     String type,filename;
-    Frame parent;
     private FileBus fileBus ;
-    private String filepath;
     /**
      * Creates new form NewJDialog
      */
@@ -40,10 +40,9 @@ public class ShareOptionPane extends javax.swing.JDialog {
     public ShareOptionPane(java.awt.Frame parent,String type,String filename) throws Exception{
         super(parent, Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
-        this.parent = parent;
-        this.type = type; this.filename = filename;
+        this.type = type;
+        this.filename = filename;
         fileBus = new FileBus();
-        filepath = filename;
         setContent(type, filename);
         setLocationRelativeTo(null);
 
@@ -52,7 +51,8 @@ public class ShareOptionPane extends javax.swing.JDialog {
         setContent(type, filename);
     }
     public void setContent(String type,String shareFileName) throws Exception{
-        List<FilePermissionWithUser> sharedUsersPermissions = fileBus.getSharedUsersPermissions(filepath);
+        System.out.println("");
+        List<FilePermissionWithUser> sharedUsersPermissions = fileBus.getSharedUsersPermissions(shareFileName);
         Gson gson = new Gson();
         String responseJson = gson.toJson(sharedUsersPermissions);
         java.lang.reflect.Type listType = new TypeToken<List<UserPermission>>() {
@@ -86,7 +86,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
     private void initComponents() {
 
         sharePanel = new javax.swing.JPanel();
-        textField2 = new view.custom.textField();
+        nameField = new view.custom.textField();
         renameConfirm2 = new view.custom.Button();
         renameConfirm3 = new view.custom.Button();
         roundPanel2 = new view.custom.RoundPanel();
@@ -100,7 +100,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
         sharePanel.setBackground(new java.awt.Color(255, 255, 255));
         sharePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
-        textField2.setLabelText("Nhập tên user");
+        nameField.setLabelText("Nhập tên user");
 
         renameConfirm2.setText("Thêm");
         renameConfirm2.setColor(new java.awt.Color(204, 204, 255));
@@ -173,7 +173,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
                             .addGroup(sharePanelLayout.createSequentialGroup()
                                 .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel1)
-                                    .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(50, 50, 50))
@@ -190,7 +190,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(sharePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(roundPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -214,7 +214,17 @@ public class ShareOptionPane extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void renameConfirm2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm2ActionPerformed
-
+        String name = nameField.getText();
+        if(name.isBlank())
+            return;
+        if(type.equals("dir")){
+            DirectoryBus dirBus = new DirectoryBus();
+            dirBus.setDirectoryPermissionAdmin(filename, name,false,false,false);
+            
+        }else {
+            NormalFileBus normalFileBus = new NormalFileBus();
+            normalFileBus.setShareNormalFilePermissionAdmin(filename, name, "r");
+        }
     }//GEN-LAST:event_renameConfirm2ActionPerformed
 
     private void renameConfirm3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm3ActionPerformed
@@ -273,11 +283,11 @@ public class ShareOptionPane extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane access5;
     private javax.swing.JLabel jLabel1;
+    private view.custom.textField nameField;
     private view.custom.Button renameConfirm2;
     private view.custom.Button renameConfirm3;
     private view.custom.RoundPanel roundPanel2;
     private javax.swing.JPanel sharePanel;
     private javax.swing.JPanel shareUserContent;
-    private view.custom.textField textField2;
     // End of variables declaration//GEN-END:variables
 }

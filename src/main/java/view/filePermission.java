@@ -4,6 +4,7 @@
  */
 package view;
 
+import bus.NormalFileBus;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,8 +18,10 @@ import payload.UserPermission;
  * @author Son
  */
 public class filePermission extends javax.swing.JPanel {
-        private String filename,username;
+    private String filename,username;
     private String readable,writable;
+    private NormalFileBus normalFileBus = new NormalFileBus();
+    ShareOptionPane parentFrame ;
     /**
      * Creates new form NewJPanel
      */
@@ -35,7 +38,10 @@ public class filePermission extends javax.swing.JPanel {
             permissionOption.setSelectedIndex(1);
         fullnameLbl.setText(fullname);
         usernameLbl.setText(username);
-        
+        permissionOption.setEnabled(true);
+        SwingUtilities.invokeLater(() -> {
+            parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+        });
     }
 
     /**
@@ -76,6 +82,7 @@ public class filePermission extends javax.swing.JPanel {
         usernameLbl.setText("<username>");
 
         permissionOption.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chỉ xem", "Chỉnh sửa" }));
+        permissionOption.setEnabled(false);
         permissionOption.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 permissionOptionActionPerformed(evt);
@@ -123,8 +130,7 @@ public class filePermission extends javax.swing.JPanel {
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         jLabel2.setForeground(new java.awt.Color(255,51,51));
         try {
-            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
-            if(socketManager.getInstance().deletePermission("file", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+            if(!normalFileBus.unshareNormalFileAdmin(filename, username)){
                 JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
             }
             parentFrame.refreshContent();
@@ -134,23 +140,27 @@ public class filePermission extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void permissionOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_permissionOptionActionPerformed
-            try {
+        if(permissionOption.isEnabled())    
+        try {
                 changePermission();
             } catch (Exception ex) {
                 Logger.getLogger(filePermission.class.getName()).log(Level.SEVERE, null, ex);
             }
     }//GEN-LAST:event_permissionOptionActionPerformed
+   
     public void changePermission() throws Exception {
         String sql="file "+filename+" "+username+
                 " "+(permissionOption.getSelectedIndex()==0?"r":"w")
                 ;
         System.out.println(sql);
         String permission = permissionOption.getSelectedIndex()==0?"r":"w";
-        if(socketManager.getInstance().grantFilePermission(filename, username,permission).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
-            ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
+        if(!normalFileBus.setShareNormalFilePermissionAdmin(filename, username, permission)){
             JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra", "Thông báo", WARNING_MESSAGE);
         }
     }
+    
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fullnameLbl;
     private javax.swing.JLabel jLabel2;

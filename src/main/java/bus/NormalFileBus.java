@@ -285,7 +285,7 @@ public class NormalFileBus {
         return success;
     }
 
-    public synchronized boolean setShareNormalFilePermissionAdmin(String fromRootFilePath, String appliedUsername, String permission) {
+    public boolean setShareNormalFilePermissionAdmin(String fromRootFilePath, String appliedUsername, String permission) {
         model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
         if (fileInDb == null) {
             return false;

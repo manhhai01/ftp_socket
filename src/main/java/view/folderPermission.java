@@ -4,6 +4,8 @@
  */
 package view;
 
+import bus.DirectoryBus;
+import bus.NormalFileBus;
 import java.awt.Frame;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -12,10 +14,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
-import payloads.UserPermission;
-import socket.StatusCode;
-import socket.socketManager;
-import view.page.ShareOptionPane;
+import payload.UserPermission;
+
 
 /**
  *
@@ -23,6 +23,7 @@ import view.page.ShareOptionPane;
  */
 public class folderPermission extends javax.swing.JPanel{
     private String filename,username;
+    private DirectoryBus dirBus = new DirectoryBus();
 
     /**
      * Creates new form NewJPanel
@@ -157,7 +158,7 @@ public class folderPermission extends javax.swing.JPanel{
         jLabel2.setForeground(new java.awt.Color(255,51,51));
         try {
             ShareOptionPane parentFrame = (ShareOptionPane) SwingUtilities.getWindowAncestor(this);
-            if(socketManager.getInstance().deletePermission("directory", filename, username).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+            if(!dirBus.unshareDirectoryAdmin(filename, username)){
                 JOptionPane.showMessageDialog(parentFrame, "Có lỗi xảy ra, tiến hành cập nhật lại danh sách!", "Thông báo", WARNING_MESSAGE);
             }
             parentFrame.refreshContent();
@@ -209,7 +210,8 @@ public class folderPermission extends javax.swing.JPanel{
                 " "+(upCb.isSelected()?"true":"false")+
                 " "+(downCb.isSelected()?"true":"false")
                 ;
-        System.out.println(sql);
-        socket.socketManager.getInstance().grantFolderPermission(filename, username, modifyCb.isSelected(),upCb.isSelected(), downCb.isSelected() );
+        
+        dirBus.setDirectoryPermissionAdmin(filename, username, modifyCb.isSelected(), upCb.isSelected(), downCb.isSelected());
+        
     }
 }
