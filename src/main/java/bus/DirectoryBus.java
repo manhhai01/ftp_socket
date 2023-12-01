@@ -192,6 +192,21 @@ public class DirectoryBus {
 
         return resUpdate;
     }
+    
+    public boolean unshareDirectory(String fromRootDirPath, String appliedUsername) {
+        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
+        if (directoryInDb == null) {
+            return false;
+        }
+
+        User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+        ShareDirectories shareDirectory = new ShareDirectories();
+        shareDirectory.setIds(new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()));
+
+        boolean success = shareDirectoriesDao.remove(shareDirectory);
+        return success;
+    }
 
     public boolean unshareDirectory(String fromRootDirPath, String ownerUsername, String appliedUsername) {
         Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
