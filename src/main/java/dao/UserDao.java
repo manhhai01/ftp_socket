@@ -231,13 +231,13 @@ public class UserDao {
                     + "INNER JOIN f.shareFiles sf INNER JOIN sf.user u WHERE u.username = :username";
             Query<File> filesQuery = session.createQuery(filesHql, File.class);
             filesQuery.setParameter("username", appliedUsername);
-            getSharedFilesResult.files = filesQuery.getResultList();
+            getSharedFilesResult.files = filesQuery.getResultList().stream().filter(f -> !f.getUser().getUsername().equals(appliedUsername)).toList();
 
             String dirHql = "SELECT d FROM Directory d "
                     + "INNER JOIN d.shareDirectories sd INNER JOIN sd.user u WHERE u.username = :username";
             Query<Directory> dirQuery = session.createQuery(dirHql, Directory.class);
             dirQuery.setParameter("username", appliedUsername);
-            getSharedFilesResult.directories = dirQuery.getResultList();
+            getSharedFilesResult.directories = dirQuery.getResultList().stream().filter(d -> !d.getUser().getUsername().equals(appliedUsername)).toList();
 
             transaction.commit();
         } catch (Exception e) {
