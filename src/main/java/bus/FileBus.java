@@ -174,10 +174,10 @@ public class FileBus {
                     return new DirectoryPermission(false, false, false, false);
                 }
 
-                // Return full permission if the user is directory's owner
-                if (directoryFromDb.getUser().getUsername().equals(username)) {
-                    return new DirectoryPermission(true, true, true, true);
-                }
+//                // Return full permission if the user is directory's owner
+//                if (directoryFromDb.getUser().getUsername().equals(username)) {
+//                    return new DirectoryPermission(true, true, true, true);
+//                }
 
                 return new DirectoryPermission(false, false, true, true);
             } else {
@@ -186,10 +186,10 @@ public class FileBus {
                     return new NormalFilePermission(NormalFilePermission.NULL_PERMISSION, false);
                 }
 
-                // Return full permission if the user is file's owner
-                if (fileFromDb.getUser().getUsername().equals(username)) {
-                    return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
-                }
+//                // Return full permission if the user is file's owner
+//                if (fileFromDb.getUser().getUsername().equals(username)) {
+//                    return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
+//                }
                 return new NormalFilePermission(NormalFilePermission.READABLE_PERMISSION, true);
             }
 
@@ -203,9 +203,9 @@ public class FileBus {
             }
 
             // Return full permission if the user is directory's owner
-            if (directoryFromDb.getUser().getUsername().equals(username)) {
-                return new DirectoryPermission(true, true, true, true);
-            }
+//            if (directoryFromDb.getUser().getUsername().equals(username)) {
+//                return new DirectoryPermission(true, true, true, true);
+//            }
 
             // Get directory's share permission
             List<ShareDirectories> directoryPermissions = directoryFromDb.getShareDirectories();
@@ -234,10 +234,10 @@ public class FileBus {
                 return new NormalFilePermission(NormalFilePermission.NULL_PERMISSION, false);
             }
 
-            // Return full permission if the user is file's owner
-            if (fileFromDb.getUser().getUsername().equals(username)) {
-                return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
-            }
+//            // Return full permission if the user is file's owner
+//            if (fileFromDb.getUser().getUsername().equals(username)) {
+//                return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
+//            }
 
             // Get file's share permission
             List<ShareFiles> filePermissions = fileFromDb.getShareFiles();

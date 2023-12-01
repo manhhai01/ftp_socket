@@ -40,6 +40,14 @@ public class Seeder {
     private static Directory createDir(String path, User user, List<ShareDirectories> sharePermissions) throws IOException {
         Directory directory = new Directory(0, path, user, sharePermissions);
         directoryDao.save(directory);
+        shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(
+                directory.getId(), user.getId()),
+                true,
+                true,
+                true,
+                directory,
+                user
+        ));
         File file = new File(path);
         file.mkdirs();
         return directory;
@@ -48,6 +56,12 @@ public class Seeder {
     private static model.File createFile(String path, String content, User user, List<ShareFiles> sharePermissions) throws IOException {
         model.File fileModel = new model.File(0, path, user, sharePermissions);
         fileDao.save(fileModel);
+        shareFilesDao.save(new ShareFiles(new ShareFilesId(
+                fileModel.getId(), user.getId()),
+                NormalFilePermission.FULL_PERMISSION,
+                fileModel,
+                user
+        ));
         File file = new File(path);
         file.createNewFile();
         FileWriter fileWriter = new FileWriter(file);
@@ -106,7 +120,7 @@ public class Seeder {
 
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedReadableFile.getId(), user2.getId()), NormalFilePermission.READABLE_PERMISSION, sharedReadableFile, user2));
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFullPermissionFile.getId(), user2.getId()), NormalFilePermission.FULL_PERMISSION, sharedFullPermissionFile, user2));
-        
+
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(sharedDir.getId(), user2.getId()), false, false, true, sharedDir, user2));
     }
 }

@@ -93,8 +93,11 @@ public class NormalFileBus {
         if (user.getUsedBytes() >= user.getQuotaInBytes()) {
             return false;
         }
+        
+        model.File fileDb = new model.File(0, fromRootFilePath, user, null);
 
-        boolean success = fileDao.save(new model.File(0, fromRootFilePath, user, null));
+        boolean success = fileDao.save(fileDb);
+        shareFilesDao.save(new ShareFiles(new ShareFilesId(fileDb.getId(), user.getId()), username, fileDb, user));
 
         if (success) {
             try {
