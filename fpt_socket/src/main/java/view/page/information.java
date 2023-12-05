@@ -4,6 +4,7 @@
  */
 package view.page;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -550,24 +551,23 @@ public class information extends javax.swing.JPanel {
         String firstname = firstnameField.getText();
         String lastname = lastnameField.getText();
         String gender = male.isSelected()? "Nam":"Nữ";
-        String birthday = birthdateField.getDate().toString();
-        String data=String.format("{\n"
-                + "            \"firstName\": \"%s\",\n"
-                + "            \"lastName\": \"%s\",\n"
-                + "            \"birthdate\": \"%s\"\n"
-                + "            \"gender\": \"%s\",\n"
-                + "            \"username\": \"%s\",\n"
-                + "            \"quotaInBytes\": \"%s\"\n"
-                + "            \"usedInBytes\": \"%s\"\n"
-                + "            \"maxDownloadFileSizeBytes\": \"%s\"\n"
-                + "            \"maxUploadFileSizeBytes\": \"%s\"\n"
-                + "            \"anonymous\": \"%s\"\n"
-                + "            \"isBlockUpload\": \"%s\"\n"
-                + "            \"isBlockDownload\": \"%s\"\n"
-                + "        }",firstname,lastname,birthday,gender,username,
-                String.valueOf(quotaInBytes),String.valueOf(usedBytes),String.valueOf(maxDownloadSizeBytes),
-                String.valueOf(maxUploadSizeBytes),String.valueOf(anonymous),String.valueOf(isBlockUpload),
-                String.valueOf(isBlockDownload));
+        Date birthdate = birthdateField.getDate();
+        UserData userData = new UserData(
+                username, 
+                firstname, 
+                lastname, 
+                birthdate, 
+                gender, 
+                anonymous, 
+                isBlockDownload, 
+                isBlockUpload, 
+                maxUploadSizeBytes, 
+                maxDownloadSizeBytes, 
+                quotaInBytes, 
+                usedBytes
+        );
+        Gson gson = new Gson();
+        String data = gson.toJson(userData);
         StringResponse res = socketManager.getInstance().changeInformation(data);
         if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
             JOptionPane.showMessageDialog(this, "Thay đổi thành công!!");
