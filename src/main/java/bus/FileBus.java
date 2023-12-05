@@ -221,6 +221,7 @@ public class FileBus {
 
             // Set directory share permission
             DirectoryPermission directoryPermission = new DirectoryPermission();
+            directoryPermission.setCanModify(userPermission.isCanModify());
             directoryPermission.setDownloadable(userPermission.isDownloadPermission());
             directoryPermission.setUploadable(userPermission.isUploadPermission());
 
