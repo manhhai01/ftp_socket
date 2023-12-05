@@ -569,7 +569,7 @@ public class information extends javax.swing.JPanel {
         Gson gson = new Gson();
         String data = gson.toJson(userData);
         StringResponse res = socketManager.getInstance().changeInformation(data);
-        if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
+        if(res.getStatus() == StatusCode.COMMAND_OK){
             JOptionPane.showMessageDialog(this, "Thay đổi thành công!!");
             getUserInfo();
             editableInfo(false);
