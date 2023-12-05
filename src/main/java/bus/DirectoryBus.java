@@ -144,34 +144,39 @@ public class DirectoryBus {
     }
 
     public boolean setShareDirectoryPermission(String fromRootDirPath, String ownerUsername, String appliedUsername, boolean canModify, boolean uploadable, boolean downloadable) {
-        Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
-        if (directoryInDb == null) {
+        try {
+            Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
+            if (directoryInDb == null) {
+                return false;
+            }
+
+            if (!ownerUsername.equals(directoryInDb.getUser().getUsername())) {
+                return false;
+            }
+
+            User appliedUser = userDao.getUserByUserName(appliedUsername);
+
+            boolean resUpdate = shareDirectoriesDao.update(
+                    new ShareDirectories(
+                            new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()),
+                            canModify,
+                            uploadable,
+                            downloadable,
+                            directoryInDb,
+                            appliedUser)
+            );
+
+            // Todo: Send mail
+            EmailUtils emailUtils = new EmailUtils();
+            boolean resSendEmail = emailUtils.sendSharingDirectoryNotification(ownerUsername, appliedUsername, canModify, uploadable, downloadable);
+
+            return resUpdate && resSendEmail;
+        } catch (Exception ex) {
             return false;
         }
 
-        if (!ownerUsername.equals(directoryInDb.getUser().getUsername())) {
-            return false;
-        }
-
-        User appliedUser = userDao.getUserByUserName(appliedUsername);
-
-        boolean resUpdate = shareDirectoriesDao.update(
-                new ShareDirectories(
-                        new ShareDirectoriesId(directoryInDb.getId(), appliedUser.getId()),
-                        canModify,
-                        uploadable,
-                        downloadable,
-                        directoryInDb,
-                        appliedUser)
-        );
-
-        // Todo: Send mail
-        EmailUtils emailUtils = new EmailUtils();
-        boolean resSendEmail = emailUtils.sendSharingDirectoryNotification(ownerUsername, appliedUsername, canModify, uploadable, downloadable);
-
-        return resUpdate && resSendEmail;
     }
-    
+
     public boolean setDirectoryPermissionAdmin(String fromRootDirPath, String appliedUsername, boolean canModify, boolean uploadable, boolean downloadable) {
         Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
         if (directoryInDb == null) {
@@ -192,9 +197,9 @@ public class DirectoryBus {
         EmailUtils emailUtils = new EmailUtils();
         boolean resSendEmail = emailUtils.sendSharingDirectoryNotification("Hệ thống", appliedUsername, canModify, uploadable, downloadable);
 
-        return resUpdate  && resSendEmail;
+        return resUpdate && resSendEmail;
     }
-    
+
     public boolean unshareDirectoryAdmin(String fromRootDirPath, String appliedUsername) {
         Directory directoryInDb = directoryDao.getDirectoryByPath(fromRootDirPath);
         if (directoryInDb == null) {

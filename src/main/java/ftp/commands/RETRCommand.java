@@ -44,7 +44,7 @@ public class RETRCommand implements Command {
         if (FileUtils.sizeOf(file) > user.getMaxDownloadFileSizeBytes()) {
             session.getSessionSocketUtils().respondCommandSocket(
                     StatusCode.FILE_ACTION_NOT_TAKEN,
-                    "Forbidden.", commandSocketWriter);
+                    "Dung lượng không được vượt quá dung lượng download tối đa.", commandSocketWriter);
             return;
         }
 

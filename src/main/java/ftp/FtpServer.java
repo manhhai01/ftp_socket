@@ -18,6 +18,7 @@ import ftp.commands.DELECommand;
 import ftp.commands.EPSVCommand;
 import ftp.commands.AUTHCommand;
 import ftp.commands.CHDTCommand;
+import ftp.commands.CHKSCommand;
 import ftp.commands.GOTPCommand;
 import ftp.commands.KEYCommand;
 import ftp.commands.LSHRCommand;
@@ -148,13 +149,12 @@ public class FtpServer {
         ftpServerBuilder.addCommand("SOTP", new SOTPCommand());
         ftpServerBuilder.addCommand("LSHR", new LSHRCommand());
         ftpServerBuilder.addCommand("USHR", new USHRCommand());
-//        ftpServerBuilder.addCommand("LSAN", new LSANCommand());
-//        ftpServerBuilder.addCommand("SSZE", new SSZECommand());
         ftpServerBuilder.addCommand("PROF", new PROFCommand());
         ftpServerBuilder.addCommand("LSUR", new LSURCommand());
         ftpServerBuilder.addCommand("KEY", new KEYCommand());
         ftpServerBuilder.addCommand("PCHG", new PCHGCommand());
         ftpServerBuilder.addCommand("CHDT", new CHDTCommand());
+        ftpServerBuilder.addCommand("CHKS", new CHKSCommand());
 
         ftpServerBuilder.addOnDisconnectCommand(new Command() {
             @Override
