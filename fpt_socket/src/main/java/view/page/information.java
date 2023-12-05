@@ -36,7 +36,6 @@ public class information extends javax.swing.JPanel {
         SwingUtilities.invokeLater(() -> {
             parentFrame = (mainLayout) SwingUtilities.getWindowAncestor(this);
         });
-        parentFrame.updateMemory();
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(passChangePanel);
         getUserInfo();
