@@ -122,6 +122,15 @@ public class SHRECommand implements Command {
 
             }
         } catch (IOException ex) {
+            try {
+                session.getSessionSocketUtils().respondCommandSocket(
+                        StatusCode.FILE_ACTION_NOT_TAKEN,
+                        "Syntax error.",
+                        commandSocketWriter
+                );
+            } catch (IOException ex1) {
+                Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex1);
+            }
             Logger.getLogger(SHRECommand.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ArrayIndexOutOfBoundsException ex) {
             try {
