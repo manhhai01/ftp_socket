@@ -15,6 +15,7 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.SwingUtilities;
 import payloads.StringResponse;
 import payloads.UserData;
+import payloads.UserUpdateData;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.customDialog;
@@ -552,19 +553,19 @@ public class information extends javax.swing.JPanel {
         String lastname = lastnameField.getText();
         String gender = male.isSelected()? "Nam":"Nữ";
         Date birthdate = birthdateField.getDate();
-        UserData userData = new UserData(
+        UserUpdateData userData = new UserUpdateData(
                 username, 
                 firstname, 
                 lastname, 
                 birthdate, 
                 gender, 
                 anonymous, 
-                isBlockDownload, 
-                isBlockUpload, 
-                maxUploadSizeBytes, 
-                maxDownloadSizeBytes, 
-                quotaInBytes, 
-                usedBytes
+                isBlockUpload,
+                isBlockDownload,
+                quotaInBytes,
+                usedBytes,
+                maxDownloadSizeBytes,
+                maxUploadSizeBytes
         );
         Gson gson = new Gson();
         String data = gson.toJson(userData);
