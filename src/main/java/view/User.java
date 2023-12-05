@@ -560,7 +560,7 @@ public class User extends javax.swing.JPanel {
         String quotaUnit = this.quotaUnit.getSelectedItem().toString();
         String maxUploadSizeBytesToString = maxuploadField.getText();
         String maxUploadUnit = uploadUnit.getSelectedItem().toString();
-        String maxDownloadSizeBytesToString = maxuploadField.getText();
+        String maxDownloadSizeBytesToString = maxdownloadField.getText();
         String maxDownloadUnit = downloadUnit.getSelectedItem().toString();
         long quotaInBytes = getBytes(quotaInBytesToString,quotaUnit);
         long maxUpload = getBytes(maxUploadSizeBytesToString,maxUploadUnit);
