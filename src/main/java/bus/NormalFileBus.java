@@ -6,6 +6,7 @@ package bus;
 
 import static bus.FileBus.DIRECTORY_TYPE;
 import static bus.FileBus.NORMAL_FILE_TYPE;
+import config.AppConfig;
 import dao.FileDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
@@ -156,11 +157,7 @@ public class NormalFileBus {
         }
 
         File file = new File(fromRootFilePath);
-        NormalFilePermission filePermission = (NormalFilePermission) fileBus.getFilePermission(
-                fromRootFilePath,
-                username,
-                NORMAL_FILE_TYPE
-        );
+
         if (!file.exists()) {
             return false;
         }
@@ -169,8 +166,15 @@ public class NormalFileBus {
             return false;
         }
 
-        if (!filePermission.isWritable()) {
-            return false;
+        if (!fromRootFilePath.startsWith(AppConfig.SERVER_FTP_ANON_PATH)) {
+            NormalFilePermission filePermission = (NormalFilePermission) fileBus.getFilePermission(
+                    fromRootFilePath,
+                    username,
+                    NORMAL_FILE_TYPE
+            );
+            if (!filePermission.isWritable()) {
+                return false;
+            }
         }
 
         FtpFileUtils ftpFileUtils = new FtpFileUtils();
@@ -188,19 +192,8 @@ public class NormalFileBus {
         try {
             if (writeMode.equals("A")) {
                 FileUtils.write(tempFile, data, StandardCharsets.UTF_8);
-//                FileWriter fileWriter = new FileWriter(tempFile);
-//                BufferedReader dataReader = new BufferedReader(new InputStreamReader(data));
-//                dataReader.transferTo(fileWriter);
-//                dataReader.close();
-//                fileWriter.close();
             } else {
-//                byte[] dataBytes = IOUtils.toByteArray(
-//                        new BufferedReader(new InputStreamReader(data)),
-//                        StandardCharsets.UTF_8
-//                );
-//                FileUtils.writeByteArrayToFile(tempFile, dataBytes);
                 FileUtils.writeByteArrayToFile(tempFile, Base64.getDecoder().decode(data));
-
             }
         } catch (IOException ex) {
             Logger.getLogger(FileBus.class.getName()).log(Level.SEVERE, null, ex);
@@ -306,7 +299,7 @@ public class NormalFileBus {
 
         return resUpdate && resSendEmail;
     }
-    
+
     public synchronized boolean unshareNormalFileAdmin(String fromRootFilePath, String appliedUsername) {
         model.File fileInDb = fileDao.getFileByPath(fromRootFilePath);
         if (fileInDb == null) {
