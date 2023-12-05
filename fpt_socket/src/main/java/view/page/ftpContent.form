@@ -101,6 +101,9 @@
           <Properties>
             <Property name="labelText" type="java.lang.String" value="Nh&#x1ead;p t&#xea;n"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="renameFieldActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

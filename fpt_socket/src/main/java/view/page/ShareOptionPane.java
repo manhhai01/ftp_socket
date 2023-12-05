@@ -21,7 +21,7 @@ import socket.socketManager;
  * @author Son
  */
 public class ShareOptionPane extends javax.swing.JDialog {
-    String type,filename;
+    String type,filename,username;
     Frame parent;
     /**
      * Creates new form NewJDialog
@@ -35,13 +35,15 @@ public class ShareOptionPane extends javax.swing.JDialog {
         initComponents();
         this.parent = parent;
         this.type = type; this.filename = filename;
+        username = socketManager.getInstance().getUserInfo().getUsername();
         setContent(type, filename);
         setLocationRelativeTo(null);
-
     }
+    
     public void refreshContent() throws Exception{
         setContent(type, filename);
     }
+    
     public void setContent(String type,String shareFileName) throws Exception{
         UserPermissionResponse res = socketManager.getInstance().getShareUserList(shareFileName);
         if(res.getStatus() == StatusCode.ABOUT_TO_OPEN_DATA_CONNECTION){
@@ -52,12 +54,16 @@ public class ShareOptionPane extends javax.swing.JDialog {
             shareUserContent.setLayout(new BoxLayout(shareUserContent,BoxLayout.Y_AXIS));
             if(type.equals("dir"))
                 for(UserPermission user : userList){
+                    if(user.getUserData().getUsername().equals(username))
+                        continue;
                     folderPermission panel = new folderPermission(user,shareFileName);
                     panel.setPreferredSize(new Dimension(450,100));
                     shareUserContent.add(panel);
                 }
             else
                 for(UserPermission user : userList){
+                    if(user.getUserData().getUsername().equals(username))
+                        continue;
                     filePermission panel = new filePermission(user,shareFileName);
                     panel.setPreferredSize(new Dimension(450,100));
                     shareUserContent.add(panel);
@@ -219,6 +225,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(parent, "có lỗi xảy ra, tiến hành tải lại dữ liệu");
             }else JOptionPane.showMessageDialog(parent, "Thành công");
         }
+        refreshContent();
         }catch (Exception e){
             JOptionPane.showMessageDialog(parent, "Có lỗi xảy ra");
         }

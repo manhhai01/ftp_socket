@@ -80,6 +80,7 @@ public class filePermission extends javax.swing.JPanel {
         usernameLbl.setText("<username>");
 
         permissionOption.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chỉ xem", "Chỉnh sửa" }));
+        permissionOption.setEnabled(false);
         permissionOption.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 permissionOptionActionPerformed(evt);

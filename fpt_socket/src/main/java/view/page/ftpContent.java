@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import payloads.StringResponse;
+import payloads.UserData;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.IconRenderer;
@@ -118,6 +119,7 @@ public final class ftpContent extends javax.swing.JPanel {
 
             @Override
             public void onMove(int row) {
+                
                 try {
                     moveFileName=getFilePath(row);
                     if(socketManager.getInstance().checkPermissionForMoveCommand(moveFileName).getStatus()==StatusCode.FILE_ACTION_NOT_TAKEN){
@@ -139,7 +141,11 @@ public final class ftpContent extends javax.swing.JPanel {
                         File selectedFile = fileChooser.getSelectedFile();
                         String localPath = selectedFile.getAbsolutePath();
                         String DownloadFile = getFilePath(row);
-                        StringResponse res = null;
+                        if(socketManager.getInstance().checkFileSize(DownloadFile).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                            JOptionPane.showMessageDialog(parentFrame, "Vượt quá dung lượng cho phép");
+                            return;
+                        }
+                        StringResponse res;
                         String fileName = Paths.get(DownloadFile).getFileName().toString();
                         if(fileName.split("\\.").length == 1){
 
@@ -168,6 +174,7 @@ public final class ftpContent extends javax.swing.JPanel {
 
             @Override
             public void onShare(int row) {
+                if(CONTENT_TYPE.equals(MYSPACE_CONTENT))
                 try{
                     shareFileName=getFilePath(row);
                     String name = Paths.get(shareFileName).getFileName().toString();
@@ -177,6 +184,9 @@ public final class ftpContent extends javax.swing.JPanel {
                     table.clearSelection();
                 }catch(Exception e){
                     e.printStackTrace();
+                }
+                else {
+                    JOptionPane.showMessageDialog(parentFrame,"Không thể dùng chức năng này ở đây");
                 }
             }
         };
@@ -311,6 +321,11 @@ public final class ftpContent extends javax.swing.JPanel {
         renameTitle.setText("Nhập tên");
 
         renameField.setLabelText("Nhập tên");
+        renameField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renameFieldActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout renamePanelLayout = new javax.swing.GroupLayout(renamePanel);
         renamePanel.setLayout(renamePanelLayout);
@@ -775,6 +790,8 @@ public final class ftpContent extends javax.swing.JPanel {
 
     private void renameCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameCancelActionPerformed
         closeDialog();
+        table.revalidate();
+        table.repaint();
     }//GEN-LAST:event_renameCancelActionPerformed
 
     private void highlightPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel1MouseClicked
@@ -878,8 +895,16 @@ public final class ftpContent extends javax.swing.JPanel {
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File[] files = fileChooser.getSelectedFiles();
+                    long sum=0;
+                    UserData userData = socketManager.getInstance().getUserInfo();
+                    for (File file : files) {
+                        sum += file.length();
+                        if(sum > userData.getMaxUploadSizeBytes() || (sum+userData.getUsedBytes())> userData.getQuotaInBytes()){
+                            JOptionPane.showMessageDialog(parentFrame,"Vượt quá dung lượng cho phép");
+                            return;
+                        }
+                    }
                     String path = pathHistory.peek();
-                    System.out.println(files[0].getPath());
                     int flag = 1;
                     for(File file : files){
                         if(socketManager.getInstance().uploadFile(path, file).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
@@ -912,6 +937,15 @@ public final class ftpContent extends javax.swing.JPanel {
                     File[] files = fileChooser.getSelectedFiles();
                     String path = pathHistory.peek();
                     int flag = 1;
+                    long sum=0;
+                    UserData userData = socketManager.getInstance().getUserInfo();
+                    for (File file : files) {
+                        sum += file.length();
+                        if(sum > userData.getMaxUploadSizeBytes() || (sum+userData.getUsedBytes())> userData.getQuotaInBytes()){
+                            JOptionPane.showMessageDialog(parentFrame,"Vượt quá dung lượng cho phép");
+                            return;
+                        }
+                    }
                     for(File file : files){
                         if(socketManager.getInstance().uploadDirectory(path, file).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
                             flag=0;
@@ -931,6 +965,10 @@ public final class ftpContent extends javax.swing.JPanel {
             }
         }else JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
     }//GEN-LAST:event_highlightPanel5MouseClicked
+
+    private void renameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_renameFieldActionPerformed
     public boolean isRootShare(){
         return pathHistory.size()==0 && CONTENT_TYPE.equals(SHARE_CONTENT);
     }
@@ -982,6 +1020,8 @@ public final class ftpContent extends javax.swing.JPanel {
                 // chia đơn vị mb,kg,Gb ******
                 model.addRow(row);
                 }
+                table.revalidate();
+                table.repaint();
             }
         }
     }
@@ -1046,6 +1086,26 @@ public final class ftpContent extends javax.swing.JPanel {
             return String.format("%.2f MB", (double) bytes / (1024 * 1024));
         } else {
             return String.format("%.2f GB", (double) bytes / (1024 * 1024 * 1024));
+        }
+    }
+        public long getBytes(String bytesString,String unit){
+        double bytes = Double.parseDouble(bytesString);
+        switch(unit){
+            case "KB" -> {
+                bytes*=1024;
+                return (long) bytes;
+            }
+            case "MB" -> {
+                bytes*=1024*1024;
+                return (long) bytes;
+            }
+            case "GB" -> {
+                bytes*=1024*1024*1024;
+                return (long) bytes;
+            }
+            default -> {
+                return (long) bytes;
+            }
         }
     }
 

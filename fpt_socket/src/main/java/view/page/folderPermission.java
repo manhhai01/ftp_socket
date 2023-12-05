@@ -60,6 +60,7 @@ public class folderPermission extends javax.swing.JPanel{
         downCb = new view.custom.checkBox();
         upCb = new view.custom.checkBox();
         modifyCb = new view.custom.checkBox();
+        renameConfirm2 = new view.custom.Button();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -108,21 +109,37 @@ public class folderPermission extends javax.swing.JPanel{
             }
         });
 
+        renameConfirm2.setText("Thêm");
+        renameConfirm2.setColor(new java.awt.Color(204, 204, 204));
+        renameConfirm2.setColorClick(new java.awt.Color(153, 153, 153));
+        renameConfirm2.setColorOver(new java.awt.Color(102, 102, 102));
+        renameConfirm2.setRadius(10);
+        renameConfirm2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renameConfirm2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(usernameLbl))
-                .addGap(18, 18, Short.MAX_VALUE)
-                .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
-                .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(usernameLbl))
+                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21)
+                        .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addGap(20, 20, 20))
@@ -130,18 +147,21 @@ public class folderPermission extends javax.swing.JPanel{
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(27, 27, 27))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(usernameLbl)
-                .addGap(16, 16, 16))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(fullnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(usernameLbl))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(downCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(upCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(modifyCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -169,28 +189,24 @@ public class folderPermission extends javax.swing.JPanel{
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void downCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downCbActionPerformed
-        try {
-            changePermission();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }//GEN-LAST:event_downCbActionPerformed
 
     private void upCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upCbActionPerformed
-        try {
-            changePermission();
-        } catch (Exception ex) {
-            Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }//GEN-LAST:event_upCbActionPerformed
 
     private void modifyCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyCbActionPerformed
+
+    }//GEN-LAST:event_modifyCbActionPerformed
+
+    private void renameConfirm2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm2ActionPerformed
         try {
             changePermission();
         } catch (Exception ex) {
             Logger.getLogger(folderPermission.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_modifyCbActionPerformed
+    }//GEN-LAST:event_renameConfirm2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -198,6 +214,7 @@ public class folderPermission extends javax.swing.JPanel{
     private javax.swing.JLabel fullnameLbl;
     private javax.swing.JLabel jLabel2;
     private view.custom.checkBox modifyCb;
+    private view.custom.Button renameConfirm2;
     private view.custom.checkBox upCb;
     private javax.swing.JLabel usernameLbl;
     // End of variables declaration//GEN-END:variables

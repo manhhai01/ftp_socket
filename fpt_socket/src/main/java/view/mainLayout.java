@@ -74,6 +74,7 @@ public class mainLayout extends javax.swing.JFrame {
         storedPanel = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         progressBar1 = new view.custom.progressBar();
+        imageIcon5 = new view.custom.imageIcon();
         contentPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -251,22 +252,35 @@ public class mainLayout extends javax.swing.JFrame {
         progressBar1.setValue(50);
         progressBar1.setStringPainted(false);
 
+        imageIcon5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/reload.png"))); // NOI18N
+        imageIcon5.setToolTipText("");
+        imageIcon5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                imageIcon5MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout storedPanelLayout = new javax.swing.GroupLayout(storedPanel);
         storedPanel.setLayout(storedPanelLayout);
         storedPanelLayout.setHorizontalGroup(
             storedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(storedPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(storedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(progressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(progressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(14, Short.MAX_VALUE))
+            .addGroup(storedPanelLayout.createSequentialGroup()
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(imageIcon5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         storedPanelLayout.setVerticalGroup(
             storedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, storedPanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel9)
+                .addGroup(storedPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(imageIcon5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 6, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -429,6 +443,14 @@ public class mainLayout extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    private void imageIcon5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageIcon5MouseClicked
+        try {
+            updateMemory();
+        } catch (Exception ex) {
+            Logger.getLogger(mainLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_imageIcon5MouseClicked
+
     public void lightTheme(){
         normalPanel= new java.awt.Color(204,204,255);
         normalText= new java.awt.Color(0,0,0);
@@ -524,6 +546,7 @@ public class mainLayout extends javax.swing.JFrame {
     private view.custom.imageIcon imageIcon1;
     private view.custom.imageIcon imageIcon2;
     private view.custom.imageIcon imageIcon4;
+    private view.custom.imageIcon imageIcon5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

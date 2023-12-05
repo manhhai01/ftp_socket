@@ -257,10 +257,15 @@ public class socketManager {
         String response = commandReader.readLine();
         return new StringResponse(response);
     }
+    public StringResponse checkFileSize(String path) throws Exception{
+        String pathURLEncode = URLEncoder.encode(path, StandardCharsets.UTF_8);
+        writeLineAndFlush("CHKS " + pathURLEncode, commandWriter);
+        String response = commandReader.readLine();
+        return new StringResponse(response);
+    }
 
     public StringResponse uploadFile(String path, File file) throws Exception {
         String pathURLEncode = URLEncoder.encode(path + "/" + file.getName(), StandardCharsets.UTF_8);
-        System.out.println(path + "/" + file.getName());
         String fileType = CustomFileUtils.determineType(file);
         writeLineAndFlush("TYPE " + fileType, commandWriter);
         commandReader.readLine();
@@ -284,7 +289,7 @@ public class socketManager {
         if (folder.isDirectory()) {
             if ((res = createNewFolder(path + "/" + folder.getName())).getStatus() == StatusCode.DIRECTORY_CREATED) {
                 File[] files = folder.listFiles();
-                if (files != null) {
+                if (files.length>0 || files!=null) {
                     for (File file : files) {
                         if (file.isFile()) {
                             String filePath = path + "/" + folder.getName();

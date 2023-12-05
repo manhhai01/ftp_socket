@@ -17,6 +17,7 @@ import payloads.UserData;
 import socket.StatusCode;
 import socket.socketManager;
 import view.custom.customDialog;
+import view.mainLayout;
 
 /**
  *
@@ -26,12 +27,16 @@ public class information extends javax.swing.JPanel {
     private customDialog customDialog;
     private long quotaInBytes,usedBytes,maxUploadSizeBytes,maxDownloadSizeBytes;
     private boolean anonymous,isBlockDownload,isBlockUpload;
+    private mainLayout parentFrame;
     /**
      * Creates new form information
      */
     public information() throws Exception {
         initComponents();
-        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        SwingUtilities.invokeLater(() -> {
+            parentFrame = (mainLayout) SwingUtilities.getWindowAncestor(this);
+        });
+        parentFrame.updateMemory();
         customDialog = new customDialog(parentFrame);
         customDialog.setDialogContent(passChangePanel);
         getUserInfo();
@@ -546,8 +551,7 @@ public class information extends javax.swing.JPanel {
         String firstname = firstnameField.getText();
         String lastname = lastnameField.getText();
         String gender = male.isSelected()? "Nam":"Nữ";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String birthday = dateFormat.format(birthdateField.getDate());
+        String birthday = birthdateField.getDate().toString();
         String data=String.format("{\n"
                 + "            \"firstName\": \"%s\",\n"
                 + "            \"lastName\": \"%s\",\n"
@@ -594,7 +598,7 @@ public class information extends javax.swing.JPanel {
             if(oldPass.isBlank()|| newPass.isBlank()){
                 JOptionPane.showMessageDialog(this,"Vui lòng không để trống thông tin");
                 return;
-            }if(!oldPass.contains(" ") || !newPass.contains(" ")){
+            }if(oldPass.contains(" ") || newPass.contains(" ")){
                 JOptionPane.showMessageDialog(this,"Mật khẩu không được chứa khoảng trắng");
                 return;
             }
@@ -653,7 +657,7 @@ public class information extends javax.swing.JPanel {
         birthdateField.setEnabled(option);
         male.setEnabled(option);
         female.setEnabled(option);
-        emailField.setFocusable(option);
+//        emailField.setFocusable(option);
     }
     public void clearField(){
         emailField.setText("");
