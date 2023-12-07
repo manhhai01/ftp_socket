@@ -174,10 +174,10 @@ public class FileBus {
                     return new DirectoryPermission(false, false, false, false);
                 }
 
-//                // Return full permission if the user is directory's owner
-//                if (directoryFromDb.getUser().getUsername().equals(username)) {
-//                    return new DirectoryPermission(true, true, true, true);
-//                }
+                // Return full permission if the user is directory's owner
+                if (directoryFromDb.getUser().getUsername().equals(username)) {
+                    return new DirectoryPermission(true, true, true, true);
+                }
 
                 return new DirectoryPermission(false, false, true, true);
             } else {
@@ -186,10 +186,10 @@ public class FileBus {
                     return new NormalFilePermission(NormalFilePermission.NULL_PERMISSION, false);
                 }
 
-//                // Return full permission if the user is file's owner
-//                if (fileFromDb.getUser().getUsername().equals(username)) {
-//                    return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
-//                }
+                // Return full permission if the user is file's owner
+                if (fileFromDb.getUser().getUsername().equals(username)) {
+                    return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
+                }
                 return new NormalFilePermission(NormalFilePermission.READABLE_PERMISSION, true);
             }
 
@@ -403,13 +403,6 @@ public class FileBus {
         MLSDFormatter formatter = new MLSDFormatter();
         boolean isAnonymous = path.startsWith(AppConfig.SERVER_FTP_ANON_PATH);
         String formattedString = "";
-        if (path.equals(AppConfig.SERVER_FTP_ANON_PATH)) {
-            File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
-            formattedString += String.format("Type=dir;Owner= ;Modify=%s;Size=%s;Perm=elrwdf; anonymous",
-                    file.lastModified(),
-                    FileUtils.sizeOf(file)
-            );
-        }
         formattedString += formatter.listFormat(
                 new File(path),
                 (File file) -> {
