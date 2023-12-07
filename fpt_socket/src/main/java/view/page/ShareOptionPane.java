@@ -217,12 +217,12 @@ public class ShareOptionPane extends javax.swing.JDialog {
         try{
         if(type.equals("dir")){
             if(socketManager.getInstance().grantFolderPermission(filename, name, false, false, false).getStatus()==StatusCode.FILE_ACTION_NOT_TAKEN){
-                JOptionPane.showMessageDialog(parent, "Có vấn đề xảy ra, tiến hành tải lại dữ liệu");
+                JOptionPane.showMessageDialog(parent, "Có vấn đề xảy ra, Không tìm thấy người dùng");
             } else JOptionPane.showMessageDialog(parent, "Thành công");
         }
         else {
             if(socketManager.getInstance().grantFilePermission(filename, name, "r").getStatus()==StatusCode.FILE_ACTION_NOT_TAKEN){
-                JOptionPane.showMessageDialog(parent, "có lỗi xảy ra, tiến hành tải lại dữ liệu");
+                JOptionPane.showMessageDialog(parent, "có lỗi xảy ra, Không tìm thấy người dùng");
             }else JOptionPane.showMessageDialog(parent, "Thành công");
         }
         refreshContent();

@@ -753,7 +753,7 @@ public final class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_highlightPanel1MouseClicked
 
     private void renameConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirmActionPerformed
-        String regex = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?$";
+        String regex = "^[^/\\\\\\\\*?<>|:]+$";
 
         Pattern pattern = Pattern.compile(regex);
         
