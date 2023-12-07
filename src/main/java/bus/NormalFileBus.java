@@ -11,6 +11,7 @@ import dao.FileDao;
 import dao.ShareFilesDao;
 import dao.UserDao;
 import ftp.DirectoryPermission;
+import ftp.FilePermission;
 import ftp.FtpFileUtils;
 import ftp.NormalFilePermission;
 import java.io.File;
@@ -129,8 +130,13 @@ public class NormalFileBus {
         if (!filePermission.isExist()) {
             return true;
         }
-
+        
         if (!filePermission.isDeletable()) {
+            return false;
+        }
+        
+        FilePermission parentDirPermission = fileBus.getFilePermission(new FtpFileUtils().getParentPath(fromRootFilePath), username, DIRECTORY_TYPE);
+        if(!parentDirPermission.isDeletable()) {
             return false;
         }
 
