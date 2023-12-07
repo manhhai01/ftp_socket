@@ -721,7 +721,7 @@ public final class ftpContent extends javax.swing.JPanel {
             if(name.split("\\.").length==1){
                 // nếu row được chọn là thư mục
                 try {
-                    if(socketManager.getInstance().changeDirectory(path).getStatus() == StatusCode.FILE_ACTION_OK); 
+                    if(socketManager.getInstance().changeDirectory(path).getStatus() == StatusCode.FILE_ACTION_OK)
                     {                       
                         pathHistory.push(path);
                         changePathTitle();
