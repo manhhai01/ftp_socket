@@ -161,7 +161,7 @@ public class folderPermission extends javax.swing.JPanel{
                             .addComponent(jLabel2))
                         .addGap(18, 18, 18)
                         .addComponent(renameConfirm2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
 

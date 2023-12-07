@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -147,15 +149,22 @@ public final class ftpContent extends javax.swing.JPanel {
                         }
                         StringResponse res;
                         String fileName = Paths.get(DownloadFile).getFileName().toString();
+                        String currentDir;
+                        if(!isRootShare())
+                            currentDir = pathHistory.peek();
+                        else {
+                            int index = DownloadFile.lastIndexOf("/");
+                            currentDir = DownloadFile.substring(0, index);
+                        }
                         if(fileName.split("\\.").length == 1){
 
-                            res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, pathHistory.peek());
+                            res =socketManager.getInstance().downloadFolder(DownloadFile, localPath, currentDir);
                             if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
                                   JOptionPane.showMessageDialog(parentFrame,"Tải thư mục xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
                             }
                         }else {
 
-                            res = socketManager.getInstance().downloadFile(DownloadFile, localPath, pathHistory.peek());
+                            res = socketManager.getInstance().downloadFile(DownloadFile, localPath, currentDir);
                             if(res.getStatus() == StatusCode.CLOSING_DATA_CONNECTION){
                                 JOptionPane.showMessageDialog(parentFrame,"Tải tệp xuống thành công!", "Thông báo",INFORMATION_MESSAGE);
                             }
@@ -267,9 +276,6 @@ public final class ftpContent extends javax.swing.JPanel {
         roundPanel1 = new view.custom.RoundPanel();
         jSeparator1 = new javax.swing.JSeparator();
         title = new javax.swing.JLabel();
-        roundPanel3 = new view.custom.RoundPanel();
-        searchField = new javax.swing.JTextField();
-        searchBtn = new view.custom.imageIcon();
         highlightPanel1 = new view.custom.HighlightPanel();
         roundPanel4 = new view.custom.RoundPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -365,56 +371,6 @@ public final class ftpContent extends javax.swing.JPanel {
 
         title.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         title.setText("/");
-
-        roundPanel3.setBackground(new java.awt.Color(204, 204, 204));
-        roundPanel3.setPreferredSize(new java.awt.Dimension(300, 40));
-        roundPanel3.setRadius(40);
-
-        searchField.setBackground(new java.awt.Color(204, 204, 204));
-        searchField.setToolTipText("Nhập tên tệp cần tìm");
-        searchField.setBorder(null);
-        searchField.setInheritsPopupMenu(true);
-        searchField.setName("Nhập tên tệp cần tìm"); // NOI18N
-        searchField.setPreferredSize(new java.awt.Dimension(64, 25));
-        searchField.setRequestFocusEnabled(false);
-        searchField.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                searchFieldMouseClicked(evt);
-            }
-        });
-        searchField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchFieldActionPerformed(evt);
-            }
-        });
-
-        searchBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/img/magnifying-glass.png"))); // NOI18N
-        searchBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                searchBtnMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout roundPanel3Layout = new javax.swing.GroupLayout(roundPanel3);
-        roundPanel3.setLayout(roundPanel3Layout);
-        roundPanel3Layout.setHorizontalGroup(
-            roundPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(roundPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17))
-        );
-        roundPanel3Layout.setVerticalGroup(
-            roundPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel3Layout.createSequentialGroup()
-                .addContainerGap(9, Short.MAX_VALUE)
-                .addGroup(roundPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(searchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(searchBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
 
         highlightPanel1.setColor(java.awt.Color.white);
         highlightPanel1.setColorClick(new java.awt.Color(153, 153, 153));
@@ -702,9 +658,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addGap(52, 52, 52)
-                                .addComponent(roundPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(71, 71, 71)
+                                .addGap(458, 458, 458)
                                 .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -731,7 +685,6 @@ public final class ftpContent extends javax.swing.JPanel {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(roundPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(highlightPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -783,11 +736,6 @@ public final class ftpContent extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tableMouseClicked
 
-    private void searchBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchBtnMouseClicked
-        //Tìm kiếm
-        String input=searchField.getText();
-    }//GEN-LAST:event_searchBtnMouseClicked
-
     private void renameCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameCancelActionPerformed
         closeDialog();
         table.revalidate();
@@ -795,19 +743,29 @@ public final class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_renameCancelActionPerformed
 
     private void highlightPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel1MouseClicked
+        
         renameTitle.setText("Tạo thư mục");
         renameForm.setVisible(true);
 
     }//GEN-LAST:event_highlightPanel1MouseClicked
 
     private void renameConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirmActionPerformed
+        String regex = "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?$";
+
+        Pattern pattern = Pattern.compile(regex);
+        
         if(renameTitle.getText().equals("Tạo thư mục")){
             //Tạo thư mục
             if(!renameField.getText().isEmpty()){
-            String name = renameField.getText();
+            String fileName = renameField.getText();
+            Matcher matcher = pattern.matcher(fileName);
+            if(!matcher.matches()){
+                JOptionPane.showMessageDialog(parentFrame, "tên ko được chứa kí tự đặc biệt");
+                return;
+            }
                 StringResponse response;
                 try {
-                    response = socketManager.getInstance().createNewFolder(name);
+                    response = socketManager.getInstance().createNewFolder(fileName);
                     if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
                         table.clearSelection();
                         getFileList();
@@ -823,6 +781,11 @@ public final class ftpContent extends javax.swing.JPanel {
             if(!renameField.getText().isEmpty()){
                 try {
                     String newName = renameField.getText();
+                    Matcher matcher = pattern.matcher(newName);
+                    if(!matcher.matches()){
+                        JOptionPane.showMessageDialog(parentFrame, "tên ko được chứa kí tự đặc biệt");
+                        return;
+                    }
                     StringResponse res = socketManager.getInstance().rename(oldName, newName);
                     if(res.getStatus()==StatusCode.FILE_ACTION_OK){
                         table.clearSelection();
@@ -877,14 +840,6 @@ public final class ftpContent extends javax.swing.JPanel {
                     
                 }
     }//GEN-LAST:event_tableMousePressed
-
-    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
-        
-    }//GEN-LAST:event_searchFieldActionPerformed
-
-    private void searchFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchFieldMouseClicked
-        searchField.requestFocus();
-    }//GEN-LAST:event_searchFieldMouseClicked
 
     private void highlightPanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel6MouseClicked
         if(!isRootShare()){
@@ -1143,10 +1098,7 @@ public final class ftpContent extends javax.swing.JPanel {
     private javax.swing.JPanel renamePanel;
     private javax.swing.JLabel renameTitle;
     private view.custom.RoundPanel roundPanel1;
-    private view.custom.RoundPanel roundPanel3;
     private view.custom.RoundPanel roundPanel4;
-    private view.custom.imageIcon searchBtn;
-    private javax.swing.JTextField searchField;
     private javax.swing.JTable table;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
