@@ -5,13 +5,14 @@
 package payload;
 
 import java.util.Date;
+import lombok.AccessLevel;
 import lombok.Builder;
 
 /**
  *
  * @author User
  */
-@Builder
+@Builder()
 public class PublicUserInfo {
 
     private String username;

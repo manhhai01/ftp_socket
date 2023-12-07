@@ -184,6 +184,10 @@ public class DirectoryBus {
         }
 
         User appliedUser = userDao.getUserByUserName(appliedUsername);
+        
+        if(appliedUser == null) {
+           return false;
+        }
 
         boolean resUpdate = shareDirectoriesDao.update(
                 new ShareDirectories(

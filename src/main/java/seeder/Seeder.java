@@ -19,6 +19,7 @@ import model.ShareFiles;
 import model.User;
 import model.ids.ShareDirectoriesId;
 import model.ids.ShareFilesId;
+import org.apache.commons.io.FileUtils;
 import utils.MP5Utils;
 
 /*
@@ -93,6 +94,7 @@ public class Seeder {
         userDao.save(user1);
 
         User user2 = new User();
+        user2.setId(2);
         user2.setUsername("tuyetle@gmail.com");
         user2.setPassword(md5Utils.getMD5Hash("test2"));
         user2.setBirthdate(dateFormat.parse("22/11/1996"));
@@ -122,5 +124,10 @@ public class Seeder {
         shareFilesDao.save(new ShareFiles(new ShareFilesId(sharedFullPermissionFile.getId(), user2.getId()), NormalFilePermission.FULL_PERMISSION, sharedFullPermissionFile, user2));
 
         shareDirectoriesDao.save(new ShareDirectories(new ShareDirectoriesId(sharedDir.getId(), user2.getId()), false, false, true, sharedDir, user2));
+        
+        user1.setUsedBytes(FileUtils.sizeOf(new File(AppConfig.SERVER_FTP_USERS_PATH + "/vanan@gmail.com")));
+        userDao.update(user1);
+        user2.setUsedBytes(FileUtils.sizeOf(new File(AppConfig.SERVER_FTP_USERS_PATH + "/tuyetle@gmail.com")));
+        userDao.update(user2);
     }
 }

@@ -245,6 +245,10 @@ public class NormalFileBus {
 
             User appliedUser = userDao.getUserByUserName(appliedUsername);
 
+            if (appliedUser == null) {
+                return false;
+            }
+
             boolean resUpdate = shareFilesDao.update(
                     new ShareFiles(
                             new ShareFilesId(fileInDb.getId(), appliedUser.getId()),
