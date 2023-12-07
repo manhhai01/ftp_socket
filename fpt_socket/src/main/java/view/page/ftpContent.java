@@ -768,7 +768,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 return;
             }
             if(isRootShare()){
-                fileName = oldName.substring(0, oldName.lastIndexOf("/"));
+                fileName = oldName.substring(0, oldName.lastIndexOf("/")) + "/" + fileName;
             }else fileName = pathHistory.peek() + "/"+fileName;
             StringResponse response;
                 try {
