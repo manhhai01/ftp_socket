@@ -767,9 +767,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(parentFrame, "tên ko được chứa kí tự đặc biệt");
                 return;
             }
-            if(isRootShare()){
-                fileName = oldName.substring(0, oldName.lastIndexOf("/")) + "/" + fileName;
-            }else fileName = pathHistory.peek() + "/"+fileName;
+            
             StringResponse response;
                 try {
                     response = socketManager.getInstance().createNewFolder(fileName);
@@ -793,6 +791,9 @@ public final class ftpContent extends javax.swing.JPanel {
                         JOptionPane.showMessageDialog(parentFrame, "tên ko được chứa kí tự đặc biệt");
                         return;
                     }
+                    if(isRootShare()){
+                newName = oldName.substring(0, oldName.lastIndexOf("/")) + "/" + newName;
+            }else newName = pathHistory.peek() + "/"+newName;
                     StringResponse res = socketManager.getInstance().rename(oldName, newName);
                     if(res.getStatus()==StatusCode.FILE_ACTION_OK){
                         table.clearSelection();
