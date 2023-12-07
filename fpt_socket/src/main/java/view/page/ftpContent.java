@@ -743,7 +743,10 @@ public final class ftpContent extends javax.swing.JPanel {
     }//GEN-LAST:event_renameCancelActionPerformed
 
     private void highlightPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highlightPanel1MouseClicked
-        
+        if(isRootShare()){
+            JOptionPane.showMessageDialog(parentFrame, "Không thực hiện chức năng này tại đây");
+            return;
+        }
         renameTitle.setText("Tạo thư mục");
         renameForm.setVisible(true);
 
