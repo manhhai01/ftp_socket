@@ -73,7 +73,7 @@ public class DirectoryBus {
         }
         File file = new File(fromRootPath);
         if (file.exists()) {
-            return true;
+            return false;
         }
 
         if (user.getUsedBytes() >= user.getQuotaInBytes()) {

@@ -88,7 +88,7 @@ public class NormalFileBus {
 
         File file = new File(fromRootFilePath);
         if (file.exists()) {
-            return true;
+            return false;
         }
 
         if (user.getUsedBytes() >= user.getQuotaInBytes()) {

@@ -53,7 +53,7 @@ public class STORCommand implements Command {
         }
 
         try {
-            // Create file if it doesn't exist
+            // Create file
             boolean fileCreationSuccess = normalFileBus.createNormalFile(path, session.getUsername());
             if (!fileCreationSuccess) {
                 session.getSessionSocketUtils().respondCommandSocket(
