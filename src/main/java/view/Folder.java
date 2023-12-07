@@ -674,6 +674,7 @@ public class Folder extends javax.swing.JPanel {
             int row = target.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             String filepath = pathHistory.peek()+"/"+model.getValueAt(row,1 ).toString();
+            System.out.println(filepath);
             File file = new File(filepath);
             if(file.isDirectory()) {
                 enterFolder(filepath);
