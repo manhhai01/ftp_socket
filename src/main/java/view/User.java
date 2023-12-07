@@ -603,6 +603,7 @@ public class User extends javax.swing.JPanel {
     private void userTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userTableMouseClicked
         if (evt.getClickCount() == 2) {
             JTable target = (JTable) evt.getSource();
+            refresh();
             int row = target.getSelectedRow();
             DefaultTableModel model = (DefaultTableModel) userTable.getModel();
             String username = model.getValueAt(row, 1).toString();
@@ -637,6 +638,21 @@ public class User extends javax.swing.JPanel {
                 return (long) bytes;
             }
         }
+    }
+    public void refresh(){
+        firstnameField.setText("");
+        lastnameField.setText("");
+        emailField.setText("");
+        male.setSelected(false);
+          female.setSelected(false);
+        anonymousRb.setSelected(false);
+        uploadRb.setSelected(false);
+        downloadRb.setSelected(false);
+        maxuploadField.setText("//");
+        maxdownloadField.setText("//");
+        usedField.setText("//");
+        quotaField.setText("//");
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
