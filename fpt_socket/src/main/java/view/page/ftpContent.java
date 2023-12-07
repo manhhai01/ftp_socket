@@ -767,7 +767,10 @@ public final class ftpContent extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(parentFrame, "tên ko được chứa kí tự đặc biệt");
                 return;
             }
-                StringResponse response;
+            if(isRootShare()){
+                fileName = oldName.substring(0, oldName.lastIndexOf("/"));
+            }else fileName = pathHistory.peek() + "/"+fileName;
+            StringResponse response;
                 try {
                     response = socketManager.getInstance().createNewFolder(fileName);
                     if(response.getStatus()== StatusCode.DIRECTORY_CREATED){
@@ -866,9 +869,10 @@ public final class ftpContent extends javax.swing.JPanel {
                     String path = pathHistory.peek();
                     int flag = 1;
                     for(File file : files){
-                        if(socketManager.getInstance().uploadFile(path, file).getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
+                        StringResponse res =socketManager.getInstance().uploadFile(path, file);
+                        if(res.getStatus() == StatusCode.FILE_ACTION_NOT_TAKEN){
                             flag=0;
-                            JOptionPane.showMessageDialog(parentFrame, "Bạn không có quyền upload lên thư mục này", "Thông báo",WARNING_MESSAGE);
+                            JOptionPane.showMessageDialog(parentFrame, res.getMessage(), "Thông báo",WARNING_MESSAGE);
                             break;
                         }   
                     }
