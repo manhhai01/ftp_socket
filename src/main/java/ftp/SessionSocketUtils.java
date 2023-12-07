@@ -45,7 +45,7 @@ public class SessionSocketUtils {
         try {
             message = AESCipher.decrypt(AESKey, encryptedMessage);
         } catch (Exception ex) {
-            Logger.getLogger(BufferedReader.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
         return message;
     }

@@ -5,6 +5,7 @@
 package ftp;
 
 import config.AppConfig;
+import java.io.File;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

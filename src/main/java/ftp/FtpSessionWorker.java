@@ -56,8 +56,6 @@ public class FtpSessionWorker extends Thread {
 
     public void matchCommand(String input, BufferedWriter commandSocketWriter, FtpServerSession session) {
         System.out.println("Input: " + input);
-
-        // Giai ma:
         InputParseResult parsedInput = parseInput(input);
         Command command = commands.get(parsedInput.commandName());
         if (command != null) {
@@ -74,7 +72,7 @@ public class FtpSessionWorker extends Thread {
             try {
                 session.getSessionSocketUtils().writeLineAndFlush("500 Command is not recognised.", commandSocketWriter);
             } catch (IOException ex) {
-                Logger.getLogger(FtpServer.class.getName()).log(Level.SEVERE, null, ex);
+                
             }
         }
     }
@@ -101,8 +99,8 @@ public class FtpSessionWorker extends Thread {
             onSocketDisconnectCommands.forEach((command) -> {
                 command.execute(null, sessionData, writer);
             });
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (Exception ex) {
+            
         }
 
     }
