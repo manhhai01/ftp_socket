@@ -281,6 +281,10 @@ public class FileBus {
         String parentPath = fromRootFilePath;
         DirectoryPermission parentDirPermission = new DirectoryPermission(false, false, false, true);
         while (!parentDirPermission.isShared()) {
+            if(fileDao.getFileByPath(parentPath).getUser().getUsername().equals(username)) {
+                parentDirPermission = new DirectoryPermission(true, true, true, true);
+                break;
+            }
             if (parentPath.equals(AppConfig.SERVER_FTP_FILE_PATH)) {
                 parentDirPermission = new DirectoryPermission(false, false, false, true);
                 break;
