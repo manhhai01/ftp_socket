@@ -93,6 +93,7 @@ public final class ftpContent extends javax.swing.JPanel {
                 // lưu lại tên cũ 
                 oldName = model.getValueAt(row,1 ).toString();
                 renameField.setText(oldName);
+                oldName = getFilePath(row);
                 renameForm.setVisible(true);
                 table.clearSelection();
             }
