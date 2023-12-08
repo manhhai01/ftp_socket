@@ -566,11 +566,18 @@ public class User extends javax.swing.JPanel {
         String maxUploadUnit = uploadUnit.getSelectedItem().toString();
         String maxDownloadSizeBytesToString = maxdownloadField.getText();
         String maxDownloadUnit = downloadUnit.getSelectedItem().toString();
+        String usedInBytesToString = usedField.getText();
+        String[] part = usedInBytesToString.split(" ");
         if(!pattern.matcher(quotaInBytesToString).matches()||!pattern.matcher(maxUploadSizeBytesToString).matches()||!pattern.matcher(maxDownloadSizeBytesToString).matches()){
             JOptionPane.showMessageDialog(renamePanel, "Vui lòng nhập số dương!");
             return;
         }
+        long usedInBytes = getBytes(part[0],part[1]);
         long quotaInBytes = getBytes(quotaInBytesToString,quotaUnit);
+        if(usedInBytes > quotaInBytes){
+            JOptionPane.showMessageDialog(renamePanel, "Dung lượng sử dụng vượt quá dung lượng tối đa!!");
+            return;
+        }
         long maxUpload = getBytes(maxUploadSizeBytesToString,maxUploadUnit);
         long maxDownload = getBytes(maxDownloadSizeBytesToString, maxDownloadUnit);
         userInfo.setQuotaInBytes(quotaInBytes);
