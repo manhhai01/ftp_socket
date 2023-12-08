@@ -33,6 +33,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.io.FileUtils;
 import payloads.StringResponse;
 import payloads.UserData;
 import socket.StatusCode;
@@ -904,7 +905,7 @@ public final class ftpContent extends javax.swing.JPanel {
                     long sum=0;
                     UserData userData = socketManager.getInstance().getUserInfo();
                     for (File file : files) {
-                        sum += file.length();
+                        sum += FileUtils.sizeOf(file);
                         if(sum > userData.getMaxUploadSizeBytes() || (sum+userData.getUsedBytes())> userData.getQuotaInBytes()){
                             JOptionPane.showMessageDialog(parentFrame,"Vượt quá dung lượng cho phép");
                             return;
