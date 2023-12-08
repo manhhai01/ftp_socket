@@ -12,6 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.Date;
 import java.util.List;
 import model.Directory;
 import model.ShareDirectories;
@@ -75,11 +78,6 @@ public class Seeder {
         MP5Utils md5Utils = new MP5Utils();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-//        User rootUser = new User();
-//        rootUser.setUsername("root");
-//        rootUser.setPassword(md5Utils.getMD5Hash("root"));
-//        rootUser.setIsActive(1);
-//        userDao.save(rootUser);
         User user1 = new User();
         user1.setUsername("vanan@gmail.com");
         user1.setPassword(md5Utils.getMD5Hash("test"));
@@ -88,6 +86,7 @@ public class Seeder {
         user1.setLastName("Tran Van");
         user1.setGender("Nam");
         user1.setIsActive(1);
+        user1.setCreateDateOtp(LocalDateTime.of(2023, Month.NOVEMBER, 14, 7, 33));
         user1.setMaxDownloadFileSizeBytes(314572800); // 300 MB
         user1.setMaxUploadFileSizeBytes(314572800); // 300 MB
         user1.setQuotaInBytes(1073741824); // 1 GB
@@ -102,10 +101,25 @@ public class Seeder {
         user2.setLastName("Le Thi");
         user2.setGender("Nữ");
         user2.setIsActive(1);
+        user2.setCreateDateOtp(LocalDateTime.of(2023, Month.NOVEMBER, 17, 9, 22));
         user2.setMaxDownloadFileSizeBytes(314572800); // 300 MB
         user2.setMaxUploadFileSizeBytes(314572800); // 300 MB
         user2.setQuotaInBytes(1073741824); // 1 GB
         userDao.save(user2);
+        
+        User user3 = new User();
+        user2.setId(3);
+        user2.setUsername("notactive@gmail.com");
+        user2.setPassword(md5Utils.getMD5Hash("test3"));
+        user2.setBirthdate(dateFormat.parse("5/2/1998"));
+        user2.setFirstName("Tran");
+        user2.setLastName("Thanh Tam");
+        user2.setGender("Nam");
+        user2.setIsActive(0);
+        user2.setMaxDownloadFileSizeBytes(314572800); // 300 MB
+        user2.setMaxUploadFileSizeBytes(314572800); // 300 MB
+        user2.setQuotaInBytes(1073741824); // 1 GB
+        userDao.save(user3);
 
         File file = new File(AppConfig.SERVER_FTP_ANON_PATH);
         file.mkdirs();
