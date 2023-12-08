@@ -19,6 +19,8 @@ import javax.swing.SwingUtilities;
 import payload.UserPermission;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import view.filePermission;
 import view.folderPermission;
 
@@ -47,10 +49,10 @@ public class ShareOptionPane extends javax.swing.JDialog {
         setLocationRelativeTo(null);
 
     }
-    public void refreshContent() throws Exception{
+    public void refreshContent(){
         setContent(type, filename);
     }
-    public void setContent(String type,String shareFileName) throws Exception{
+    public void setContent(String type,String shareFileName) {
         System.out.println("");
         List<FilePermissionWithUser> sharedUsersPermissions = fileBus.getSharedUsersPermissions(shareFileName);
         Gson gson = new Gson();
@@ -225,6 +227,7 @@ public class ShareOptionPane extends javax.swing.JDialog {
             NormalFileBus normalFileBus = new NormalFileBus();
             normalFileBus.setShareNormalFilePermissionAdmin(filename, name, "r");
         }
+        refreshContent();
     }//GEN-LAST:event_renameConfirm2ActionPerformed
 
     private void renameConfirm3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirm3ActionPerformed
