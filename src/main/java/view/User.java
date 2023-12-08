@@ -9,6 +9,8 @@ import com.beust.ah.A;
 import java.awt.Component;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
@@ -556,12 +558,18 @@ public class User extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void renameConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameConfirmActionPerformed
+        String regex = "^[1-9]\\d*(\\.\\d+)?$";
+        Pattern pattern = Pattern.compile(regex);
         String quotaInBytesToString = quotaField.getText();
         String quotaUnit = this.quotaUnit.getSelectedItem().toString();
         String maxUploadSizeBytesToString = maxuploadField.getText();
         String maxUploadUnit = uploadUnit.getSelectedItem().toString();
         String maxDownloadSizeBytesToString = maxdownloadField.getText();
         String maxDownloadUnit = downloadUnit.getSelectedItem().toString();
+        if(!pattern.matcher(quotaInBytesToString).matches()||!pattern.matcher(maxUploadSizeBytesToString).matches()||!pattern.matcher(maxDownloadSizeBytesToString).matches()){
+            JOptionPane.showMessageDialog(renamePanel, "Vui lòng nhập số dương!");
+            return;
+        }
         long quotaInBytes = getBytes(quotaInBytesToString,quotaUnit);
         long maxUpload = getBytes(maxUploadSizeBytesToString,maxUploadUnit);
         long maxDownload = getBytes(maxDownloadSizeBytesToString, maxDownloadUnit);
