@@ -107,11 +107,13 @@ public class FileBus {
             return false;
         }
 
-        // Check if uploadable
         String parentPath = ftpFileUtils.getParentPath(newFilePath);
-        DirectoryPermission parentDirPermission = (DirectoryPermission) getFilePermission(parentPath, username, DIRECTORY_TYPE);
-        if (!parentDirPermission.isUploadable()) {
-            return false;
+        // Check if uploadable
+        if (file.isFile()) {
+            DirectoryPermission parentDirPermission = (DirectoryPermission) getFilePermission(parentPath, username, DIRECTORY_TYPE);
+            if (!parentDirPermission.isUploadable()) {
+                return false;
+            }
         }
 
         // Reparent children files/directories
@@ -206,7 +208,6 @@ public class FileBus {
 //            if (directoryFromDb.getUser().getUsername().equals(username)) {
 //                return new DirectoryPermission(true, true, true, true);
 //            }
-
             // Get directory's share permission
             List<ShareDirectories> directoryPermissions = directoryFromDb.getShareDirectories();
             ShareDirectories userPermission = directoryPermissions.stream()
@@ -239,7 +240,6 @@ public class FileBus {
 //            if (fileFromDb.getUser().getUsername().equals(username)) {
 //                return new NormalFilePermission(NormalFilePermission.FULL_PERMISSION, true);
 //            }
-
             // Get file's share permission
             List<ShareFiles> filePermissions = fileFromDb.getShareFiles();
             ShareFiles userPermission = filePermissions.stream()
