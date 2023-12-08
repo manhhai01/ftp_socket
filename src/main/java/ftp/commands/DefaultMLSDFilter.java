@@ -32,7 +32,7 @@ public class DefaultMLSDFilter implements FileFilter {
                 ftpFileUtils.convertJavaPathToFtpPath(childFile.getPath()),
                 username,
                 childFile.isFile() ? FileBus.NORMAL_FILE_TYPE : FileBus.DIRECTORY_TYPE);
-        return filePermission.isReadable();
+        return filePermission != null;
     }
 
 }
